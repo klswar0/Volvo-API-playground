@@ -1,0 +1,28 @@
+========================================================================
+NOTICE
+========================================================================
+
+This project incorporates, interacts with, or is derived from the official 
+Open API specifications for the following Volvo Car Corporation platforms:
+  - Connected Vehicle API (v2)
+  - Energy API (v2)
+  - Location API (v1)
+
+Copyright (c) Volvo Car Corporation. All rights reserved.
+
+------------------------------------------------------------------------
+Trademarks and Attribution
+------------------------------------------------------------------------
+"Volvo", "Volvo Cars", and the Volvo logo are registered trademarks of 
+Volvo Car Corporation or its affiliates. Use of these trademarks within 
+this project is for descriptive and identification purposes only and does 
+not imply endorsement, sponsorship, or affiliation by Volvo Car Corporation.
+
+------------------------------------------------------------------------
+API Usage and Compliance
+------------------------------------------------------------------------
+This software is an independent implementation developed to interface with the 
+Volvo Cars API ecosystem. Users of this software are solely responsible for 
+complying with the "Connected Vehicle API, Energy API, and Location API Specific 
+Agreement" and the general Terms and Conditions governed by the Volvo Cars 
+Developer Portal.
