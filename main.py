@@ -3,6 +3,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import uvicorn
 
+
+# WARNING: this code is made for eu cars only (dev site states only km and liters are valid so there needs to be a USA developer site.(for sure there is a diffrent server for them) )
+
+
 class AuthHeader(BaseModel):
     content_type: str = Field(..., alias="Content-Type")
     authorization: str = Field(...)
@@ -13,6 +17,7 @@ class Car(BaseModel):
     fuelType: str = Field(...) #possible values: PETROL, DIESEL, ELECTRIC, HYBRID
     fuelICE:int = Field(default=0) # fuel level for petrol and diesel cars
     fuelElectric:int = Field(default=0) # fuel level for electric and hybrid cars
+    Odometer: int = Field(default=0) 
     climate: int =Field(default=0) # in future time based it can be set to time when the climate will be turned off (why you can set time thru app not thru api. how long api climate lasts? OR only engine has a timer)
     commands:list
     availabilityStatus_value: str = Field(default="AVAILABLE") # AVAILABLE, UNAVAILABLE, UNSPECIFIED
@@ -180,7 +185,7 @@ def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
             return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
         elif str(e) == "Invalid VIN":
             return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
-    else:   #TODO: unit and timestamp
+    else:   #TODO: unit and timestamp . docs says  thath only liters and % are  valid?
         FuelType = car.fuelType
         FuelLevel = str(car.fuelICE)
         FuelLevelElectric = str(car.fuelElectric)
@@ -195,8 +200,21 @@ def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
     
     
-#
-
+#Odometer section
+@app.get("/vehicles/{VIN}/odometer")
+def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+        elif str(e) == "Invalid VIN":
+            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+    else:   #Units and timestamp here again only km is valid Why volvo Why?
+        Odometer =str(car.Odometer)
+        data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : "placeholder"}}}
+        return JSONResponse(content=data, status_code=200)
+        
 
 
 
