@@ -10,6 +10,9 @@ class AuthHeader(BaseModel):
 
 class Car(BaseModel):
     VIN: str = Field(...)
+    fuelType: str = Field(...) #possible values: PETROL, DIESEL, ELECTRIC, HYBRID
+    fuelICE:int = Field(default=0) # fuel level for petrol and diesel cars
+    fuelElectric:int = Field(default=0) # fuel level for electric and hybrid cars
     climate: int =Field(default=0) # in future time based it can be set to time when the climate will be turned off (why you can set time thru app not thru api. how long api climate lasts? OR only engine has a timer)
     commands:list
     availabilityStatus_value: str = Field(default="AVAILABLE") # AVAILABLE, UNAVAILABLE, UNSPECIFIED
@@ -19,7 +22,7 @@ class Car(BaseModel):
     
     
 database = {
-    "vcc_api_key": [Car(VIN="VIN123", climate=0, commands=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])]
+    "vcc_api_key": [Car(VIN="VIN123", fuelType="HYBRID", climate=0, commands=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])]
 }
 
 app = FastAPI()
@@ -60,6 +63,8 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         elif command == "CLIMATIZATION_STOP" and car.climate > 0:
             car.climate = 0
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200) 
+    return JSONResponse(
+    content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
     # what if climate is already started? Need to check docs or a real car (not in mine doesnt have that option)
 
 
@@ -93,6 +98,7 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
             car.engineStatus = "STOPPED"
             car.engineTime = 0
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
     # what if engine is already started? Need to check docs or a real car (not in mine doesnt have that option)
 
 
@@ -109,6 +115,8 @@ def engineStatus(VIN:str, auth_header: AuthHeader = Header(...)):
     else:
         data = {"vin": VIN, "engineStatus": car.engineStatus}
         return JSONResponse(content={"data": data}, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
 
 @app.post("/vehicles/{VIN}/commands/engine-start")
 def engineStart(VIN:str, auth_header: AuthHeader = Header(...), runtimeMinutes:int = Body(...)):
@@ -139,9 +147,11 @@ def commands(VIN:str, auth_header: AuthHeader = Header(...)):
                 "href": href + command.lower().replace("_", "-")
             })
         return JSONResponse(content={"data": data}, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
 
-@app.get("/vehicles/{VIN}/commands/command-accessibility")
+
+@app.get("/vehicles/{VIN}/command-accessibility")
 def commandAccessibility(VIN:str, auth_header: AuthHeader = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
@@ -157,7 +167,35 @@ def commandAccessibility(VIN:str, auth_header: AuthHeader = Header(...)):
             data = {"availabilityStatus": {"value": car.availabilityStatus_value, "unavailableReason": car.availabilityStatus_unavailableReason,"timestamp":"placeholder"}}     
                 
         return JSONResponse(content={"data": data}, status_code=200)  
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
                      
+#Fuel section
+@app.get("/vehicles/{VIN}/fuel")
+def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+        elif str(e) == "Invalid VIN":
+            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+    else:   #TODO: unit and timestamp
+        FuelType = car.fuelType
+        FuelLevel = str(car.fuelICE)
+        FuelLevelElectric = str(car.fuelElectric)
+        if FuelType == "PETROL" or FuelType == "DIESEL":
+            data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":"placeholder"}}} 
+        elif FuelType == "ELECTRIC":
+            data = {"data":{"batteryChargeLevel":{"value" : FuelLevelElectric, "unit":"%","timestamp":"placeholder"}}} 
+        elif FuelType == "HYBRID":
+            data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":"placeholder"}, "batteryChargeLevel":{"value" : FuelLevelElectric, "unit":"%","timestamp":"placeholder"}}} 
+        else:
+            return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+        return JSONResponse(content=data, status_code=200)
+    
+    
+#
 
 
 
