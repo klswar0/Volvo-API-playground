@@ -20,11 +20,26 @@ class Car(BaseModel):
     Odometer: int = Field(default=0) 
     climate: int =Field(default=0) # in future time based it can be set to time when the climate will be turned off (why you can set time thru app not thru api. how long api climate lasts? OR only engine has a timer)
     commands:list
-    availabilityStatus_value: str = Field(default="AVAILABLE") # AVAILABLE, UNAVAILABLE, UNSPECIFIED
+    availabilityStatus_value: str = Field(default="AVAILABLE") # AVAILABLE, UNAVAILABLE, UNSPECIFIED # AVAILABLE is needed for any command TO IMPLEMENT
     availabilityStatus_unavailableReason: str = Field(default="") # Description of why the vehicle is unavailable UNSPECIFIED, NO_INTERNET, POWER_SAVING_MODE, CAR_IN_USE
     engineStatus:str = Field(default="STOPPED") # possible values: STOPPED, RUNNING
     engineTime:int = Field(default=0) # TODO:how long should engine run in future time based (one variable that is time when engine will be turned off not (enginestatus and enginetime))
     
+    #diagnostic parameters
+    engineCoolantLever:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, TOO_LOW.
+    oillevel:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, SERVICE_REQUIRED, TOO_LOW, TOO_HIGH.
+    
+    serviceWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, UNKNOWN_WARNING, REGULAR_MAINTENANCE_ALMOST_TIME_FOR_SERVICE, ENGINE_HOURS_ALMOST_TIME_FOR_SERVICE, DISTANCE_DRIVEN_ALMOST_TIME_FOR_SERVICE, REGULAR_MAINTENANCE_TIME_FOR_SERVICE, ENGINE_HOURS_TIME_FOR_SERVICE, DISTANCE_DRIVEN_TIME_FOR_SERVICE, REGULAR_MAINTENANCE_OVERDUE_FOR_SERVICE, ENGINE_HOURS_OVERDUE_FOR_SERVICE, DISTANCE_DRIVEN_OVERDUE_FOR_SERVICE.
+    serviceTrigger:str #Values: CALENDAR_TIME, DISTANCE, ENGINE_HOURS, UNSPECIFIED, UNKNOWN.
+    engineHoursToService:int = Field(default=0) # in hours
+    distanceToService:int = Field(default=0) # in km
+    timeToService:int = Field(default=0) # in days (or months. need to check when they change to months. stored in days sent in both?)
+    
+    washerFluidLevelWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, TOO_LOW. # not sure no infornation about it in official docs but sent thru real API response
+
+    brakeFluidLevel:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, TOO_LOW.
+    
+    #additional parameters for error like if you want fail engine start nextInvoice status, last timestamp
     
 database = {
     "vcc_api_key": [Car(VIN="VIN123", fuelType="HYBRID", climate=0, commands=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])]
@@ -198,7 +213,8 @@ def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
         else:
             return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
         return JSONResponse(content=data, status_code=200)
-    
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
     
 #Odometer section
 @app.get("/vehicles/{VIN}/odometer")
@@ -214,11 +230,75 @@ def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
         Odometer =str(car.Odometer)
         data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : "placeholder"}}}
         return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+    
+#diagnostic section
+@app.get("/vehicles/{VIN}/engine")
+def engineDiagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+        elif str(e) == "Invalid VIN":
+            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+    else:
+        data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLever,"timestamp":"placeholder"},"oilLevelWarning":{"value":car.oillevel,"timestamp":"placeholder"}}}
+        return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+@app.get("/vehicles/{VIN}/diagnostics")  # there is additional washer fluid data sent by the api but docs dont talk about it there ? and units?
+def diagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+        elif str(e) == "Invalid VIN":
+            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+    else:
+        toService = car.timeToService
         
+        unit=""
+        if toService < 62:
+            unit="days"
+        else:
+            unit="months"
+            toService = toService//31
+            
+        if car.serviceWarning != "NO_WARNING" and car.serviceTrigger != "UNSPECIFIED":
+            data={"data":{"serviceWarning":{"value":car.serviceWarning,"timestamp":"placeholder"},"serviceTrigger":{"value":car.serviceTrigger,"timestamp":"placholder"},"engineHoursToService":{"value":car.engineHoursToService,"unit":"h","timestamp":"placeholder"},"distanceToService":{"value":car.distanceToService,"unit":"km","timestamp":"placeholder"},"washerFluidLevelWarning":{"value":car.washerFluidLevelWarning,"timestamp":"placeholder"},"timeToService":{"value":toService,"unit":unit,"timestamp":"placeholder"}}}
+        else:
+            data={"data":{"serviceWarning":{"value":car.serviceWarning,"timestamp":"placeholder"},"engineHoursToService":{"value":car.engineHoursToService,"unit":"h","timestamp":"placeholder"},"distanceToService":{"value":car.distanceToService,"unit":"km","timestamp":"placeholder"},"washerFluidLevelWarning":{"value":car.washerFluidLevelWarning,"timestamp":"placeholder"},"timeToService":{"value":toService,"unit":unit,"timestamp":"placeholder"}}}
+        
+        return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+
+
+
+
+@app.get("/vehicles/{VIN}/brakes")
+def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+        elif str(e) == "Invalid VIN":
+            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+    else:
+        data={"data":{"brakFluidLevelWarning":{"value":car.brakeFluidLevel,"timestamp":"placeholder"}}}
+        return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
 #internal endpoints 
 
 #TODO: add authentication func for internal endpoints API key and VIN without in future bearer token
+@app.get("/internal")
+def Internal():
+    return JSONResponse(content={"message": "Welcome to the internal API"}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
 
 @app.get("/internal/dashboard")

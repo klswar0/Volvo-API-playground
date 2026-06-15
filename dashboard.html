@@ -3,6 +3,7 @@
     <head>
         <title>Car dashboard</title>
         <script>
+            //TODO REDO IT
             var apiKey = "vcc_api_key";
             async function loadData(){
                 try{
@@ -20,11 +21,11 @@
                 document.getElementById("fuelElectric").textContent = data.fuelElectric;
                 document.getElementById("Odometer").textContent = data.Odometer;
                 document.getElementById("climate").textContent = data.climate ?? "0";
-                //document.getElementById("commands").textContent = data.commands;
+                document.getElementById("commands").textContent = data.commands;
                 document.getElementById("availabilityStatus_value").textContent = data.availabilityStatus_value;
-                //document.getElementById("availabilityStatus_unavailableReason").textContent = data.availabilityStatus_unavailableReason;
+                document.getElementById("availabilityStatus_unavailableReason").textContent = data.availabilityStatus_unavailableReason;
                 document.getElementById("engineStatus").textContent = data.engineStatus;
-                //document.getElementById("engineTime").textContent = data.engineTime;
+                document.getElementById("engineTime").textContent = data.engineTime;
 
                 document.getElementById("apiKey").textContent = apiKey;
                 
@@ -32,23 +33,80 @@
                 console.error('Error fetching data:', error);
             }
             }
-            window.addEventListener('load', loadData);
-            setInterval(loadData, 5000);
+
+            async function update(form){
+                const attribute = form.dataset.attribute;
+                const value = form.querySelector('select').value;
+                
+                await fetch("/internal/update", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "VIN":"VIN123",
+                        "vcc-api-key": apiKey
+                    },
+                    body: JSON.stringify({ attribute, value })
+                });
+                loadData();
+            }
+
+                //learn about it later...
+            document.addEventListener('DOMContentLoaded', () => {
+                loadData();
+                setInterval(loadData, 5000);
+                
+                document.querySelectorAll('[data-attribute]').forEach(form => {
+                    form.onsubmit = (e) => { e.preventDefault(); update(form); };
+                });
+            });
         </script>
     </head>
 </html>
 
 <body>
     <h1>Car dashboard</h1>
-    <p>Status:<span id="availabilityStatus_value">Loading...</span></p>
+    <p>Status:<span id="availabilityStatus_value">Loading...</span> <span id="availabilityStatus_unavailableReason">..</span></p>
+    <form data-attribute="availabilityStatus_value">
+        <select>
+            <option value="AVAILABLE">AVAILABLE</option>
+            <option value="UNAVAILABLE">UNAVAILABLE</option>
+            <option value="UNSPECIFIED">UNSPECIFIED</option>
+        </select>
+        <input type="submit" value="change">
+    </form>
     <p>Odometer: <span id="Odometer">Loading...</span></p>
     <p>VIN: <span id="VIN">Loading...</span></p>
     <p>Fuel type: <span id="fuelType">Loading...</span></p>
+    <form data-attribute="fuelType">
+        <select>
+            <option value="HYBRID">HYBRID</option>
+            <option value="ELECTRIC">ELECTRIC</option>
+            <option value="DIESEL">DIESEL</option>
+            <option value="PETROL">PETROL</option>
+        </select>
+        <input type="submit" value="change">
+    </form>
     <p>Fuel level: <span id="fuelICE">Loading...</span></p>
     <p>Charge level: <span id="fuelElectric">Loading...</span></p>
     <p>API key: <span id="apiKey">Loading...</span></p>
     <p>engine status: <span id="engineStatus">Loading...</span></p>
+    <form data-attribute="engineStatus">
+        <select>
+            <option value="RUNNING">RUNNING</option>
+            <option value="STOPPED">STOPPED</option>
+        </select>
+        <input type="submit" value="change">
+    </form>
+    <p>engine time: <span id="engineTime">Loading...</span></p>
     <p>climate status: <span id="climate">Loading...</span></p>
-
+    <form data-attribute="climate">
+    <select>
+        <option value="0">OFF</option>
+        <option value="1">ON</option>
+    </select>
+    <input type="submit" value="change">
+</form>
+    <p>commands:</p>
+    <p><span id="commands">Loading...</span></p>
 
 </body>
