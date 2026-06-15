@@ -1,15 +1,15 @@
 from fastapi import Body, FastAPI, Header
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel, Field
 import uvicorn
 
 
 # WARNING: this code is made for eu cars only (dev site states only km and liters are valid so there needs to be a USA developer site.(for sure there is a diffrent server for them) )
-
+# API states USA region support maybe just for simplicity they use km and liters and so on.
 
 class AuthHeader(BaseModel):
-    content_type: str = Field(..., alias="Content-Type")
-    authorization: str = Field(...)
+    content_type: str = Field(default="application/json", alias="Content-Type")
+    authorization: str =Field(default="") #= Field(...) # NOT IMPLEMENTED
     vcc_api_key: str =Field(...,alias="vcc-api-key")
 
 class Car(BaseModel):
@@ -216,6 +216,56 @@ def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
         
 
+#internal endpoints 
+
+#TODO: add authentication func for internal endpoints API key and VIN without in future bearer token
 
 
+@app.get("/internal/dashboard")
+def Dashbard():
+    return FileResponse("dashboard.html")
+
+@app.get("/internal/status") #todo: websocket version
+def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
+    try:
+        cars = database[vcc_api_key]
+        for car in cars:
+            if car.VIN == VIN:
+                data = {
+                    "VIN": car.VIN,
+                    "fuelType": car.fuelType,
+                    "fuelICE": car.fuelICE,
+                    "fuelElectric": car.fuelElectric,
+                    "Odometer": car.Odometer,
+                    "climate": car.climate,
+                    "commands": car.commands,
+                    "availabilityStatus_value": car.availabilityStatus_value,
+                    "availabilityStatus_unavailableReason": car.availabilityStatus_unavailableReason,
+                    "engineStatus": car.engineStatus,
+                    "engineTime": car.engineTime
+                }
+                return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "THIS IS INTERNAL API/invalid VIN value. field:{VIN}"}}, status_code=400)
+    except KeyError:
+        return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
+    
+@app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) #TODO: implement this to html
+def update(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: str = Body(...), value: str = Body(...)):
+    try:
+        cars = database[vcc_api_key]
+        for car in cars:
+            if car.VIN == VIN:
+                if hasattr(car,attribute):
+                    setattr(car,attribute, value)
+                    return JSONResponse(content={"message": f"{attribute} updated successfully"}, status_code=200)    
+                else:
+                    return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute}"}}, status_code=400)
+                
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "THIS IS INTERNAL API/invalid VIN value. field:{VIN}"}}, status_code=400)
+                
+    except KeyError:
+        return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
+                    
+    
+    
 uvicorn.run(app)

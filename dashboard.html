@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>  
+    <head>
+        <title>Car dashboard</title>
+        <script>
+            var apiKey = "vcc_api_key";
+            async function loadData(){
+                try{
+                const response = await fetch('/internal/status', {
+                    headers: {
+                        "VIN":"VIN123",
+                        "vcc-api-key": apiKey
+                    }
+                });
+                const data = await response.json();
+
+                document.getElementById("VIN").textContent = data.VIN;
+                document.getElementById("fuelType").textContent = data.fuelType;
+                document.getElementById("fuelICE").textContent = data.fuelICE;
+                document.getElementById("fuelElectric").textContent = data.fuelElectric;
+                document.getElementById("Odometer").textContent = data.Odometer;
+                document.getElementById("climate").textContent = data.climate ?? "0";
+                //document.getElementById("commands").textContent = data.commands;
+                document.getElementById("availabilityStatus_value").textContent = data.availabilityStatus_value;
+                //document.getElementById("availabilityStatus_unavailableReason").textContent = data.availabilityStatus_unavailableReason;
+                document.getElementById("engineStatus").textContent = data.engineStatus;
+                //document.getElementById("engineTime").textContent = data.engineTime;
+
+                document.getElementById("apiKey").textContent = apiKey;
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            }
+            window.addEventListener('load', loadData);
+            setInterval(loadData, 5000);
+        </script>
+    </head>
+</html>
+
+<body>
+    <h1>Car dashboard</h1>
+    <p>Status:<span id="availabilityStatus_value">Loading...</span></p>
+    <p>Odometer: <span id="Odometer">Loading...</span></p>
+    <p>VIN: <span id="VIN">Loading...</span></p>
+    <p>Fuel type: <span id="fuelType">Loading...</span></p>
+    <p>Fuel level: <span id="fuelICE">Loading...</span></p>
+    <p>Charge level: <span id="fuelElectric">Loading...</span></p>
+    <p>API key: <span id="apiKey">Loading...</span></p>
+    <p>engine status: <span id="engineStatus">Loading...</span></p>
+    <p>climate status: <span id="climate">Loading...</span></p>
+
+
+</body>
