@@ -4,8 +4,6 @@ from pydantic import BaseModel, Field
 import uvicorn
 
 
-# WARNING: this code is made for eu cars only (dev site states only km and liters are valid so there needs to be a USA developer site.(for sure there is a diffrent server for them) )
-# API states USA region support maybe just for simplicity they use km and liters and so on.
 
 class AuthHeader(BaseModel):
     content_type: str = Field(default="application/json", alias="Content-Type")
@@ -30,7 +28,7 @@ class Car(BaseModel):
     oillevel:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, SERVICE_REQUIRED, TOO_LOW, TOO_HIGH.
     
     serviceWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, UNKNOWN_WARNING, REGULAR_MAINTENANCE_ALMOST_TIME_FOR_SERVICE, ENGINE_HOURS_ALMOST_TIME_FOR_SERVICE, DISTANCE_DRIVEN_ALMOST_TIME_FOR_SERVICE, REGULAR_MAINTENANCE_TIME_FOR_SERVICE, ENGINE_HOURS_TIME_FOR_SERVICE, DISTANCE_DRIVEN_TIME_FOR_SERVICE, REGULAR_MAINTENANCE_OVERDUE_FOR_SERVICE, ENGINE_HOURS_OVERDUE_FOR_SERVICE, DISTANCE_DRIVEN_OVERDUE_FOR_SERVICE.
-    serviceTrigger:str #Values: CALENDAR_TIME, DISTANCE, ENGINE_HOURS, UNSPECIFIED, UNKNOWN.
+    serviceTrigger:str =Field(default="UNSPECIFIED") #Values: CALENDAR_TIME, DISTANCE, ENGINE_HOURS, UNSPECIFIED, UNKNOWN.
     engineHoursToService:int = Field(default=0) # in hours
     distanceToService:int = Field(default=0) # in km
     timeToService:int = Field(default=0) # in days (or months. need to check when they change to months. stored in days sent in both?)
@@ -38,6 +36,30 @@ class Car(BaseModel):
     washerFluidLevelWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, TOO_LOW. # not sure no infornation about it in official docs but sent thru real API response
 
     brakeFluidLevel:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, TOO_LOW.
+    
+    
+    
+    #windows
+    #Values: UNSPECIFIED, OPEN, CLOSED, AJAR- not fully open? Mostly for sunroof .
+    frontLeftWindow:str = Field(default="CLOSED")  
+    frontRightWindow:str = Field(default="CLOSED") 
+    rearRightWindow:str = Field(default="CLOSED")
+    rearLeftWindow:str = Field(default="CLOSED")
+    sunroof:str = Field(default="CLOSED") # UNSPECIFIED means mostly that car doesnt have sunroof
+    
+    #doors and locks
+    
+    centralLock:str = Field(default="UNLOCKED") #Possible values: UNSPECIFIED, UNLOCKED, LOCKED.
+    
+    #Values: UNSPECIFIED, OPEN, CLOSED, AJAR.
+    frontLeftDoor:str = Field(default="CLOSED") 
+    frontRightDoor:str = Field(default="CLOSED") 
+    rearLeftDoor:str = Field(default="CLOSED")
+    rearRightDoor:str = Field(default="CLOSED") 
+    tailGate:str = Field(default="CLOSED") 
+    hood:str = Field(default="CLOSED") 
+    tankLid:str = Field(default="CLOSED") # UNSPECIFIED means mostly that car doesnt have sensors
+    
     
     #additional parameters for error like if you want fail engine start nextInvoice status, last timestamp
     
@@ -50,6 +72,15 @@ app = FastAPI()
 def authenticate(auth_header: AuthHeader):
     if auth_header.vcc_api_key not in database:
         raise ValueError("Invalid API key")
+
+def UnauthorizedResponse():
+    return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+
+def BadRequestResponse(VIN:str):
+    return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": f"invalid VIN value. field:{VIN}"}}, status_code=400)
+
+def NotSupportedResponse(command:str):
+    return JSONResponse(content={"error": {"message": "NOT_FOUND","description": f"{command} is not supported by this vehicle"}}, status_code=404)
     
 
 def VINHandling(VIN:str, auth_header: AuthHeader):
@@ -70,13 +101,13 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:
         invoiceStatus = "COMPLETED" # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
-            return JSONResponse(content={"error": {"message": "NOT_FOUND","description": f"{command} is not supported by this vehicle"}}, status_code=404)
+            return NotSupportedResponse(command)
         elif command == "CLIMATIZATION_START" and car.climate == 0: # need to check if the climate is then the api throws an error or not ther same in stop verison
             car.climate = 1
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
@@ -103,13 +134,13 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:
         invoiceStatus = "COMPLETED" # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
-            return JSONResponse(content={"error": {"message": "NOT_FOUND","description": f"{command} is not supported by this vehicle"}}, status_code=404)
+            return NotSupportedResponse(command)
         elif command == "ENGINE_START":
             car.engineStatus = "RUNNING"
             car.engineTime = runtimeMinutes
@@ -129,9 +160,9 @@ def engineStatus(VIN:str, auth_header: AuthHeader = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:
         data = {"vin": VIN, "engineStatus": car.engineStatus}
         return JSONResponse(content={"data": data}, status_code=200)
@@ -148,6 +179,87 @@ def engineStart(VIN:str, auth_header: AuthHeader = Header(...), runtimeMinutes:i
 def engineStop(VIN:str, auth_header: AuthHeader = Header(...)):
     return engine(VIN, auth_header,command="ENGINE_STOP")
 
+# doors, windows, locks section
+
+
+
+@app.get("/vehicles/{VIN}/windows")
+def windows(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponse()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponse(VIN)
+    else:
+        data={"data": {"frontLeftWindow": { "value": car.frontLeftWindow, "timestamp": "placeholder"},"frontRightWindow": {"value": car.frontRightWindow,"timestamp": "placeholder"},"rearLeftWindow": { "value": car.rearLeftWindow,"timestamp": "placeholder"}, "rearRightWindow": {"value": car.rearRightWindow,"timestamp": "placeholder"},"sunroof": {"value": car.sunroof,"timestamp": "placeholder"}}}
+
+        return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+@app.get("/vehicles/{VIN}/doors")
+def doors(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponse()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponse(VIN)
+    else:
+        data={"data": {"centralLock": {"value": car.centralLock,"timestamp": "placeholder"},"frontLeftDoor": {"value": car.frontLeftDoor,"timestamp": "placeholder"},"frontRightDoor": {"value": car.frontRightDoor,"timestamp": "placeholder"},"hood": {"value": car.hood,"timestamp": "placeholder"},"rearLeftDoor": {"value": car.rearLeftDoor,"timestamp": "placeholder"},"rearRightDoor": {"value": car.rearRightDoor,"timestamp": "placeholder"},"tailGate": {"value": car.tailGate,"timestamp": "placeholder"},"tankLid": {"value": car.tankLid,"timestamp": "placeholder"}}}
+        return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+@app.post("/vehicles/{VIN}/commands/lock")
+def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car =VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponse()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponse(VIN)
+    else:
+        invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+        car.centralLock = "LOCKED"
+        data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
+        return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+# @app.post("/vehicles/{VIN}/commands/lock-reduced-guard") #only for AAOS not Sensus
+# def doorLockReduce(VIN:str, auth_header: AuthHeader = Header(...)):
+#     try:
+#         car =VINHandling(VIN, auth_header)
+#     except ValueError as e:
+#         if str(e) == "Invalid API key":
+#             return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+#         elif str(e) == "Invalid VIN":
+#             return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+#     else:
+#         invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+#         car.centralLock = "LOCKED"
+#         data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
+#         return JSONResponse(content=data, status_code=200)
+#     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+@app.post("/vehicles/{VIN}/commands/unlock") # doesnt work like in real life you must click button of the trunk
+def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
+    try:
+        car =VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponse()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponse(VIN)
+    else:
+        invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+        car.centralLock = "UNLOCKED" 
+        data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
+        return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
 #commands 
 @app.get("/vehicles/{VIN}/commands")
 def commands(VIN:str, auth_header: AuthHeader = Header(...)):
@@ -156,9 +268,9 @@ def commands(VIN:str, auth_header: AuthHeader = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:
         data = []
         for command in car.commands:
@@ -177,9 +289,9 @@ def commandAccessibility(VIN:str, auth_header: AuthHeader = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:
         if car.availabilityStatus_value == "AVAILABLE" or car.availabilityStatus_value == "UNSPECIFIED": 
             data = {"availabilityStatus": {"value": car.availabilityStatus_value,"timestamp":"placeholder"}}
@@ -197,9 +309,9 @@ def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:   #TODO: unit and timestamp . docs says  thath only liters and % are  valid?
         FuelType = car.fuelType
         FuelLevel = str(car.fuelICE)
@@ -223,9 +335,9 @@ def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:   #Units and timestamp here again only km is valid Why volvo Why?
         Odometer =str(car.Odometer)
         data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : "placeholder"}}}
@@ -240,9 +352,9 @@ def engineDiagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:
         data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLever,"timestamp":"placeholder"},"oilLevelWarning":{"value":car.oillevel,"timestamp":"placeholder"}}}
         return JSONResponse(content=data, status_code=200)
@@ -254,9 +366,9 @@ def diagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:
         toService = car.timeToService
         
@@ -285,9 +397,9 @@ def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         if str(e) == "Invalid API key":
-            return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+            return UnauthorizedResponse()
         elif str(e) == "Invalid VIN":
-            return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+            return BadRequestResponse(VIN)
     else:
         data={"data":{"brakFluidLevelWarning":{"value":car.brakeFluidLevel,"timestamp":"placeholder"}}}
         return JSONResponse(content=data, status_code=200)
