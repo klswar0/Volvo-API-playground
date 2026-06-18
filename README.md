@@ -11,4 +11,10 @@ This projects aims to provide dynamic alternative to official volvo API sandbox 
 - additional APIs to force errors and state change 
 - Working Authorisation code flow with oauth2
 
+check ROADMAP.md file in this repositorium for more info about status of this project
 
+
+## How to run:
+packages: uvicorn, fastapi
+then:
+`uv run main.py`
