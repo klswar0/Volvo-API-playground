@@ -1,9 +1,12 @@
 from fastapi import Body, FastAPI, Header
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 import uvicorn
 import secrets
 from datetime import datetime, timezone
+
+templates = Jinja2Templates(directory="templates")
 
 options = {
     "fuelType": ["PETROL", "DIESEL", "ELECTRIC", "HYBRID"],
@@ -524,6 +527,10 @@ def Internal():
 @app.get("/internal/dashboard")
 def Dashbard():
     return FileResponse("dashboard.html")
+
+@app.get("/internal/welcome")
+def Welcome():
+    return templates.TemplateResponse("welcome.html", {"request": {"url": "/internal/welcome"}})
 
 @app.get("/internal/status") #todo: websocket version
 def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
