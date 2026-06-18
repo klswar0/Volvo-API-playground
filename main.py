@@ -2,8 +2,44 @@ from fastapi import Body, FastAPI, Header
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel, Field
 import uvicorn
+import secrets
+from datetime import datetime, timezone
 
+options = {
+    "fuelType": ["PETROL", "DIESEL", "ELECTRIC", "HYBRID"],
+    "fuelICE": "int",
+    "fuelElectric": "int",
+    "odometer": "int",
 
+    "climate": [True, False],
+    "engine": ["ENGINE_START", "ENGINE_STOP"],
+    "availabilityStatus_value": ["AVAILABLE", "UNAVAILABLE", "UNSPECIFIED"],
+    "availabilityStatus_unavailableReason": ["UNSPECIFIED", "NO_INTERNET", "POWER_SAVING_MODE", "CAR_IN_USE"],
+    "engineStatus": ["STOPPED", "RUNNING"],
+    "engineCoolantLever": ["UNSPECIFIED", "NO_WARNING", "TOO_LOW"],
+    "oillevel": ["UNSPECIFIED", "NO_WARNING", "SERVICE_REQUIRED", "TOO_LOW", "TOO_HIGH"],
+    "serviceWarning": ["UNSPECIFIED", "NO_WARNING", "UNKNOWN_WARNING", "REGULAR_MAINTENANCE_ALMOST_TIME_FOR_SERVICE", "ENGINE_HOURS_ALMOST_TIME_FOR_SERVICE", "DISTANCE_DRIVEN_ALMOST_TIME_FOR_SERVICE", "REGULAR_MAINTENANCE_TIME_FOR_SERVICE", "ENGINE_HOURS_TIME_FOR_SERVICE", "DISTANCE_DRIVEN_TIME_FOR_SERVICE", "REGULAR_MAINTENANCE_OVERDUE_FOR_SERVICE", "ENGINE_HOURS_OVERDUE_FOR_SERVICE", "DISTANCE_DRIVEN_OVERDUE_FOR_SERVICE"],
+    "serviceTrigger": ["CALENDAR_TIME", "DISTANCE", "ENGINE_HOURS", "UNSPECIFIED", "UNKNOWN"],
+    "washerFluidLevelWarning": ["UNSPECIFIED", "NO_WARNING", "TOO_LOW"],
+    "brakeFluidLevel": ["UNSPECIFIED", "NO_WARNING", "TOO_LOW"],
+    "frontLeftWindow": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "frontRightWindow": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "rearLeftWindow": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "rearRightWindow": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "sunroof": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "centralLock": ["UNSPECIFIED", "UNLOCKED", "LOCKED"],
+    "frontLeftDoor": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "frontRightDoor": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "rearLeftDoor": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "rearRightDoor": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "tailGate": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "hood": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "tankLid": ["UNSPECIFIED", "OPEN", "CLOSED", "AJAR"],
+    "frontLeft": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
+    "frontRight": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
+    "rearLeft": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
+    "rearRight": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"]
+}
 
 class AuthHeader(BaseModel):
     content_type: str = Field(default="application/json", alias="Content-Type")
@@ -12,12 +48,12 @@ class AuthHeader(BaseModel):
 
 class Car(BaseModel):
     VIN: str = Field(...)
-    fuelType: str = Field(...) #possible values: PETROL, DIESEL, ELECTRIC, HYBRID
+    fuelType: str = Field(default="HYBRID") #possible values: PETROL, DIESEL, ELECTRIC, HYBRID
     fuelICE:int = Field(default=0) # fuel level for petrol and diesel cars
     fuelElectric:int = Field(default=0) # fuel level for electric and hybrid cars
     Odometer: int = Field(default=0) 
-    climate: int =Field(default=0) # in future time based it can be set to time when the climate will be turned off (why you can set time thru app not thru api. how long api climate lasts? OR only engine has a timer)
-    commands:list
+    climate: bool =Field(default=False) # in future time based it can be set to time when the climate will be turned off (why you can set time thru app not thru api. how long api climate lasts? OR only engine has a timer)
+    commands:list =Field(default=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])
     availabilityStatus_value: str = Field(default="AVAILABLE") # AVAILABLE, UNAVAILABLE, UNSPECIFIED # AVAILABLE is needed for any command TO IMPLEMENT
     availabilityStatus_unavailableReason: str = Field(default="") # Description of why the vehicle is unavailable UNSPECIFIED, NO_INTERNET, POWER_SAVING_MODE, CAR_IN_USE
     engineStatus:str = Field(default="STOPPED") # possible values: STOPPED, RUNNING
@@ -60,14 +96,54 @@ class Car(BaseModel):
     hood:str = Field(default="CLOSED") 
     tankLid:str = Field(default="CLOSED") # UNSPECIFIED means mostly that car doesnt have sensors
     
+    #tires value UNSPECIFIED, NO_WARNING, VERY_LOW_PRESSURE, LOW_PRESSURE, HIGH_PRESSURE.
+    frontLeft:str = Field(default="NO_WARNING")
+    frontRight:str = Field(default="NO_WARNING")
+    rearLeft:str = Field(default="NO_WARNING")
+    rearRight:str = Field(default="NO_WARNING")
+    
+    lastTimestamp:str = Field(default="") #set if not available
+    
+    
+    lightTimestamp:str = Field(default="")#set if light commands is sent
+    
+    hornTimestamp:str = Field(default="") # set if horn commands is sent
+    
     
     #additional parameters for error like if you want fail engine start nextInvoice status, last timestamp
+    def timestamp(self):
+        if self.availabilityStatus_value == "AVAILABLE":
+            self.lastTimestamp = timestampGenerator()
+        return self.lastTimestamp
+            
+    
+    
+    def checkValidity(self,attribute,value):
+        if attribute in options:
+            valid = options[attribute]
+            if valid == "int":
+                return isinstance(value, int)
+            if value not in valid:
+                return False
+        return True
+
+    def update(self,values,attribute):
+        for i in range(len(attribute)):
+            if self.checkValidity(attribute[i],values[i]):
+                setattr(self, attribute[i], values[i])
+                # additional coditions for last timestamp and next invoice status if needed
+            else:
+                return False
+        return True
     
 database = {
-    "vcc_api_key": [Car(VIN="VIN123", fuelType="HYBRID", climate=0, commands=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])]
+    "vcc_api_key": [Car(VIN="VIN123", fuelType="HYBRID", commands=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])]
 }
 
 app = FastAPI()
+
+def timestampGenerator():
+    return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
 
 def authenticate(auth_header: AuthHeader):
     if auth_header.vcc_api_key not in database:
@@ -108,11 +184,11 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         invoiceStatus = "COMPLETED" # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
             return NotSupportedResponse(command)
-        elif command == "CLIMATIZATION_START" and car.climate == 0: # need to check if the climate is then the api throws an error or not ther same in stop verison
-            car.climate = 1
+        elif command == "CLIMATIZATION_START": # need to check if the climate is then the api throws an error or not ther same in stop verison
+            car.climate = True
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
-        elif command == "CLIMATIZATION_STOP" and car.climate > 0:
-            car.climate = 0
+        elif command == "CLIMATIZATION_STOP":
+            car.climate = False
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200) 
     return JSONResponse(
     content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
@@ -256,9 +332,41 @@ def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
     else:
         invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
         car.centralLock = "UNLOCKED" 
-        data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
+        data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+#ligts and horn
+
+@app.post("/vehicles/{VIN}/commands/flash")
+    #def flash 
+    
+@app.post("/vehicles/{VIN}/commands/honk")
+    #def honk
+@app.post("/vehicles/{VIN}/commands/honk-and-flash")
+    #def honkAndFlash
+
+#statistics
+
+@app.get("/vehicles/{VIN}/statistics")
+    #def statistics
+    
+#tyres
+@app.get("/vehicles/{VIN}/tyres")
+def tyres(VIN:str, auth_header: AuthHeader= Header(...)):
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponse()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponse(VIN)
+    else:
+        data={"data":{"frontLeft":{"value":car.frontLeft,"timestamp":car.timestamp()},"frontRight":{"value":car.frontRight,"timestamp":car.timestamp()},"rearLeft":{"value":car.rearLeft,"timestamp":car.timestamp()},"rearRight":{"value":car.rearRight,"timestamp":car.timestamp()}}}
+        return JSONResponse(content=data, status_code=200)
+    
+        
+
 
 #commands 
 @app.get("/vehicles/{VIN}/commands")
@@ -294,9 +402,9 @@ def commandAccessibility(VIN:str, auth_header: AuthHeader = Header(...)):
             return BadRequestResponse(VIN)
     else:
         if car.availabilityStatus_value == "AVAILABLE" or car.availabilityStatus_value == "UNSPECIFIED": 
-            data = {"availabilityStatus": {"value": car.availabilityStatus_value,"timestamp":"placeholder"}}
+            data = {"availabilityStatus": {"value": car.availabilityStatus_value,"timestamp":car.timestamp()}}
         else:
-            data = {"availabilityStatus": {"value": car.availabilityStatus_value, "unavailableReason": car.availabilityStatus_unavailableReason,"timestamp":"placeholder"}}     
+            data = {"availabilityStatus": {"value": car.availabilityStatus_value, "unavailableReason": car.availabilityStatus_unavailableReason,"timestamp":car.timestamp()}}     
                 
         return JSONResponse(content={"data": data}, status_code=200)  
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
@@ -317,11 +425,11 @@ def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
         FuelLevel = str(car.fuelICE)
         FuelLevelElectric = str(car.fuelElectric)
         if FuelType == "PETROL" or FuelType == "DIESEL":
-            data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":"placeholder"}}} 
+            data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":car.timestamp()}}} 
         elif FuelType == "ELECTRIC":
-            data = {"data":{"batteryChargeLevel":{"value" : FuelLevelElectric, "unit":"%","timestamp":"placeholder"}}} 
+            data = {"data":{"batteryChargeLevel":{"value" : FuelLevelElectric, "unit":"%","timestamp":car.timestamp()}}} 
         elif FuelType == "HYBRID":
-            data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":"placeholder"}, "batteryChargeLevel":{"value" : FuelLevelElectric, "unit":"%","timestamp":"placeholder"}}} 
+            data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":car.timestamp()}, "batteryChargeLevel":{"value" : FuelLevelElectric, "unit":"%","timestamp":car.timestamp()}}} 
         else:
             return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
         return JSONResponse(content=data, status_code=200)
@@ -340,7 +448,7 @@ def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
             return BadRequestResponse(VIN)
     else:   #Units and timestamp here again only km is valid Why volvo Why?
         Odometer =str(car.Odometer)
-        data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : "placeholder"}}}
+        data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : car.timestamp()}}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
@@ -356,7 +464,7 @@ def engineDiagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLever,"timestamp":"placeholder"},"oilLevelWarning":{"value":car.oillevel,"timestamp":"placeholder"}}}
+        data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLever,"timestamp":car.timestamp()},"oilLevelWarning":{"value":car.oillevel,"timestamp":car.timestamp()}}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
@@ -380,9 +488,9 @@ def diagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
             toService = toService//31
             
         if car.serviceWarning != "NO_WARNING" and car.serviceTrigger != "UNSPECIFIED":
-            data={"data":{"serviceWarning":{"value":car.serviceWarning,"timestamp":"placeholder"},"serviceTrigger":{"value":car.serviceTrigger,"timestamp":"placholder"},"engineHoursToService":{"value":car.engineHoursToService,"unit":"h","timestamp":"placeholder"},"distanceToService":{"value":car.distanceToService,"unit":"km","timestamp":"placeholder"},"washerFluidLevelWarning":{"value":car.washerFluidLevelWarning,"timestamp":"placeholder"},"timeToService":{"value":toService,"unit":unit,"timestamp":"placeholder"}}}
+            data={"data":{"serviceWarning":{"value":car.serviceWarning,"timestamp":car.timestamp()},"serviceTrigger":{"value":car.serviceTrigger,"timestamp":car.timestamp()},"engineHoursToService":{"value":car.engineHoursToService,"unit":"h","timestamp":car.timestamp()},"distanceToService":{"value":car.distanceToService,"unit":"km","timestamp":car.timestamp()},"washerFluidLevelWarning":{"value":car.washerFluidLevelWarning,"timestamp":car.timestamp()},"timeToService":{"value":toService,"unit":unit,"timestamp":car.timestamp()}}}
         else:
-            data={"data":{"serviceWarning":{"value":car.serviceWarning,"timestamp":"placeholder"},"engineHoursToService":{"value":car.engineHoursToService,"unit":"h","timestamp":"placeholder"},"distanceToService":{"value":car.distanceToService,"unit":"km","timestamp":"placeholder"},"washerFluidLevelWarning":{"value":car.washerFluidLevelWarning,"timestamp":"placeholder"},"timeToService":{"value":toService,"unit":unit,"timestamp":"placeholder"}}}
+            data={"data":{"serviceWarning":{"value":car.serviceWarning,"timestamp":car.timestamp()},"engineHoursToService":{"value":car.engineHoursToService,"unit":"h","timestamp":car.timestamp()},"distanceToService":{"value":car.distanceToService,"unit":"km","timestamp":car.timestamp()},"washerFluidLevelWarning":{"value":car.washerFluidLevelWarning,"timestamp":car.timestamp()},"timeToService":{"value":toService,"unit":unit,"timestamp":car.timestamp()}}}
         
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
@@ -401,7 +509,7 @@ def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        data={"data":{"brakFluidLevelWarning":{"value":car.brakeFluidLevel,"timestamp":"placeholder"}}}
+        data={"data":{"brakFluidLevelWarning":{"value":car.brakeFluidLevel,"timestamp":car.timestamp()}}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
@@ -423,26 +531,14 @@ def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
         cars = database[vcc_api_key]
         for car in cars:
             if car.VIN == VIN:
-                data = {
-                    "VIN": car.VIN,
-                    "fuelType": car.fuelType,
-                    "fuelICE": car.fuelICE,
-                    "fuelElectric": car.fuelElectric,
-                    "Odometer": car.Odometer,
-                    "climate": car.climate,
-                    "commands": car.commands,
-                    "availabilityStatus_value": car.availabilityStatus_value,
-                    "availabilityStatus_unavailableReason": car.availabilityStatus_unavailableReason,
-                    "engineStatus": car.engineStatus,
-                    "engineTime": car.engineTime
-                }
+                data = car.model_dump()
                 return JSONResponse(content=data, status_code=200)
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "THIS IS INTERNAL API/invalid VIN value. field:{VIN}"}}, status_code=400)
     except KeyError:
         return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
     
 @app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) #TODO: implement this to html
-def update(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: str = Body(...), value: str = Body(...)):
+def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: str = Body(...), value: str = Body(...)):
     try:
         cars = database[vcc_api_key]
         for car in cars:
@@ -457,7 +553,47 @@ def update(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: str 
                 
     except KeyError:
         return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
-                    
-    
-    
+
+
+@app.post("/internal/updates")
+def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: list = Body(...), value: list = Body(...)):
+    try:
+        cars = database[vcc_api_key]
+        for car in cars:
+            if car.VIN == VIN:
+                for i in range(len(attribute)):
+                    if hasattr(car, attribute[i]):
+                        setattr(car, attribute[i], value[i])
+                    else:
+                        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute[i]}"}}, status_code=400)
+                return JSONResponse(content={"message": f"THIS IS INTERNAL API/attributes updated successfully"}, status_code=200)
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "THIS IS INTERNAL API/invalid VIN value. field:{VIN}"}}, status_code=400)
+    except KeyError:
+        return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
+
+@app.get("/internal/APIKey")
+def genAPIKey():                    
+    api_key=secrets.token_hex(16)
+    database[api_key] = []
+    return JSONResponse(content={"message": f"THIS IS INTERNAL API/API key generated successfully: {api_key}"}, status_code=200)
+
+@app.post("/internal/addCar")
+def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: list = Body(...), values: list = Body(...)):
+    try:
+        cars =database[vcc_api_key]
+        if any(car.VIN == VIN for car in cars):
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/Car with VIN {VIN} already exists."}}, status_code=400)
+        
+        new_car = Car(VIN=VIN)
+        for attribute in attributes:
+            if hasattr(new_car, attribute):
+                setattr(new_car, attribute, values[attributes.index(attribute)])
+            else:
+                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute}"}}, status_code=400)
+        cars.append(new_car)
+        return JSONResponse(content={"message": f"THIS IS INTERNAL API/Car added successfully: {VIN}"}, status_code=200)
+
+    except KeyError:
+        return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
+
 uvicorn.run(app)
