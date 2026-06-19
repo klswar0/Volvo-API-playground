@@ -7,30 +7,25 @@
         
     </head>
     <body>
+        <div id="welcome-form">
         <h1>Welcome to Volvo API Playground Dashboard</h1>
-        <form>
+        <form hx-get="/internal/welcome/Check" hx-target="#welcome-form" hx-swap="beforeend"> <!-- error messege needs to be added only once-->
             <label>Enter your API Key:</label><br>
-            <input type="text" id="vcc_api_key" name="vcc_api_key">
+            <input type="text" id="vcc_api_key" name="vcc_api_key" required>
+            <input type="submit" value="Submit">
         </form>
-        <p>----------------</p>
+        </div>
+        <div id="generate-api-key">
         <p>No API key? Generate one.</p>
         <button 
-            class="btn primary" 
-            hx-get="/modal" hx-target="body" 
-            hx-swap="beforeend"
+            class="generate-button" 
+            hx-get="/internal/welcome/APIKey" 
+            hx-target="#generate-api-key" 
+            hx-swap="outerHTML"
+            
         >
         Generate API Key
         </button>
-        <div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
-        <div class="modal-underlay" _="on click trigger closeModal"></div>
-        <div class="modal-content">
-            <h1>Modal Dialog</h1>
-            This is the modal content.
-            You can put anything here, like text, or a form, or an image.
-            <br>
-            <br>
-            <button class="btn danger" _="on click trigger closeModal">Close</button>
         </div>
-        </div> 
     </body>
     </html>

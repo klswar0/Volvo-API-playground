@@ -1,11 +1,14 @@
-from fastapi import Body, FastAPI, Header
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi import Body, FastAPI, Header ,Request ,Query, Response
+from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field 
 import uvicorn
+import json
 import secrets
 from datetime import datetime, timezone
 
+
+#TODO: redo internal responses
 templates = Jinja2Templates(directory="templates")
 
 options = {
@@ -523,18 +526,43 @@ def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
 def Internal():
     return JSONResponse(content={"message": "Welcome to the internal API"}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
-
+#site section
 @app.get("/internal/dashboard")
 def Dashbard():
     return FileResponse("dashboard.html")
 
 @app.get("/internal/welcome")
 def Welcome():
-    return templates.TemplateResponse("welcome.html", {"request": {"url": "/internal/welcome"}})
+    return FileResponse("templates/welcome.html")
+
+@app.get("/internal/welcome/Check")
+def WelcomeCheck(vcc_api_key: str):
+    try:
+        authenticateInternal(vcc_api_key)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+    
+    response = Response()
+    response.headers["HX-Redirect"] = f"/internal/dashboard?key={vcc_api_key}"
+    return response
+
+@app.get("/internal/welcome/APIKey")
+def WelcomeAPIKey(request: Request):
+    data=genAPIKey().body.decode("utf-8")
+    data = json.loads(data)
+    data = data["message"]
+    return templates.TemplateResponse(request=request,name="welcomeAPI.html",context={"api_key": data})
+
+#internal endpoints for testing and dashboard purposes. Not part of the official API.
+
+def authenticateInternal(vcc_api_key: str):
+    if vcc_api_key not in database:
+        raise ValueError("Invalid API key")
 
 @app.get("/internal/status") #todo: websocket version
 def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
     try:
+        authenticateInternal(vcc_api_key)
         cars = database[vcc_api_key]
         for car in cars:
             if car.VIN == VIN:
@@ -582,7 +610,7 @@ def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attri
 def genAPIKey():                    
     api_key=secrets.token_hex(16)
     database[api_key] = []
-    return JSONResponse(content={"message": f"THIS IS INTERNAL API/API key generated successfully: {api_key}"}, status_code=200)
+    return JSONResponse(content={"message": api_key,"description": f"THIS IS INTERNAL API/API key generated successfully"}, status_code=200)
 
 @app.post("/internal/addCar")
 def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: list = Body(...), values: list = Body(...)):
