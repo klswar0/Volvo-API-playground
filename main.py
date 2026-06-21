@@ -527,9 +527,43 @@ def Internal():
     return JSONResponse(content={"message": "Welcome to the internal API"}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
 #site section
+@app.get("/internal/dashboard/car")
+def Dashbard(key: str,VIN: str, request: Request):
+    try:
+        car = VINHandlingInternal(VIN, key)
+        data = car.model_dump()
+        return templates.TemplateResponse(name="dashboard.html", request=request, context=data)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+    
+@app.post("/internal/dashboard/update") # html request here for dashboard
+def DashbardUpdate(key: str,VIN: str, request: Request, attribute: list = Body(...), value: list = Body(...)):
+    try:
+        response=update(VIN, attribute, value, key)
+        if response:
+            return JSONResponse(content={"message": f"THIS IS INTERNAL API/attribute {attribute} updated successfully"}, status_code=200)
+        else:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute}"}}, status_code=400)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponseInternal()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponseInternal(VIN)
+    
+    
+    
 @app.get("/internal/dashboard")
-def Dashbard():
-    return FileResponse("dashboard.html")
+def Dashbard(key: str, request: Request):
+    try:
+        authenticateInternal(key)
+        cars = database[key]
+        VINs = []
+        for car in cars:
+            VINs.append(car.VIN)
+        return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs})
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")   
+    
 
 @app.get("/internal/welcome")
 def Welcome():
@@ -546,7 +580,7 @@ def WelcomeCheck(vcc_api_key: str):
     response.headers["HX-Redirect"] = f"/internal/dashboard?key={vcc_api_key}"
     return response
 
-@app.get("/internal/welcome/APIKey")
+@app.get("/internal/welcome/APIKey") 
 def WelcomeAPIKey(request: Request):
     data=genAPIKey().body.decode("utf-8")
     data = json.loads(data)
@@ -555,56 +589,83 @@ def WelcomeAPIKey(request: Request):
 
 #internal endpoints for testing and dashboard purposes. Not part of the official API.
 
+def UnauthorizedResponseInternal():
+    return JSONResponse(content={ "error": {"message": "THIS IS INTERNAL API/UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
+
+def BadRequestResponseInternal(VIN:str):
+    return JSONResponse(content={ "error": {"message": "THIS IS INTERNAL API/BAD_REQUEST","description": f"invalid VIN value. field:{VIN}"}}, status_code=400)
+
 def authenticateInternal(vcc_api_key: str):
     if vcc_api_key not in database:
         raise ValueError("Invalid API key")
+    
+def VINHandlingInternal(VIN:str, vcc_api_key: str):
+    try:
+        authenticateInternal(vcc_api_key)
+    except ValueError:
+        raise ValueError("Invalid API key")
+    for car in database[vcc_api_key]:
+        if car.VIN == VIN:
+            return car
+    raise ValueError("Invalid VIN")
+    
+def update(VIN:str, attribute: list, value: list, vcc_api_key: str):
+    try:
+        car = VINHandlingInternal(VIN, vcc_api_key)
+        if hasattr(car,attribute):
+            setattr(car,attribute, value)
+            return True  
+        else:
+            return False
+    except ValueError as e:
+        raise ValueError(str(e))
+
 
 @app.get("/internal/status") #todo: websocket version
 def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
     try:
-        authenticateInternal(vcc_api_key)
-        cars = database[vcc_api_key]
-        for car in cars:
-            if car.VIN == VIN:
-                data = car.model_dump()
-                return JSONResponse(content=data, status_code=200)
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "THIS IS INTERNAL API/invalid VIN value. field:{VIN}"}}, status_code=400)
-    except KeyError:
-        return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
-    
+        car = VINHandlingInternal(VIN, vcc_api_key)
+        data = car.model_dump()
+        return JSONResponse(content=data, status_code=200)
+
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponseInternal()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponseInternal(VIN)
+
 @app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) #TODO: implement this to html
 def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: str = Body(...), value: str = Body(...)):
     try:
-        cars = database[vcc_api_key]
-        for car in cars:
-            if car.VIN == VIN:
-                if hasattr(car,attribute):
-                    setattr(car,attribute, value)
-                    return JSONResponse(content={"message": f"{attribute} updated successfully"}, status_code=200)    
-                else:
-                    return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute}"}}, status_code=400)
-                
-            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "THIS IS INTERNAL API/invalid VIN value. field:{VIN}"}}, status_code=400)
-                
-    except KeyError:
-        return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
+        response=update(VIN, attribute, value, vcc_api_key)
+        if response:
+            return JSONResponse(content={"message": f"THIS IS INTERNAL API/attribute {attribute} updated successfully"}, status_code=200)
+        else:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute}"}}, status_code=400)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponseInternal()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponseInternal(VIN)
 
 
 @app.post("/internal/updates")
 def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: list = Body(...), value: list = Body(...)):
     try:
-        cars = database[vcc_api_key]
-        for car in cars:
-            if car.VIN == VIN:
-                for i in range(len(attribute)):
-                    if hasattr(car, attribute[i]):
-                        setattr(car, attribute[i], value[i])
-                    else:
-                        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute[i]}"}}, status_code=400)
-                return JSONResponse(content={"message": f"THIS IS INTERNAL API/attributes updated successfully"}, status_code=200)
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "THIS IS INTERNAL API/invalid VIN value. field:{VIN}"}}, status_code=400)
-    except KeyError:
-        return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
+        car = VINHandlingInternal(VIN, vcc_api_key)
+        for i in range(len(attribute)):
+            if hasattr(car, attribute[i]):
+                setattr(car, attribute[i], value[i])
+            else:
+                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute[i]}"}}, status_code=400)
+        return JSONResponse(content={"message": f"THIS IS INTERNAL API/attributes updated successfully"}, status_code=200)
+
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponseInternal()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponseInternal(VIN)
+
 
 @app.get("/internal/APIKey")
 def genAPIKey():                    
@@ -617,18 +678,18 @@ def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: lis
     try:
         cars =database[vcc_api_key]
         if any(car.VIN == VIN for car in cars):
-            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/Car with VIN {VIN} already exists."}}, status_code=400)
+            return BadRequestResponseInternal(VIN)
         
         new_car = Car(VIN=VIN)
         for attribute in attributes:
             if hasattr(new_car, attribute):
                 setattr(new_car, attribute, values[attributes.index(attribute)])
             else:
-                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute}"}}, status_code=400)
+                return BadRequestResponseInternal(VIN)
         cars.append(new_car)
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/Car added successfully: {VIN}"}, status_code=200)
 
     except KeyError:
-        return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "THIS IS INTERNAL API/invalid API key value."}}, status_code=401)
+        return UnauthorizedResponseInternal()
 
 uvicorn.run(app)

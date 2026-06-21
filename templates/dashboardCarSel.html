@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>  
+    <head>
+        <title>Car dashboard</title>
+        <script src="https://unpkg.com/htmx.org@1.6.1/dist/htmx.min.js"></script>
+    </head>    
+
+
+
+    <body>
+        <h1>Car list</h1>
+        <ul>
+            {% for vin in VINs%}
+            <li>
+                {{ vin }}
+                <form hx-get="/internal/dashboard"hx-vals='js:{
+                    "key": new URLSearchParams(window.location.search).get("key") || ""
+                    }' hx-target="body" hx-swap="outerHTML">
+                    <button type="submit" name="VIN" value="{{ vin }}" hx-swap="outerHTML">Select</button>
+                </form>
+
+            </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>

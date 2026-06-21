@@ -2,18 +2,19 @@
     <html>
     <head>
         <link rel="stylesheet" href="welcome.css">
-        <title>FastAPI with HTMX</title>
+        <title>Playground login</title>
         <script src="https://unpkg.com/htmx.org@1.6.1/dist/htmx.min.js"></script>
         
     </head>
     <body>
         <div id="welcome-form">
         <h1>Welcome to Volvo API Playground Dashboard</h1>
-        <form hx-get="/internal/welcome/Check" hx-target="#welcome-form" hx-swap="beforeend"> <!-- error messege needs to be added only once-->
+        <form hx-get="/internal/welcome/Check" hx-target="#error-message">
             <label>Enter your API Key:</label><br>
             <input type="text" id="vcc_api_key" name="vcc_api_key" required>
             <input type="submit" value="Submit">
         </form>
+        <div id="error-message"></div>
         </div>
         <div id="generate-api-key">
         <p>No API key? Generate one.</p>
