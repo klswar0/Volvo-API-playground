@@ -1,0 +1,44 @@
+<div id="car-info">
+    <p>Status:{{ availabilityStatus_value }} {% if availabilityStatus_value == "UNAVAILABLE" %} {{ availabilityStatus_unavailableReason }} {% endif %}</p>
+        <form data-attribute="availabilityStatus_value" hx-ext="json-enc" hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response" >
+            <input type="hidden" name="attribute" value="availabilityStatus_value">
+            <select name="value">
+                <option value="AVAILABLE">AVAILABLE</option>
+                <option value="UNAVAILABLE">UNAVAILABLE</option>
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+        <p>Odometer: {{odometer}}</p>
+        <p>VIN: {{VIN}}</p>
+        <p>Fuel type: {{fuelType}}</p>
+        <form data-attribute="fuelType">
+            <select>
+                <option value="HYBRID">HYBRID</option>
+                <option value="ELECTRIC">ELECTRIC</option>
+                <option value="DIESEL">DIESEL</option>
+                <option value="PETROL">PETROL</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+        <p>Fuel level: {{fuelICE}}</p>
+        <p>Charge level: {{fuelElectric}}</p>
+        <p>engine status: {{engineStatus}}</p>
+        <form data-attribute="engineStatus">
+            <select>
+                <option value="RUNNING">RUNNING</option>
+                <option value="STOPPED">STOPPED</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+        <p>climate status: {{climate}}</p>
+        <form data-attribute="climate">
+        <select>
+            <option value="False">OFF</option>
+            <option value="True">ON</option>
+        </select>
+        <input type="submit" value="change">
+    </form>
+        <p>commands:</p>
+        <p>{{commands}}</p>
+</div>

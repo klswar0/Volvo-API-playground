@@ -2,7 +2,12 @@
 <html>  
     <head>
         <title>Car dashboard</title>
-        <script src="https://unpkg.com/htmx.org@1.6.1/dist/htmx.min.js"></script>
+            <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js"></script>
+
+            <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.1/ws.js"></script>{#delete if diffrent wy to dashboard#}
+
+            <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+
     </head>    
 
 
@@ -13,10 +18,10 @@
             {% for vin in VINs%}
             <li>
                 {{ vin }}
-                <form hx-get="/internal/dashboard"hx-vals='js:{
+                <form hx-get="/internal/dashboard/redirect"hx-vals='js:{
                     "key": new URLSearchParams(window.location.search).get("key") || ""
-                    }' hx-target="body" hx-swap="outerHTML">
-                    <button type="submit" name="VIN" value="{{ vin }}" hx-swap="outerHTML">Select</button>
+                    }' hx-target="body" hx-swap="outerHTML" hx-oob>
+                    <button type="submit" name="VIN" value="{{ vin }}" hx-swap="outerHTML" hx-swap-oob="true">Select</button>
                 </form>
 
             </li>

@@ -1,10 +1,11 @@
-from fastapi import Body, FastAPI, Header ,Request ,Query, Response
+from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field 
 import uvicorn
 import json
 import secrets
+import asyncio
 from datetime import datetime, timezone
 
 
@@ -135,8 +136,8 @@ class Car(BaseModel):
 
     def update(self,values,attribute):
         for i in range(len(attribute)):
-            if self.checkValidity(attribute[i],values[i]):
-                setattr(self, attribute[i], values[i])
+            if self.checkValidity(attribute,values):
+                setattr(self, attribute, values)
                 # additional coditions for last timestamp and next invoice status if needed
             else:
                 return False
@@ -191,10 +192,10 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         if command not in car.commands:
             return NotSupportedResponse(command)
         elif command == "CLIMATIZATION_START": # need to check if the climate is then the api throws an error or not ther same in stop verison
-            car.climate = True
+            car.update(True,"climate")
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
         elif command == "CLIMATIZATION_STOP":
-            car.climate = False
+            car.update(False,'climate')
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200) 
     return JSONResponse(
     content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
@@ -224,12 +225,12 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
         if command not in car.commands:
             return NotSupportedResponse(command)
         elif command == "ENGINE_START":
-            car.engineStatus = "RUNNING"
-            car.engineTime = runtimeMinutes
+            car.update("RUNNING","engineStatus")
+            car.update(runtimeMinutes,"engineTime")
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
         elif command == "ENGINE_STOP":
-            car.engineStatus = "STOPPED"
-            car.engineTime = 0
+            car.update("STOPPED","engineStatus")
+            car.update(0,"engineTime")
             return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
     # what if engine is already started? Need to check docs or a real car (not in mine doesnt have that option)
@@ -305,7 +306,7 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
             return BadRequestResponse(VIN)
     else:
         invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
-        car.centralLock = "LOCKED"
+        car.update("LOCKED", "centralLock")
         data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
@@ -321,7 +322,7 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
 #             return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
 #     else:
 #         invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
-#         car.centralLock = "LOCKED"
+#         car.update("LOCKED", "centralLock")
 #         data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
 #         return JSONResponse(content=data, status_code=200)
 #     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
@@ -337,7 +338,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
             return BadRequestResponse(VIN)
     else:
         invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
-        car.centralLock = "UNLOCKED" 
+        car.update("UNLOCKED", "centralLock")
         data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
@@ -536,8 +537,46 @@ def Dashbard(key: str,VIN: str, request: Request):
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
+@app.get("/internal/dashboard/redirect")
+def Dashbard(key: str,VIN: str, request: Request):
+    try:
+        response = Response()
+        response.headers["HX-Redirect"] = f"/internal/dashboard/car?key={key}&VIN={VIN}"
+        return response
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+    
+@app.websocket("/internal/dashboard/ws")
+async def Dashbard(websocket: WebSocket):
+    await websocket.accept()
+    params = websocket.query_params
+    vin = params.get("VIN")
+    api_key = params.get("key")
+    car_data_old={}
+    print(f"Connected car: {vin} with key: {api_key}")
+    try:
+       
+
+        while True:
+            car = VINHandlingInternal(vin, api_key)
+            car_data = car.model_dump()
+            car_data["VIN"] = vin
+            car_data["key"] = api_key
+            template = templates.get_template("dashboardUpdate.html")
+            html=template.render(car_data)
+            if car_data != car_data_old:
+                await websocket.send_text(html)
+                car_data_old = car_data
+            await asyncio.sleep(5)
+    except WebSocketDisconnect:
+        print("Dashboard disconnected")
+    except ValueError as e:
+        await websocket.send_text("Invalid API key or VIN")
+        await websocket.close()
+        return
+    
 @app.post("/internal/dashboard/update") # html request here for dashboard
-def DashbardUpdate(key: str,VIN: str, request: Request, attribute: list = Body(...), value: list = Body(...)):
+def DashbardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
     try:
         response=update(VIN, attribute, value, key)
         if response:
@@ -609,14 +648,10 @@ def VINHandlingInternal(VIN:str, vcc_api_key: str):
             return car
     raise ValueError("Invalid VIN")
     
-def update(VIN:str, attribute: list, value: list, vcc_api_key: str):
+def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
-        if hasattr(car,attribute):
-            setattr(car,attribute, value)
-            return True  
-        else:
-            return False
+        return car.update(value, attribute)
     except ValueError as e:
         raise ValueError(str(e))
 
@@ -649,7 +684,7 @@ def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attrib
             return BadRequestResponseInternal(VIN)
 
 
-@app.post("/internal/updates")
+@app.post("/internal/updates") # to redo
 def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: list = Body(...), value: list = Body(...)):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
