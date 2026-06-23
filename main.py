@@ -7,7 +7,7 @@ import json
 import secrets
 import asyncio
 from datetime import datetime, timezone
-
+from typing import Dict, Set
 
 #TODO: redo internal responses
 templates = Jinja2Templates(directory="templates")
@@ -58,7 +58,7 @@ class Car(BaseModel):
     fuelType: str = Field(default="HYBRID") #possible values: PETROL, DIESEL, ELECTRIC, HYBRID
     fuelICE:int = Field(default=0) # fuel level for petrol and diesel cars
     fuelElectric:int = Field(default=0) # fuel level for electric and hybrid cars
-    Odometer: int = Field(default=0) 
+    odometer: int = Field(default=0) 
     climate: bool =Field(default=False) # in future time based it can be set to time when the climate will be turned off (why you can set time thru app not thru api. how long api climate lasts? OR only engine has a timer)
     commands:list =Field(default=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])
     availabilityStatus_value: str = Field(default="AVAILABLE") # AVAILABLE, UNAVAILABLE, UNSPECIFIED # AVAILABLE is needed for any command TO IMPLEMENT
@@ -129,18 +129,19 @@ class Car(BaseModel):
         if attribute in options:
             valid = options[attribute]
             if valid == "int":
-                return isinstance(value, int)
+                value=int(value) #check if value is int todo
+                return True
             if value not in valid:
                 return False
         return True
 
-    def update(self,values,attribute):
-        for i in range(len(attribute)):
-            if self.checkValidity(attribute,values):
-                setattr(self, attribute, values)
+    def update(self,attribute,value):
+        if self.checkValidity(attribute,value):
+                setattr(self, attribute, value)
+                notifier.trigger_update(self.VIN, self, changed_attribute=attribute)
                 # additional coditions for last timestamp and next invoice status if needed
-            else:
-                return False
+        else:
+            return False
         return True
     
 database = {
@@ -148,6 +149,33 @@ database = {
 }
 
 app = FastAPI()
+
+class websocketNotifier:
+    def __init__(self):
+        self._subscribers: Dict[str, Set[asyncio.Queue]] = {}
+    def subscribe(self, vin: str) -> asyncio.Queue:
+        queue = asyncio.Queue()
+        self._subscribers.setdefault(vin, set()).add(queue)
+        return queue
+
+    def unsubscribe(self, vin: str, queue: asyncio.Queue):
+        if vin in self._subscribers:
+            self._subscribers[vin].discard(queue)
+            if not self._subscribers[vin]:
+                del self._subscribers[vin]
+
+    def trigger_update(self, vin: str, car_instance, changed_attribute: str):
+        """Call this function whenever a car's data changes in your database."""
+        if vin in self._subscribers:    
+            update_packet = {
+                "VIN": vin,
+                "attribute_name": changed_attribute,
+                "current_value": getattr(car_instance, changed_attribute),
+            }
+            for queue in self._subscribers[vin]:
+                queue.put_nowait(update_packet)
+        
+notifier = websocketNotifier()
 
 def timestampGenerator():
     return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
@@ -552,28 +580,41 @@ async def Dashbard(websocket: WebSocket):
     params = websocket.query_params
     vin = params.get("VIN")
     api_key = params.get("key")
-    car_data_old={}
+    queue = notifier.subscribe(vin)
     print(f"Connected car: {vin} with key: {api_key}")
     try:
-       
-
+        car = VINHandlingInternal(vin, api_key)
+        if not car:
+            raise ValueError("Car not found or invalid API key")
+        car_data = car.model_dump()
+        
+        car_data["key"] = api_key
+        template = templates.get_template("dashboardUpdate.html")
+        html=template.render(car_data)
+        await websocket.send_text(html)
+        
         while True:
-            car = VINHandlingInternal(vin, api_key)
-            car_data = car.model_dump()
-            car_data["VIN"] = vin
-            car_data["key"] = api_key
-            template = templates.get_template("dashboardUpdate.html")
-            html=template.render(car_data)
-            if car_data != car_data_old:
-                await websocket.send_text(html)
-                car_data_old = car_data
-            await asyncio.sleep(5)
+            packet = await queue.get()
+    
+            packet["key"] = api_key
+            
+            data={"data": packet["attribute_name"],"value": packet["current_value"],"options":options[packet["attribute_name"]],"VIN": packet["VIN"],"key": api_key}
+            template = templates.get_template("dashboardTemplate.html")
+            html = template.render(data)
+            
+            await websocket.send_text(html)
+            queue.task_done()
+            
     except WebSocketDisconnect:
         print("Dashboard disconnected")
     except ValueError as e:
         await websocket.send_text("Invalid API key or VIN")
         await websocket.close()
         return
+    finally:
+        notifier.unsubscribe(vin, queue)
+        await websocket.close()
+        print(f"Disconnected car: {vin} with key: {api_key}")
     
 @app.post("/internal/dashboard/update") # html request here for dashboard
 def DashbardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
@@ -588,6 +629,11 @@ def DashbardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(..
             return UnauthorizedResponseInternal()
         elif str(e) == "Invalid VIN":
             return BadRequestResponseInternal(VIN)
+        else:
+            return JSONResponse(
+            content={"error": {"message": "VALUE_ERROR", "description": str(e)}}, 
+            status_code=400
+            )
     
     
     
@@ -651,7 +697,7 @@ def VINHandlingInternal(VIN:str, vcc_api_key: str):
 def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
-        return car.update(value, attribute)
+        return car.update(attribute, value)
     except ValueError as e:
         raise ValueError(str(e))
 

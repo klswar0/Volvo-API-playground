@@ -14,7 +14,7 @@
         <p>API Key: <span id="API_KEY"></span></p>
         
         <div hx-ext="ws" ws-connect="ws://127.0.0.1:8000/internal/dashboard/ws?VIN=VIN123&key=vcc_api_key">
-            <div id="car-info">   
+            <div id="car-info" hx-swap-oob="true">   
                 <p>Awaiting real-time vehicle data connection...</p>
             </div>
         </div>
