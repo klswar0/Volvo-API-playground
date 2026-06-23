@@ -482,7 +482,7 @@ def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:   #Units and timestamp here again only km is valid Why volvo Why?
-        Odometer =str(car.Odometer)
+        Odometer =str(car.odometer)
         data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : car.timestamp()}}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
@@ -714,6 +714,41 @@ def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
             return UnauthorizedResponseInternal()
         elif str(e) == "Invalid VIN":
             return BadRequestResponseInternal(VIN)
+        
+@app.websocket("/internal/status/ws")
+async def Dashbard(websocket: WebSocket):
+    await websocket.accept()
+    params = websocket.query_params
+    vin = params.get("VIN")
+    api_key = params.get("key")
+    queue = notifier.subscribe(vin)
+    print(f"Connected car: {vin} with key: {api_key}")
+    try:
+        car = VINHandlingInternal(vin, api_key)
+        if not car:
+            raise ValueError("Car not found or invalid API key")
+        car_data = car.model_dump()
+        await websocket.send_text(json.dumps(car_data))
+        
+        while True:
+            packet = await queue.get()
+    
+            packet["key"] = api_key
+            
+            
+            await websocket.send_text(json.dumps(packet))
+            queue.task_done()
+            
+    except WebSocketDisconnect:
+        print("Dashboard disconnected")
+    except ValueError as e:
+        await websocket.send_text("Invalid API key or VIN")
+        await websocket.close()
+        return
+    finally:
+        notifier.unsubscribe(vin, queue)
+        await websocket.close()
+        print(f"Disconnected car: {vin} with key: {api_key}")
 
 @app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) #TODO: implement this to html
 def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: str = Body(...), value: str = Body(...)):
@@ -728,6 +763,11 @@ def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attrib
             return UnauthorizedResponseInternal()
         elif str(e) == "Invalid VIN":
             return BadRequestResponseInternal(VIN)
+        else:
+            return JSONResponse(
+            content={"error": {"message": "VALUE_ERROR", "description": str(e)}}, 
+            status_code=400
+            )
 
 
 @app.post("/internal/updates") # to redo
@@ -746,6 +786,11 @@ def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attri
             return UnauthorizedResponseInternal()
         elif str(e) == "Invalid VIN":
             return BadRequestResponseInternal(VIN)
+        else:
+            return JSONResponse(
+            content={"error": {"message": "VALUE_ERROR", "description": str(e)}}, 
+            status_code=400
+            )
 
 
 @app.get("/internal/APIKey")
