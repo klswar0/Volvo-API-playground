@@ -1,87 +1,75 @@
-/***** MODAL DIALOG ****/
-#modal {
-	/* Underlay covers entire screen. */
-	position: fixed;
-	top:0px;
-	bottom: 0px;
-	left:0px;
-	right:0px;
-	background-color:rgba(0,0,0,0.5);
-	z-index:1000;
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
 
-	/* Flexbox centers the .modal-content vertically and horizontally */
-	display:flex;
-	flex-direction:column;
-	align-items:center;
-
-	/* Animate when opening */
-	animation-name: fadeIn;
-	animation-duration:150ms;
-	animation-timing-function: ease;
+body {
+  background: radial-gradient(circle at 50% 70%, #1b3552 30%, #111d2d 100%);
+  background-attachment: fixed; 
+  color: #ffffff;   
+  font-family: "Source Sans 3", sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  
+  display: grid;
+  place-items: center;     
+  min-height: 100vh;
 }
 
-#modal > .modal-underlay {
-	/* underlay takes up the entire viewport. This is only
-	required if you want to click to dismiss the popup */
-	position: absolute;
-	z-index: -1;
-	top:0px;
-	bottom:0px;
-	left: 0px;
-	right: 0px;
+h1 {
+  font-family: "Arimo", sans-serif;
+  font-weight: 350; 
+  letter-spacing: -0.02em;
+  padding: 10px;
+  margin: 0 0 20px 0;
 }
 
-#modal > .modal-content {
-	/* Position visible dialog near the top of the window */
-	margin-top:10vh;
-
-	/* Sizing for visible dialog */
-	width:80%;
-	max-width:600px;
-
-	/* Display properties for visible dialog*/
-	border:solid 1px #999;
-	border-radius:8px;
-	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.3);
-	background-color:white;
-	padding:20px;
-
-	/* Animate when opening */
-	animation-name:zoomIn;
-	animation-duration:150ms;
-	animation-timing-function: ease;
+.premium-card-dark {
+  background-color: rgba(255, 255, 255, 0.03); 
+  backdrop-filter: blur(12px); 
+  border: 1px solid rgba(255, 255, 255, 0.08); 
+  border-radius: 12px; 
+  padding: 40px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
 }
 
-#modal.closing {
-	/* Animate when closing */
-	animation-name: fadeOut;
-	animation-duration:150ms;
-	animation-timing-function: ease;
+.input-form input {
+  width: 30%;
+  padding: 12px;
+  margin: 8px auto;
+  box-sizing: border-box;
+  border: 1px solid #ffffff;
+  background-color: #40638a;
+  color: #ffffff;
+  border-radius: 4px;
 }
 
-#modal.closing > .modal-content {
-	/* Animate when closing */
-	animation-name: zoomOut;
-	animation-duration:150ms;
-	animation-timing-function: ease;
+#submit-btn {
+  display: block;
+  width: 30%; 
+  background-color: #1b3552; 
+  color: #ffffff; 
+  padding: 12px; 
+  margin: 8px auto;
+  border: none;
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: 16px; 
+  transition: background-color 0.3s ease, transform 0.2s ease; 
 }
 
-@keyframes fadeIn {
-	0% {opacity: 0;}
-	100% {opacity: 1;}
+#submit-btn:hover, .generate-button:hover {
+  background-color: #40638a; 
 }
 
-@keyframes fadeOut {
-	0% {opacity: 1;}
-	100% {opacity: 0;}
-}
-
-@keyframes zoomIn {
-	0% {transform: scale(0.9);}
-	100% {transform: scale(1);}
-}
-
-@keyframes zoomOut {
-	0% {transform: scale(1);}
-	100% {transform: scale(0.9);}
+.generate-button {
+  width: 30%;
+  background-color: #1b3552; 
+  color: #ffffff; 
+  padding: 12px 24px; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: 16px; 
+  transition: background-color 0.3s ease, transform 0.2s ease; 
 }
