@@ -12,6 +12,13 @@ from typing import Dict, Set
 #TODO: redo internal responses
 templates = Jinja2Templates(directory="templates")
 
+startUp={
+    "Validation": True,
+    "Dashboard": True,# not implemented yet
+    "Websocket": True# not implemented yet
+}
+
+
 options = {
     "fuelType": ["PETROL", "DIESEL", "ELECTRIC", "HYBRID"],
     "fuelICE": "int", # in liters
@@ -45,7 +52,8 @@ options = {
     "frontLeft": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
     "frontRight": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
     "rearLeft": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
-    "rearRight": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"]
+    "rearRight": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
+    "nextInvoiceStatus": ["RUNNING", "WAITING", "COMPLETED", "REJECTED", "UNKNOWN", "TIMEOUT", "CONNECTION_FAILURE", "VEHICLE_IN_SLEEP", "DELIVERED", "CAR_ERROR", "NOT_ALLOWED_PRIVACY_ENABLED", "NOT_ALLOWED_WRONG_USAGE_MODE"]
 }
 
 class AuthHeader(BaseModel):
@@ -115,6 +123,8 @@ class Car(BaseModel):
     lightTimestamp:str = Field(default="")#set if light commands is sent
     
     hornTimestamp:str = Field(default="") # set if horn commands is sent
+
+    nextInvoiceStatus:str = Field(default="") # Possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
     
     
     #additional parameters for error like if you want fail engine start nextInvoice status, last timestamp
@@ -126,6 +136,9 @@ class Car(BaseModel):
     
     
     def checkValidity(self,attribute,value):
+        if startUp["Validation"] == False:
+            return True
+        
         if attribute in options:
             valid = options[attribute]
             if valid == "int":
@@ -134,6 +147,14 @@ class Car(BaseModel):
             if value not in valid:
                 return False
         return True
+    
+    def InvoiceStatus(self): # add if invoice status is successful or not
+        if self.nextInvoiceStatus == "":
+            if self.climate == True or self.engineStatus == "RUNNING":
+                return "RUNNING"
+            else:
+                return "COMPLETED"
+        return self.nextInvoiceStatus
 
     def update(self,attribute,value):
         if self.checkValidity(attribute,value):
@@ -216,7 +237,7 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = "COMPLETED" # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
+        invoiceStatus = car.getInvoiceStatus() # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
             return NotSupportedResponse(command)
         elif command == "CLIMATIZATION_START": # need to check if the climate is then the api throws an error or not ther same in stop verison
@@ -249,7 +270,7 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = "COMPLETED" # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
+        invoiceStatus = car.getInvoiceStatus() # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
             return NotSupportedResponse(command)
         elif command == "ENGINE_START":
@@ -333,7 +354,7 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+        invoiceStatus = car.getInvoiceStatus() # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
         car.update("LOCKED", "centralLock")
         data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
         return JSONResponse(content=data, status_code=200)
@@ -365,7 +386,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+        invoiceStatus = car.getInvoiceStatus() # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
         car.update("UNLOCKED", "centralLock")
         data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}
         return JSONResponse(content=data, status_code=200)
@@ -553,7 +574,7 @@ def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
 #TODO: add authentication func for internal endpoints API key and VIN without in future bearer token
 @app.get("/internal")
 def Internal():
-    return JSONResponse(content={"message": "Welcome to the internal API"}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
+    return JSONResponse(content={"message": "Welcome to the internal API", "description": startUp}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
 #site section
 @app.get("/internal/dashboard/dashboardWS.css")
@@ -712,7 +733,7 @@ def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
         raise ValueError(str(e))
 
 
-@app.get("/internal/status") #todo: websocket version
+@app.get("/internal/status") 
 def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
@@ -725,8 +746,12 @@ def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponseInternal(VIN)
         
-@app.websocket("/internal/status/ws")
+@app.websocket("/internal/status/ws") #todo: test this version
 async def Dashbard(websocket: WebSocket):
+    if startUp["Websocket"] == False:
+        await websocket.close()
+        return
+    
     await websocket.accept()
     params = websocket.query_params
     vin = params.get("VIN")
@@ -747,7 +772,6 @@ async def Dashbard(websocket: WebSocket):
             
             
             await websocket.send_text(json.dumps(packet))
-            queue.task_done()
             
     except WebSocketDisconnect:
         print("Dashboard disconnected")
