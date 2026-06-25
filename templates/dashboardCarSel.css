@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+
+/* Global & Body Setup */
+body {
+  background: radial-gradient(circle at 50% 70%, #1b3552 30%, #111d2d 100%);
+  background-attachment: fixed; 
+  color: #ffffff;   
+  font-family: "Source Sans 3", sans-serif;
+  margin: 0;
+  padding: 40px 20px;
+  text-align: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+
+h1 {
+  font-family: "Arimo", sans-serif;
+  font-weight: 350; 
+  letter-spacing: -0.02em;
+  margin-bottom: 40px;
+}
+
+
+ul {
+  list-style-type: none; 
+  padding: 0;
+  margin: 0 auto;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}
+
+.premium-card-dark {
+  background-color: rgba(255, 255, 255, 0.03); 
+  backdrop-filter: blur(12px); 
+  border: 1px solid rgba(255, 255, 255, 0.08); 
+  border-radius: 12px; 
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  
+
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.premium-card-dark:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+
+.premium-card-dark form {
+  margin: 0;
+  padding: 0;
+}
+
+/* Action Select Button */
+.premium-card-dark button[type="submit"] {
+  background-color: #1b3552; 
+  color: #ffffff; 
+  padding: 10px 24px; 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px; 
+  cursor: pointer; 
+  font-size: 15px; 
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.premium-card-dark button[type="submit"]:hover {
+  background-color: #40638a; 
+  border-color: #ffffff;
+}
+
+.premium-card-dark button[type="submit"]:active {
+  transform: scale(0.97);
+}

@@ -33,6 +33,7 @@ h1 {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
 }
 
+
 .input-form input {
   width: 30%;
   padding: 12px;
@@ -72,4 +73,11 @@ h1 {
   cursor: pointer; 
   font-size: 16px; 
   transition: background-color 0.3s ease, transform 0.2s ease; 
+}
+#submit-btn, .generate-button {
+  transition: background-color 0.2s ease, transform 0.1s ease; 
+}
+
+#submit-btn:active, .generate-button:active {
+  transform: scale(0.97); 
 }

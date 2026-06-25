@@ -14,9 +14,9 @@ templates = Jinja2Templates(directory="templates")
 
 options = {
     "fuelType": ["PETROL", "DIESEL", "ELECTRIC", "HYBRID"],
-    "fuelICE": "int",
-    "fuelElectric": "int",
-    "odometer": "int",
+    "fuelICE": "int", # in liters
+    "fuelElectric": "int", # in % so 0-100
+    "odometer": "int", # 0-infinity in km
 
     "climate": [True, False],
     "engine": ["ENGINE_START", "ENGINE_STOP"],
@@ -556,6 +556,11 @@ def Internal():
     return JSONResponse(content={"message": "Welcome to the internal API"}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
 #site section
+@app.get("/internal/dashboard/dashboardWS.css")
+def DashbardCSS():
+    return FileResponse("templates/dashboardWS.css")
+
+
 @app.get("/internal/dashboard/car")
 def Dashbard(key: str,VIN: str, request: Request):
     try:
@@ -603,7 +608,6 @@ async def Dashbard(websocket: WebSocket):
             html = template.render(data)
             
             await websocket.send_text(html)
-            queue.task_done()
             
     except WebSocketDisconnect:
         print("Dashboard disconnected")
@@ -636,7 +640,10 @@ def DashbardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(..
             )
     
     
-    
+@app.get("/internal/dashboardCarSel.css")
+def DashbardCSS():
+    return FileResponse("templates/dashboardCarSel.css")
+
 @app.get("/internal/dashboard")
 def Dashbard(key: str, request: Request):
     try:
@@ -649,6 +656,9 @@ def Dashbard(key: str, request: Request):
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")   
     
+@app.get("/internal/welcome.css")
+def DashbardCSS():
+    return FileResponse("templates/welcome.css")
 
 @app.get("/internal/welcome")
 def Welcome():
