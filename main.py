@@ -125,7 +125,7 @@ class Car(BaseModel):
     hornTimestamp:str = Field(default="") # set if horn commands is sent
 
     nextInvoiceStatus:str = Field(default="") # Possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
-    
+    # running available for climate or engine commands
     
     #additional parameters for error like if you want fail engine start nextInvoice status, last timestamp
     def timestamp(self):
@@ -148,13 +148,24 @@ class Car(BaseModel):
                 return False
         return True
     
-    def InvoiceStatus(self): # add if invoice status is successful or not
+    #TODO: invoices are difrent for locks 
+    def InvoiceStatus(self, command): # add if invoice status is successful or not
         if self.nextInvoiceStatus == "":
-            if self.climate == True or self.engineStatus == "RUNNING":
-                return "RUNNING"
+            if command == "climate":
+                if self.climate == True:
+                    return ["RUNNING",True]
+            elif command == "engine":
+                if self.engineStatus == "RUNNING":
+                    return ["RUNNING",True]
             else:
-                return "COMPLETED"
-        return self.nextInvoiceStatus
+                return ["COMPLETED",True]
+        if self.nextInvoiceStatus == "RUNNING":
+            if command == "locks":
+                return ["COMPLETED",True]
+            
+        if self.nextInvoiceStatus == "REJECTED" or self.nextInvoiceStatus == "UNKNOWN" or self.nextInvoiceStatus == "TIMEOUT" or self.nextInvoiceStatus == "CONNECTION_FAILURE" or self.nextInvoiceStatus == "VEHICLE_IN_SLEEP" or self.nextInvoiceStatus == "CAR_ERROR" or self.nextInvoiceStatus == "NOT_ALLOWED_PRIVACY_ENABLED" or self.nextInvoiceStatus == "NOT_ALLOWED_WRONG_USAGE_MODE":
+            return [self.nextInvoiceStatus,False]
+        return [self.nextInvoiceStatus,True]
 
     def update(self,attribute,value):
         if self.checkValidity(attribute,value):
@@ -237,15 +248,18 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = car.getInvoiceStatus() # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
+        invoiceStatus = car.getInvoiceStatus("climate") # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
             return NotSupportedResponse(command)
-        elif command == "CLIMATIZATION_START": # need to check if the climate is then the api throws an error or not ther same in stop verison
-            car.update(True,"climate")
-            return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
-        elif command == "CLIMATIZATION_STOP":
-            car.update(False,'climate')
-            return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200) 
+        elif invoiceStatus[1] == True:
+            if command == "CLIMATIZATION_START": # need to check if the climate is then the api throws an error or not ther same in stop verison
+                car.update(True,"climate")
+                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
+            if command == "CLIMATIZATION_STOP":
+                car.update(False,'climate')
+                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200) 
+        else:
+            return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=500) # what if rejected what status code should be sent
     return JSONResponse(
     content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
     # what if climate is already started? Need to check docs or a real car (not in mine doesnt have that option)
@@ -270,17 +284,20 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = car.getInvoiceStatus() # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
+        invoiceStatus = car.getInvoiceStatus("engine") # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
             return NotSupportedResponse(command)
-        elif command == "ENGINE_START":
-            car.update("RUNNING","engineStatus")
-            car.update(runtimeMinutes,"engineTime")
-            return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
-        elif command == "ENGINE_STOP":
-            car.update("STOPPED","engineStatus")
-            car.update(0,"engineTime")
-            return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus,"message": "Extra information from the response."}, status_code=200)
+        elif invoiceStatus[1] == True:
+            if command == "ENGINE_START":
+                car.update("RUNNING","engineStatus")
+                car.update(runtimeMinutes,"engineTime")
+                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
+            if command == "ENGINE_STOP":
+                car.update("STOPPED","engineStatus")
+                car.update(0,"engineTime")
+                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
+        else:
+            return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
     # what if engine is already started? Need to check docs or a real car (not in mine doesnt have that option)
 
@@ -354,10 +371,14 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = car.getInvoiceStatus() # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
-        car.update("LOCKED", "centralLock")
-        data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
-        return JSONResponse(content=data, status_code=200)
+        invoiceStatus = car.getInvoiceStatus("locks") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+        if invoiceStatus[1] == True:
+            car.update("LOCKED", "centralLock")
+            data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}}
+            return JSONResponse(content=data, status_code=200)   
+        else:
+            data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}}
+            return JSONResponse(content=data, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
 # @app.post("/vehicles/{VIN}/commands/lock-reduced-guard") #only for AAOS not Sensus
@@ -386,10 +407,14 @@ def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = car.getInvoiceStatus() # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
-        car.update("UNLOCKED", "centralLock")
-        data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}
-        return JSONResponse(content=data, status_code=200)
+        invoiceStatus = car.getInvoiceStatus("locks") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+        if invoiceStatus[1] == True:
+            car.update("UNLOCKED", "centralLock")
+            data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
+            return JSONResponse(content=data, status_code=200)
+        else:
+            data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
+            return JSONResponse(content=data, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
 #ligts and horn
