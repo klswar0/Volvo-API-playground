@@ -19,7 +19,7 @@
             {% for vin in VINs%}
             <li class="premium-card-dark">
                 {{ vin }}
-                <form hx-get="/internal/dashboard/redirect"hx-vals='js:{
+                <form hx-get="/internal/dashboard/redirect" hx-vals='js:{
                     "key": new URLSearchParams(window.location.search).get("key") || ""
                     }' hx-target="body" hx-swap="outerHTML" hx-oob>
                     <button type="submit" name="VIN" value="{{ vin }}" hx-swap="outerHTML" hx-swap-oob="true">Select</button>
@@ -28,5 +28,13 @@
             </li>
             {% endfor %}
         </ul>
+
+        
+        <form hx-post="dashboard/NewCar" hx-vals='js:{
+                    "key": new URLSearchParams(window.location.search).get("key") || ""}' class="premium-card-dark" id="New-car">
+            <h3>Create new car</h3>
+            <input type="text" name="VIN" placeholder="Enter VIN">
+            <button type="submit">Create</button>
+        </form>
     </body>
 </html>
