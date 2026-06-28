@@ -70,7 +70,7 @@ class Car(BaseModel):
     fuelElectric:int = Field(default=0) # fuel level for electric and hybrid cars
     odometer: int = Field(default=0) 
     climate: bool =Field(default=False) # in future time based it can be set to time when the climate will be turned off (why you can set time thru app not thru api. how long api climate lasts? OR only engine has a timer)
-    commands:list =Field(default=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])
+    commands:list =Field(default=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP","FLASH","HONK", "HONK_AND_FLASH","LOCK","UNLOCK"]) # and reduced guard lock but not implemented yet. TO IMPLEMENT
     availabilityStatus_value: str = Field(default="AVAILABLE") # AVAILABLE, UNAVAILABLE, UNSPECIFIED # AVAILABLE is needed for any command TO IMPLEMENT
     availabilityStatus_unavailableReason: str = Field(default="") # Description of why the vehicle is unavailable UNSPECIFIED, NO_INTERNET, POWER_SAVING_MODE, CAR_IN_USE
     engineStatus:str = Field(default="STOPPED") # possible values: STOPPED, RUNNING
@@ -471,38 +471,41 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = car.InvoiceStatus(command)
-        if invoiceStatus[1] == True:
-            car.update("lightTimestamp",car.timestamp())
-            if command == "flash":
-                car.update("lightTimestamp",car.timestamp())
-            elif command == "honk":
-                car.update("hornTimestamp",car.timestamp())
-            elif command == "honk-and-flash":
-                car.update("hornTimestamp",car.timestamp())
-                car.update("lightTimestamp",car.timestamp())
-            else:
-                return BadRequestResponse(VIN)
-            data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-            return JSONResponse(content=data, status_code=200)
+        if command not in car.commands:
+            return NotSupportedResponse(command)
         else:
-            data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-            return JSONResponse(content=data, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
+            invoiceStatus = car.InvoiceStatus(command)
+            if invoiceStatus[1] == True:
+                car.update("lightTimestamp",car.timestamp())
+                if command == "FLASH":
+                    car.update("lightTimestamp",car.timestamp())
+                elif command == "HONK":
+                    car.update("hornTimestamp",car.timestamp())
+                elif command == "HONK_AND_FLASH":
+                    car.update("hornTimestamp",car.timestamp())
+                    car.update("lightTimestamp",car.timestamp())
+                else:
+                    return BadRequestResponse(VIN)
+                data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
+                return JSONResponse(content=data, status_code=200)
+            else:
+                data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
+                return JSONResponse(content=data, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
 @app.post("/vehicles/{VIN}/commands/flash")
 def flash(VIN:str, auth_header: AuthHeader = Header(...)):
-    return lightsAndHorn(VIN, auth_header, command="flash")
+    return lightsAndHorn(VIN, auth_header, command="FLASH")
             
     
 @app.post("/vehicles/{VIN}/commands/honk")
 def honk(VIN:str, auth_header: AuthHeader = Header(...)):
-    return lightsAndHorn(VIN, auth_header, command="honk")
+    return lightsAndHorn(VIN, auth_header, command="HONK")
 
 
 @app.post("/vehicles/{VIN}/commands/honk-and-flash")
 def honkAndFlash(VIN:str, auth_header: AuthHeader = Header(...)):
-    return lightsAndHorn(VIN, auth_header, command="honk-and-flash")
+    return lightsAndHorn(VIN, auth_header, command="HONK_AND_FLASH")
 
 #statistics
 
