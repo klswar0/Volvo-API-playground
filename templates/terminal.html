@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>  
+<head>
+    <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js"></script>
+    
+    <style>
+        .terminal-container {
+            background-color: #1e1e1e;
+            color: #39ff14; 
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: inset 0 0 10px #000;
+            height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .terminal-line {
+            margin: 0;
+            padding: 2px 0;
+            white-space: pre-wrap;
+            border-left: 3px solid #39ff14;
+            padding-left: 8px;
+            margin-bottom: 4px;
+        }
+
+        .system-msg {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>    
+<body>
+    
+    <div id="terminal-log" class="terminal-container">
+        <p id="status-placeholder" class="terminal-line system-msg">Awaiting real-time vehicle data connection...</p>
+    </div>
+
+    <script>
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const apiKey = urlParams.get('key') || 'vcc_api_key';
+        const vin = urlParams.get('VIN') || 'VIN123';
+        
+      
+        const wsUrl = `ws://127.0.0.1:8000/internal/status/ws?VIN=${vin}&key=${apiKey}`;
+        const socket = new WebSocket(wsUrl);
+        
+        const terminalLog = document.getElementById('terminal-log');
+        const placeholder = document.getElementById('status-placeholder');
+
+
+        function appendToTerminal(text, isSystem = false) {
+            if (placeholder) placeholder.remove();
+
+            const p = document.createElement('p');
+            p.className = isSystem ? "terminal-line system-msg" : "terminal-line";
+            
+            const timestamp = new Date().toLocaleTimeString();
+            p.textContent = `[${timestamp}] ${text}`;
+            
+            terminalLog.appendChild(p);
+            
+            terminalLog.scrollTop = terminalLog.scrollHeight;
+        }
+
+        socket.onopen = function(e) {
+            appendToTerminal("Connection established successfully.", true);
+        };
+
+        socket.onmessage = function(event) {
+            try {
+
+                const data = JSON.parse(event.data);
+                
+
+                const formattedJson = JSON.stringify(data, null, 2); 
+                appendToTerminal(`Data: ${formattedJson}`);
+                
+            } catch (e) {
+
+                appendToTerminal(event.data, true);
+            }
+        };
+
+        socket.onclose = function(event) {
+            appendToTerminal(`Connection closed (Code: ${event.code}).`, true);
+        };
+
+        socket.onerror = function(error) {
+            appendToTerminal(`WebSocket Error observed.`, true);
+        };
+    </script>
+</body>
+</html>

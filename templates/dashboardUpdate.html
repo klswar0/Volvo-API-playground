@@ -15,7 +15,25 @@
             <input type="submit" value="change">
         </form>
     </div>
+
+    <p>Availability Status Unavailable Reason:</p>
+    
+    <div id="availabilityStatus_unavailableReason">
+        <p>{{availabilityStatus_unavailableReason}}</p>
+        <form data-attribute="availabilityStatus_unavailableReason" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="availabilityStatus_unavailableReason">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_INTERNET">NO_INTERNET</option>
+                <option value="POWER_SAVING_MODE">POWER_SAVING_MODE</option>
+                <option value="CAR_IN_USE">CAR_IN_USE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
     </div>
+    </div>
+
     <div class="info">
     <p>Odometer:</p>
     <div id="odometer">
@@ -115,23 +133,7 @@
         </form>
     </div>
     </div>
-    <div class="info">
-    <p>Availability Status Unavailable Reason:</p>
-    <div id="availabilityStatus_unavailableReason">
-        <p>{{availabilityStatus_unavailableReason}}</p>
-        <form data-attribute="availabilityStatus_unavailableReason" hx-ext="json-enc"
-            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
-            <input type="hidden" name="attribute" value="availabilityStatus_unavailableReason">
-            <select name="value">
-                <option value="UNSPECIFIED">UNSPECIFIED</option>
-                <option value="NO_INTERNET">NO_INTERNET</option>
-                <option value="POWER_SAVING_MODE">POWER_SAVING_MODE</option>
-                <option value="CAR_IN_USE">CAR_IN_USE</option>
-            </select>
-            <input type="submit" value="change">
-        </form>
-    </div>
-    </div>
+
     <div class="info">
     <p>Engine Coolant Level:</p>
     <div id="engineCoolantLever">
@@ -428,8 +430,7 @@
                 <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
             </select><input type="submit" value="change"></form>
     </div>
-    </div>
-    <div class="info">
+
     <p>Front Right Tire:</p>
     <div id="frontRight">
         <p>{{frontRight}}</p>
@@ -443,8 +444,7 @@
                 <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
             </select><input type="submit" value="change"></form>
     </div>
-    </div>
-    <div class="info">
+
     <p>Rear Left Tire:</p>
     <div id="rearLeft">
         <p>{{rearLeft}}</p>
@@ -458,8 +458,7 @@
                 <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
             </select><input type="submit" value="change"></form>
     </div>
-    </div>
-    <div class="info">
+
     <p>Rear Right Tire:</p>
     <div id="rearRight">
         <p>{{rearRight}}</p>

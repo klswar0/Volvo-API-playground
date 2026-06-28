@@ -16,7 +16,8 @@ startUp={
     "Validation": True,
     "Dashboard": True,# not implemented yet
     "Websocket": True,# not implemented yet
-    "TOKENcheck": False # not implemented yet
+    "TOKENcheck": False, # not implemented yet
+    "statusNofication": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes
 }
 
 
@@ -1034,6 +1035,8 @@ def VINHandlingInternal(VIN:str, vcc_api_key: str):
 def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
+        if startUp["statusNofication"] == "SET" or startUp["statusNofication"] == "ALL":
+            notifier.notify(VIN, car, value)
         return car.update(attribute, value)
     except ValueError as e:
         raise ValueError(str(e))

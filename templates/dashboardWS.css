@@ -42,3 +42,9 @@ h1 {
   text-align: center;
 }
 
+#Iframe {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  overflow: hidden; 
+}
