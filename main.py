@@ -15,7 +15,8 @@ templates = Jinja2Templates(directory="templates")
 startUp={
     "Validation": True,
     "Dashboard": True,# not implemented yet
-    "Websocket": True# not implemented yet
+    "Websocket": True,# not implemented yet
+    "TOKENcheck": False # not implemented yet
 }
 
 
@@ -152,16 +153,16 @@ class Car(BaseModel):
         return True
     
     #TODO: invoices are difrent for locks 
-    def InvoiceStatus(self, command): # add if invoice status is successful or not
+    def InvoiceStatus(self, command, status=None): #status true turning ON false turning off TODO update climate and engine becouse know its not working for climate stop and engine stop
         if self.nextInvoiceStatus == "":
             if command == "climate":
-                if self.climate == True:
+                if self.climate == True and status == True:
                     return ["RUNNING",True]
             elif command == "engine":
-                if self.engineStatus == "RUNNING":
+                if self.engineStatus == "RUNNING" and status == True:
                     return ["RUNNING",True]
-            else:
-                return ["COMPLETED",True]
+                
+            return ["COMPLETED",True]
         if self.nextInvoiceStatus == "RUNNING":
             if command == "locks":
                 return ["COMPLETED",True]
@@ -182,7 +183,7 @@ class Car(BaseModel):
         return True
     
 database = {
-    "vcc_api_key": [Car(VIN="VIN123", fuelType="HYBRID", commands=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP"])]
+    "vcc_api_key": [Car(VIN="VIN123", fuelType="HYBRID", commands=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP","FLASH","HONK", "HONK_AND_FLASH","LOCK","UNLOCK"])] #TODO more commands checks
 }
 
 app = FastAPI()
@@ -220,6 +221,9 @@ def timestampGenerator():
 def authenticate(auth_header: AuthHeader):
     if auth_header.vcc_api_key not in database:
         raise ValueError("Invalid API key")
+    if startUp["TOKENcheck"] == True:
+        if auth_header.authorization != "Bearer valid_token": # real token endpoints needed
+            raise ValueError("Invalid token")
 
 def UnauthorizedResponse():
     return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
@@ -271,22 +275,26 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = car.InvoiceStatus("climate") # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
             return NotSupportedResponse(command)
-        elif invoiceStatus[1] == True:
-            if command == "CLIMATIZATION_START": # need to check if the climate is then the api throws an error or not ther same in stop verison
-                car.update("climate",True)
-                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
-            if command == "CLIMATIZATION_STOP":
-                car.update("climate",False)
-                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200) 
         else:
-            return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=500) # what if rejected what status code should be sent
+            invoiceStatus="Let the dev know if you see this message. Something went wrong with the invoiceStatus"
+            if command == "CLIMATIZATION_START":
+                invoiceStatus = car.InvoiceStatus("climate",True) # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
+                if invoiceStatus[1]:
+                    car.update("climate",True)
+                    return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
+            elif command == "CLIMATIZATION_STOP":
+                invoiceStatus = car.InvoiceStatus("climate",False) # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
+                if invoiceStatus[1]:
+                    car.update("climate",False)
+                    return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
+            
+            if invoiceStatus[1] == False:
+                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=500) # what if rejected what status code should be sent 
     return JSONResponse(
     content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
-    # what if climate is already started? Need to check docs or a real car (not in mine doesnt have that option)
-
+# What if climate is already off?
 
 @app.post("/vehicles/{VIN}/commands/climatization-start")
 def climateStart(VIN:str, auth_header: AuthHeader = Header(...)):
@@ -307,22 +315,28 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        invoiceStatus = car.InvoiceStatus("engine") # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
+         # invoice possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
             return NotSupportedResponse(command)
-        elif invoiceStatus[1] == True:
-            if command == "ENGINE_START":
-                car.update("engineStatus", "RUNNING")
-                car.update("engineTime", runtimeMinutes)
-                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
-            if command == "ENGINE_STOP":
-                car.update("engineStatus", "STOPPED")
-                car.update("engineTime", 0)
-                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
         else:
-            return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
+            invoiceStatus="Let the dev know if you see this message. Something went wrong with the invoiceStatus"
+            if command == "ENGINE_START":
+                invoiceStatus = car.InvoiceStatus("engine",True)
+                if invoiceStatus[1]:
+                    car.update("engineStatus", "RUNNING")
+                    car.update("engineTime", runtimeMinutes)
+                    return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
+            elif command == "ENGINE_STOP":
+                invoiceStatus = car.InvoiceStatus("engine",False)
+                if invoiceStatus[1]:
+                    car.update("engineStatus", "STOPPED")
+                    car.update("engineTime", 0)
+                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=200)
+            
+            if invoiceStatus[1] == False:
+                return JSONResponse(content={"vin": VIN ,"invokeStatus": invoiceStatus[0],"message": "Extra information from the response."}, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
-    # what if engine is already started? Need to check docs or a real car (not in mine doesnt have that option)
+    # what if engine is already stopped? Need to check docs or a real car (not in mine doesnt have that option)
 
 
 
@@ -394,6 +408,9 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
+        command = "LOCK"
+        if command not in car.commands:
+            return NotSupportedResponse(command)
         invoiceStatus = car.InvoiceStatus("locks") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
         if invoiceStatus[1] == True:
             car.update("centralLock", "LOCKED")
@@ -430,6 +447,9 @@ def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
+        command = "UNLOCK"
+        if command not in car.commands:
+            return NotSupportedResponse(command)
         invoiceStatus = car.InvoiceStatus("locks") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
         if invoiceStatus[1] == True:
             car.update("centralLock","UNLOCKED")
@@ -454,9 +474,9 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
         invoiceStatus = car.InvoiceStatus(command)
         if invoiceStatus[1] == True:
             car.update("lightTimestamp",car.timestamp())
-            if command == "lights":
+            if command == "flash":
                 car.update("lightTimestamp",car.timestamp())
-            elif command == "horn":
+            elif command == "honk":
                 car.update("hornTimestamp",car.timestamp())
             elif command == "honk-and-flash":
                 car.update("hornTimestamp",car.timestamp())
@@ -472,12 +492,12 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
 
 @app.post("/vehicles/{VIN}/commands/flash")
 def flash(VIN:str, auth_header: AuthHeader = Header(...)):
-    return lightsAndHorn(VIN, auth_header, command="lights")
+    return lightsAndHorn(VIN, auth_header, command="flash")
             
     
 @app.post("/vehicles/{VIN}/commands/honk")
 def honk(VIN:str, auth_header: AuthHeader = Header(...)):
-    return lightsAndHorn(VIN, auth_header, command="horn")
+    return lightsAndHorn(VIN, auth_header, command="honk")
 
 
 @app.post("/vehicles/{VIN}/commands/honk-and-flash")
@@ -838,6 +858,10 @@ def Warnings(VIN:str, auth_header: AuthHeader = Header(...)):
 def Internal():
     return JSONResponse(content={"message": "Welcome to the internal API", "description": startUp}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
+
+@app.get("/internal/terminal")
+def Terminal():
+    return FileResponse("templates/terminal.html")
 #site section
 @app.get("/internal/dashboard/dashboardWS.css")
 def DashbardCSS():
@@ -848,7 +872,7 @@ def DashbardCSS():
 def Dashbard(key: str,VIN: str, request: Request):
     try:
         car = VINHandlingInternal(VIN, key)
-        data = car.model_dump()
+        data={"VIN":VIN,"key":key}
         return templates.TemplateResponse(name="dashboard.html", request=request, context=data)
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
@@ -900,7 +924,6 @@ async def Dashbard(websocket: WebSocket):
         return
     finally:
         notifier.unsubscribe(vin, queue)
-        await websocket.close()
         print(f"Disconnected car: {vin} with key: {api_key}")
     
 @app.post("/internal/dashboard/update") # html request here for dashboard
@@ -1029,7 +1052,6 @@ def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
 @app.websocket("/internal/status/ws") #todo: test this version
 async def Dashbard(websocket: WebSocket):
     if startUp["Websocket"] == False:
-        await websocket.close()
         return
     
     await websocket.accept()
@@ -1061,7 +1083,6 @@ async def Dashbard(websocket: WebSocket):
         return
     finally:
         notifier.unsubscribe(vin, queue)
-        await websocket.close()
         print(f"Disconnected car: {vin} with key: {api_key}")
 
 @app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) #TODO: implement this to html
