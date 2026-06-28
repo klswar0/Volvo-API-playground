@@ -30,7 +30,7 @@ options = {
     "climate": [True, False],
     "engine": ["ENGINE_START", "ENGINE_STOP"],
     "availabilityStatus_value": ["AVAILABLE", "UNAVAILABLE", "UNSPECIFIED"],
-    "availabilityStatus_unavailableReason": ["UNSPECIFIED", "NO_INTERNET", "POWER_SAVING_MODE", "CAR_IN_USE"],
+    "availabilityStatus_unavailableReason": ["UNSPECIFIED", "NO_INTERNET", "POWER_SAVING_MODE", "CAR_IN_USE",""],
     "engineStatus": ["STOPPED", "RUNNING"],
     "engineCoolantLever": ["UNSPECIFIED", "NO_WARNING", "TOO_LOW"],
     "oillevel": ["UNSPECIFIED", "NO_WARNING", "SERVICE_REQUIRED", "TOO_LOW", "TOO_HIGH"],
@@ -156,20 +156,30 @@ class Car(BaseModel):
     #TODO: invoices are difrent for locks 
     def InvoiceStatus(self, command, status=None): #status true turning ON false turning off TODO update climate and engine becouse know its not working for climate stop and engine stop
         if self.nextInvoiceStatus == "":
+            if self.availabilityStatus_value == "UNAVAILABLE":
+                if self.availabilityStatus_unavailableReason == "NO_INTERNET":
+                    return ["CONNECTION_FAILURE",False]
+                elif self.availabilityStatus_unavailableReason == "POWER_SAVING_MODE":
+                    return ["VEHICLE_IN_SLEEP",False]
+                elif self.availabilityStatus_unavailableReason == "CAR_IN_USE":
+                    return ["NOT_ALLOWED_WRONG_USAGE_MODE",False]
+                return ["UNKNOWN",False]
+                
             if command == "climate":
                 if self.climate == True and status == True:
                     return ["RUNNING",True]
             elif command == "engine":
                 if self.engineStatus == "RUNNING" and status == True:
                     return ["RUNNING",True]
-                
+                    
             return ["COMPLETED",True]
+        
         if self.nextInvoiceStatus == "RUNNING":
             if command == "locks":
                 return ["COMPLETED",True]
             elif command == "lights":
                 return ["COMPLETED",True]
-            
+                
         if self.nextInvoiceStatus == "REJECTED" or self.nextInvoiceStatus == "UNKNOWN" or self.nextInvoiceStatus == "TIMEOUT" or self.nextInvoiceStatus == "CONNECTION_FAILURE" or self.nextInvoiceStatus == "VEHICLE_IN_SLEEP" or self.nextInvoiceStatus == "CAR_ERROR" or self.nextInvoiceStatus == "NOT_ALLOWED_PRIVACY_ENABLED" or self.nextInvoiceStatus == "NOT_ALLOWED_WRONG_USAGE_MODE":
             return [self.nextInvoiceStatus,False]
         return [self.nextInvoiceStatus,True]
@@ -1036,7 +1046,7 @@ def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
         if startUp["statusNofication"] == "SET" or startUp["statusNofication"] == "ALL":
-            notifier.notify(VIN, car, value)
+            notifier.trigger_update(VIN, car, attribute)
         return car.update(attribute, value)
     except ValueError as e:
         raise ValueError(str(e))
