@@ -15,6 +15,7 @@
 
     <body>
         <h1>Car list</h1>
+        <p>API key: {{ key }}</p>
         <ul>
             {% for vin in VINs%}
             <li class="premium-card-dark">
@@ -29,9 +30,20 @@
             {% endfor %}
         </ul>
 
-        
-        <form hx-post="dashboard/NewCar" hx-vals='js:{
-                    "key": new URLSearchParams(window.location.search).get("key") || ""}' class="premium-card-dark" id="New-car">
+        <script>
+            document.body.addEventListener('htmx:configRequest', function(evt) {
+                if (evt.detail.elt.id === 'New-car') {
+                    // Pobieramy wartość wpisaną w input
+                    const vin = evt.detail.parameters['VIN'];
+                    if (vin) {
+                        // Doklejamy ją dynamicznie do adresu URL jako Query Parameter
+                        evt.detail.path += '&VIN=' + encodeURIComponent(vin);
+                    }
+                }
+            });
+        </script>
+
+        <form hx-post="dashboard/NewCar?key={{ key }}" class="premium-card-dark" id="New-car">
             <h3>Create new car</h3>
             <input type="text" name="VIN" placeholder="Enter VIN">
             <button type="submit">Create</button>

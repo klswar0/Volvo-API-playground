@@ -1,4 +1,4 @@
-from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, WebSocketDisconnect
+from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, WebSocketDisconnect, Form
 from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field 
@@ -972,7 +972,7 @@ def Dashbard(key: str, request: Request):
         VINs = []
         for car in cars:
             VINs.append(car.VIN)
-        return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs})
+        return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key})
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")   
     
@@ -1011,7 +1011,7 @@ def WelcomeNewCar(key: str, VIN: str):
            car = VINHandlingInternal(VIN, key)
            return HTMLResponse(content="<p style=\"color:red\">Car already exists</p>")
         except ValueError:
-            new_car = Car(VIN)
+            new_car = Car(VIN=VIN)
             database[key].append(new_car)
             response = Response()
             response.headers["HX-Redirect"] = f"/internal/dashboard/car?key={key}&VIN={VIN}"
