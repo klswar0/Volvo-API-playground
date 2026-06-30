@@ -41,7 +41,7 @@ legend:
 
 | additional  | status | comments |
 |:----------:|:------------:|:-----------:|
-| dashboard | 🛑 | 🌍   |
+| dashboard | 🆗 | 🌍   |
 | Oauth |  ❌   | 🌍   |
 | example app |  ❌   | 🌍   |
 | internal endpoints for testing errors |     | 🌍   |

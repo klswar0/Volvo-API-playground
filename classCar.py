@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field 
 from notifier import notifier
 from datetime import datetime, timezone
+import configparser #TODO use it
 
 
 class AuthHeader(BaseModel):
@@ -54,7 +55,32 @@ options = {
     "rearLeft": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
     "rearRight": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
     "nextInvoiceStatus": ["RUNNING", "WAITING", "COMPLETED", "REJECTED", "UNKNOWN", "TIMEOUT", "CONNECTION_FAILURE", "VEHICLE_IN_SLEEP", "DELIVERED", "CAR_ERROR", "NOT_ALLOWED_PRIVACY_ENABLED", "NOT_ALLOWED_WRONG_USAGE_MODE",""],
+    "brakeLightLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "brakeLightCenterWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "brakeLightRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "fogLightFrontWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "fogLightRearWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "positionLightFrontLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "positionLightFrontRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "positionLightRearLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "positionLightRearRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "highBeamLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "highBeamRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "lowBeamLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "lowBeamRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "daytimeRunningLightLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "daytimeRunningLightRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "turnIndicationFrontLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "turnIndicationFrontRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "turnIndicationRearLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "turnIndicationRearRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "registrationPlateLightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "sideMarkLightsWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "hazardLightsWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+    "reverseLightsWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
+
     "lightTimestamp": "", 
+    "hornTimestamp": "",
 }
 
 
@@ -184,13 +210,31 @@ class Car(BaseModel):
 
     def update(self,attribute,value):
         if self.checkValidity(attribute,value):
+                if startUp["Validation"] == True:
+                    if attribute=="fuelElectric":
+                        value=int(value)
+                        if value>100:
+                            value=100
+                        elif value<0:
+                            value=0
+                    if attribute=="fuelICE" or attribute=="odometer":
+                        value=int(value)
+                        if value<0:
+                            value=0
                 setattr(self, attribute, value)
                 notifier.trigger_update(self.VIN, self, changed_attribute=attribute)
+                self.updated()
                 # additional coditions for last timestamp and next invoice status if needed
         else:
             return False
         return True
     
+    def updated(self):
+        self.lastTimestamp = timestampGenerator()
+
+        
+        
 
 def timestampGenerator():
     return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+

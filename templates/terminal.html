@@ -38,13 +38,9 @@
     </div>
 
     <script>
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const apiKey = urlParams.get('key') || 'vcc_api_key';
-        const vin = urlParams.get('VIN') || 'VIN123';
         
       
-        const wsUrl = `ws://127.0.0.1:8000/internal/status/ws?VIN=${vin}&key=${apiKey}`;
+        const wsUrl = `ws://127.0.0.1:8000/internal/status/ws?VIN={{vin}}&key={{key}}`;
         const socket = new WebSocket(wsUrl);
         
         const terminalLog = document.getElementById('terminal-log');

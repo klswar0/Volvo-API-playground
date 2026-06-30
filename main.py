@@ -1,10 +1,9 @@
+
 from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, WebSocketDisconnect, Form
 from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field 
 import uvicorn
-import json
-import secrets
 
 
 
@@ -19,6 +18,8 @@ templates = Jinja2Templates(directory="templates")
 
 
 app = FastAPI()
+
+
 
 
 
@@ -40,10 +41,14 @@ def VINHandling(VIN:str, auth_header: AuthHeader):
             return car
     raise ValueError("Invalid VIN")
 
+
+
+
 # https://api.volvocars.com/connected-vehicle/v2/ section
 
 @app.get("/vehicles")
 def listVehicles(auth_header: AuthHeader = Header(...)):
+    """list all vehicles associated with the provided API key."""
     try:
         authenticate(auth_header)
     except ValueError:
@@ -57,7 +62,35 @@ def listVehicles(auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
-
+@app.get("/vehicles/{VIN}")
+def getVehicle(VIN:str, auth_header: AuthHeader = Header(...)): #TODO: implement the data in car class
+    """get vehicle information for the specified VIN. Mostly static data but enough to test your apps"""
+    try:
+        car = VINHandling(VIN, auth_header)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponse()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponse(VIN)
+    else:
+        data={
+        "data": {
+            "vin": VIN,
+            "modelYear": 2019,
+            "gearbox" : "AUTOMATIC",
+            "fuelType" : car.fuelType,
+            "externalColour": "SAVILE GREY STATIC",
+            "batteryCapacityKWH": 78.0,
+            "images": {
+            "exteriorImageUrl": "link-to-exterior-image",
+            "internalImageUrl": "link-to-internal-image"
+            },
+            "descriptions": {
+            "model": "V60 II STATIC",
+            "upholstery": "CHARCOAL/LEAC/CHARC STATIC",
+            "steering": "LEFT STATIC"
+            }}}
+        return JSONResponse(content=data, status_code=200)
 
 #climetization commands
 def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
@@ -92,11 +125,13 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
 
 @app.post("/vehicles/{VIN}/commands/climatization-start")
 def climateStart(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to start the climatization."""
     return climate(VIN, auth_header, command="CLIMATIZATION_START")
 
 
 @app.post("/vehicles/{VIN}/commands/climatization-stop")
 def climateStop(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to stop the climatization."""
     return climate(VIN, auth_header, command="CLIMATIZATION_STOP")
 
 #engine commands
@@ -136,6 +171,7 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
 
 @app.get("/vehicles/{VIN}/engine-status")
 def engineStatus(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current engine status for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -151,12 +187,14 @@ def engineStatus(VIN:str, auth_header: AuthHeader = Header(...)):
 
 @app.post("/vehicles/{VIN}/commands/engine-start")
 def engineStart(VIN:str, auth_header: AuthHeader = Header(...), runtimeMinutes:int = Body(...)):
+    """send a command to start the engine for the specified VIN. The runtimeMinutes >0 and <15."""
     if runtimeMinutes < 1 or runtimeMinutes >= 15:
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "runtimeMinutes can be maximaly 15 min"}}, status_code=400)
     return engine(VIN, auth_header,command="ENGINE_START", runtimeMinutes=runtimeMinutes)
 
 @app.post("/vehicles/{VIN}/commands/engine-stop")
 def engineStop(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to stop the engine for the specified VIN."""
     return engine(VIN, auth_header,command="ENGINE_STOP")
 
 # doors, windows, locks section
@@ -165,6 +203,7 @@ def engineStop(VIN:str, auth_header: AuthHeader = Header(...)):
 
 @app.get("/vehicles/{VIN}/windows")
 def windows(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current status of the windows and sunroof for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -180,6 +219,7 @@ def windows(VIN:str, auth_header: AuthHeader = Header(...)):
 
 @app.get("/vehicles/{VIN}/doors")
 def doors(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current status of the doors and locks for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -188,12 +228,14 @@ def doors(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        data={"data": {"centralLock": {"value": car.centralLock,"timestamp": "placeholder"},"frontLeftDoor": {"value": car.frontLeftDoor,"timestamp": "placeholder"},"frontRightDoor": {"value": car.frontRightDoor,"timestamp": "placeholder"},"hood": {"value": car.hood,"timestamp": "placeholder"},"rearLeftDoor": {"value": car.rearLeftDoor,"timestamp": "placeholder"},"rearRightDoor": {"value": car.rearRightDoor,"timestamp": "placeholder"},"tailGate": {"value": car.tailGate,"timestamp": "placeholder"},"tankLid": {"value": car.tankLid,"timestamp": "placeholder"}}}
+        timestamp = car.timestamp()
+        data={"data": {"centralLock": {"value": car.centralLock,"timestamp": timestamp},"frontLeftDoor": {"value": car.frontLeftDoor,"timestamp": timestamp},"frontRightDoor": {"value": car.frontRightDoor,"timestamp": timestamp},"hood": {"value": car.hood,"timestamp": timestamp},"rearLeftDoor": {"value": car.rearLeftDoor,"timestamp": timestamp},"rearRightDoor": {"value": car.rearRightDoor,"timestamp": timestamp},"tailGate": {"value": car.tailGate,"timestamp": timestamp},"tankLid": {"value": car.tankLid,"timestamp": timestamp}}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
 @app.post("/vehicles/{VIN}/commands/lock")
 def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to lock the doors for the specified VIN."""
     try:
         car =VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -233,6 +275,7 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
 
 @app.post("/vehicles/{VIN}/commands/unlock") # doesnt work like in real life you must click button of the trunk
 def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to unlock the doors for the specified VIN."""
     try:
         car =VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -254,9 +297,10 @@ def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
          # FIXME:what if rejected what status code should be sent and all of the other BAD invoices
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
-#ligts and horn
+#lights and horn
 
 def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
+    """send a command to start the lights and horn for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -287,22 +331,26 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
 
 @app.post("/vehicles/{VIN}/commands/flash")
 def flash(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to flash the lights for the specified VIN."""
     return lightsAndHorn(VIN, auth_header, command="FLASH")
             
     
 @app.post("/vehicles/{VIN}/commands/honk")
 def honk(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to honk the horn for the specified VIN."""
     return lightsAndHorn(VIN, auth_header, command="HONK")
 
 
 @app.post("/vehicles/{VIN}/commands/honk-and-flash")
 def honkAndFlash(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to honk the horn and flash the lights for the specified VIN."""
     return lightsAndHorn(VIN, auth_header, command="HONK_AND_FLASH")
 
 #statistics
 
 @app.get("/vehicles/{VIN}/statistics") #STATIC
 def statistics(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get vehicle statistics for the specified VIN. Mostly static data but enough to test your apps"""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -378,6 +426,7 @@ def statistics(VIN:str, auth_header: AuthHeader = Header(...)):
 #tyres
 @app.get("/vehicles/{VIN}/tyres")
 def tyres(VIN:str, auth_header: AuthHeader= Header(...)):
+    """get the current tyre warnings status for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -395,6 +444,7 @@ def tyres(VIN:str, auth_header: AuthHeader= Header(...)):
 #commands 
 @app.get("/vehicles/{VIN}/commands")
 def commands(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get a list of available commands for the specified VIN."""
     href=f"/v2/vehicles/{VIN}/commands/" 
     try:
         car = VINHandling(VIN, auth_header)
@@ -417,6 +467,7 @@ def commands(VIN:str, auth_header: AuthHeader = Header(...)):
 
 @app.get("/vehicles/{VIN}/command-accessibility")
 def commandAccessibility(VIN:str, auth_header: AuthHeader = Header(...)):
+    """check if the car is ready to receive commands or why it is not for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -437,6 +488,7 @@ def commandAccessibility(VIN:str, auth_header: AuthHeader = Header(...)):
 #Fuel section
 @app.get("/vehicles/{VIN}/fuel")
 def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current fuel level or/and battery charge level"""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -463,6 +515,7 @@ def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
 #Odometer section
 @app.get("/vehicles/{VIN}/odometer")
 def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current odometer reading for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -480,6 +533,7 @@ def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
 #diagnostic section
 @app.get("/vehicles/{VIN}/engine")
 def engineDiagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current engine diagnostics for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -494,6 +548,7 @@ def engineDiagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
 
 @app.get("/vehicles/{VIN}/diagnostics")  # there is additional washer fluid data sent by the api but docs dont talk about it there ? and units?
 def diagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current diagnostics for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -505,7 +560,7 @@ def diagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
         toService = car.timeToService
         
         unit=""
-        if toService < 62:
+        if toService < 62: #when volvo uses day and whe months 
             unit="days"
         else:
             unit="months"
@@ -522,6 +577,7 @@ def diagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
 
 @app.get("/vehicles/{VIN}/brakes")
 def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current brake status for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -530,12 +586,13 @@ def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
         elif str(e) == "Invalid VIN":
             return BadRequestResponse(VIN)
     else:
-        data={"data":{"brakFluidLevelWarning":{"value":car.brakeFluidLevel,"timestamp":car.timestamp()}}}
+        data={"data":{"brakeFluidLevelWarning":{"value":car.brakeFluidLevel,"timestamp":car.timestamp()}}}
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
 app.get("/vehicles/{VIN}/warnings") #STATIC for now
 def Warnings(VIN:str, auth_header: AuthHeader = Header(...)):
+    """get the current warning status for the specified VIN. STATIC for now"""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -651,24 +708,27 @@ def Warnings(VIN:str, auth_header: AuthHeader = Header(...)):
 #TODO: add authentication func for internal endpoints API key and VIN without in future bearer token
 @app.get("/internal")
 def Internal():
+   """internal endpoint that shows version and instance information"""
    return internal.Internal() # here will be displayed any options like authetication using tokens and so on.
 
 
 @app.get("/internal/terminal")
-def Terminal():
-    return internal.Terminal() #file response
+
+def Terminal(VIN:str,key:str, request: Request):
+    """For testing and development purposes. Use as help."""
+    return internal.Terminal(VIN, key, request) #file response
 
 #site section
-@app.get("/internal/dashboard/dashboardWS.css")
+@app.get("/internal/dashboard/dashboardWS.css", include_in_schema=False)
 def DashboardCSS():
     return internal.DashboardCSS() #file response
 
 
-@app.get("/internal/dashboard/car")
+@app.get("/internal/dashboard/car", include_in_schema=False)
 def DashboardCar(key: str,VIN: str, request: Request):
     return internal.DashboardCar(key, VIN, request)
     
-@app.get("/internal/dashboard/redirect")
+@app.get("/internal/dashboard/redirect", include_in_schema=False)
 def DashboardRedirect(key: str,VIN: str, request: Request):
     return internal.DashboardRedirect(key, VIN, request)
     
@@ -676,36 +736,36 @@ def DashboardRedirect(key: str,VIN: str, request: Request):
 async def DashboardWS(websocket: WebSocket):
     return await internal.DashboardWS(websocket)
     
-@app.post("/internal/dashboard/update") # html request here for dashboard
+@app.post("/internal/dashboard/update", include_in_schema=False) # html request here for dashboard
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
     return internal.DashboardUpdate(key, VIN, request, attribute, value)
     
     
-@app.get("/internal/dashboardCarSel.css")
+@app.get("/internal/dashboardCarSel.css", include_in_schema=False)
 def DashboardCarCSS():
     return internal.DashboardCarCSS() #file response
 
-@app.get("/internal/dashboard")
+@app.get("/internal/dashboard", include_in_schema=False)
 def Dashboard(key: str, request: Request):
     return internal.Dashboard(key, request)
 
-@app.get("/internal/welcome.css")
+@app.get("/internal/welcome.css", include_in_schema=False)
 def WelcomeCSS():
     return internal.WelcomeCSS() #file response
 
-@app.get("/internal/welcome")
+@app.get("/internal/welcome", include_in_schema=False)
 def Welcome():
     return internal.Welcome() #file response
 
-@app.get("/internal/welcome/Check")
+@app.get("/internal/welcome/Check", include_in_schema=False)
 def WelcomeCheck(vcc_api_key: str):
     return internal.WelcomeCheck(vcc_api_key)
 
-@app.get("/internal/welcome/APIKey") 
+@app.get("/internal/welcome/APIKey", include_in_schema=False) 
 def WelcomeAPIKey(request: Request):
     return internal.WelcomeAPIKey(request)
 
-@app.post("/internal/dashboard/NewCar") 
+@app.post("/internal/dashboard/NewCar", include_in_schema=False) 
 def WelcomeNewCar(key: str, VIN: str):
     return internal.WelcomeNewCar(key, VIN)
 
@@ -713,6 +773,7 @@ def WelcomeNewCar(key: str, VIN: str):
 
 @app.get("/internal/status") 
 def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)): 
+    """internal endpoint for getting car status without using commands and without a token"""
     return internal.getStatus(VIN, vcc_api_key)
         
 @app.websocket("/internal/status/ws") #todo: test this version
@@ -721,20 +782,24 @@ async def statusWS(websocket: WebSocket):
 
 @app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) #TODO: implement this to html
 def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: str = Body(...), value: str = Body(...)):
+    """internal endpoint for updating car without using commands and without a token"""
     return internal.internal_update(VIN, vcc_api_key, attribute, value)
 
 
 @app.post("/internal/updates") # to redo
 def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: list = Body(...), value: list = Body(...)):
+    """internal endpoint for updating multiple car attributes without using commands and without a token/ NEED TO BE REWRITTEN"""
     return internal.internal_updates(VIN, vcc_api_key, attribute, value)
 
 
 @app.get("/internal/APIKey")
-def genAPIKey():                    
+def genAPIKey():            
+    """internal endpoint for creating a new API key"""        
     return internal.genAPIKey()
 
 @app.post("/internal/addCar")
 def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: list = Body(...), values: list = Body(...)):
+    """internal endpoint for adding a new car to the database"""
     return internal.addCar(vcc_api_key, VIN, attributes, values)
 
 uvicorn.run(app)

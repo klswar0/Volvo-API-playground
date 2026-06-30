@@ -22,8 +22,8 @@ def Internal():
     return JSONResponse(content={"message": "Welcome to the internal API", "description": startUp}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
 
-def Terminal():
-    return FileResponse("templates/terminal.html")
+def Terminal(VIN: str, key: str, request: Request):
+    return templates.TemplateResponse(name="terminal.html", request=request, context={"vin": VIN, "key": key})
 #site section
 
 def DashboardCSS():
