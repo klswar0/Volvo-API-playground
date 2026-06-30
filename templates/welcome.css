@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+
+body {
+  background: radial-gradient(circle at 50% 70%, #1b3552 30%, #111d2d 100%);
+  background-attachment: fixed; 
+  color: #ffffff;   
+  font-family: "Source Sans 3", sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  
+  display: grid;
+  place-items: center;     
+  min-height: 100vh;
+}
+
+h1 {
+  font-family: "Arimo", sans-serif;
+  font-weight: 350; 
+  letter-spacing: -0.02em;
+  padding: 10px;
+  margin: 0 0 20px 0;
+}
+
+.premium-card-dark {
+  background-color: rgba(255, 255, 255, 0.03); 
+  backdrop-filter: blur(12px); 
+  border: 1px solid rgba(255, 255, 255, 0.08); 
+  border-radius: 12px; 
+  padding: 40px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+}
+
+
+.input-form input {
+  width: 30%;
+  padding: 12px;
+  margin: 8px auto;
+  box-sizing: border-box;
+  border: 1px solid #ffffff;
+  background-color: #40638a;
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+#submit-btn {
+  display: block;
+  width: 30%; 
+  background-color: #1b3552; 
+  color: #ffffff; 
+  padding: 12px; 
+  margin: 8px auto;
+  border: none;
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: 16px; 
+  transition: background-color 0.3s ease, transform 0.2s ease; 
+}
+
+#submit-btn:hover, .generate-button:hover {
+  background-color: #40638a; 
+}
+
+.generate-button {
+  width: 30%;
+  background-color: #1b3552; 
+  color: #ffffff; 
+  padding: 12px 24px; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: 16px; 
+  transition: background-color 0.3s ease, transform 0.2s ease; 
+}
+#submit-btn, .generate-button {
+  transition: background-color 0.2s ease, transform 0.1s ease; 
+}
+
+#submit-btn:active, .generate-button:active {
+  transform: scale(0.97); 
+}

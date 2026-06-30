@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+
+body {
+  background: radial-gradient(circle at 50% 70%, #1b3552 30%, #111d2d 100%);
+  background-attachment: fixed; 
+  color: #ffffff;   
+  font-family: "Source Sans 3", sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+
+  display: grid;
+  place-items: center;     
+  min-height: 100vh;
+}
+
+h1 {
+  font-family: "Arimo", sans-serif;
+  font-weight: 350; 
+  letter-spacing: -0.02em;
+  padding: 10px;
+  margin: 0 0 20px 0;
+}
+
+
+#car-info {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.info {
+  background-color: rgba(255, 255, 255, 0.03); 
+  backdrop-filter: blur(12px); 
+  border: 1px solid rgba(255, 255, 255, 0.08); 
+  border-radius: 12px; 
+  padding: 20px;
+  width: 60%;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+  text-align: center;
+}
+
+#Iframe {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  overflow: hidden; 
+}

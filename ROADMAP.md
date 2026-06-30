@@ -4,8 +4,9 @@ legend:
 - fully working 1:1 volvo API: ✅
 - working:🆗
 - doesnt work:❎
+- static:⏸️
 - not implemented:❌
-- real life testing need:🌍
+- real life testing needed:🌍
 - rework needed:🛑
 
 | endpoints  | status | comments |
@@ -21,26 +22,26 @@ legend:
 | doors  | 🆗   |  🌍  |
 | lock  | 🆗   | 🌍   |
 | locks with reduced |  ❌ |    |
-| unluck  | 🆗   | 🌍   |
+| unlock  | 🆗   | 🌍   |
 | engine status  | 🆗   | 🌍   |
 | engine start  | 🆗   | 🌍   |
 | engine stop  | 🆗   | 🌍   |
 | fuel  | 🆗   | 🌍   |
-| flash  | ❌   | 🌍   |
-| honk  | ❌   | 🌍   |
-| honk and flash  | ❌   | 🌍   |
+| flash  | 🆗   | 🌍   |
+| honk  | 🆗  | 🌍   |
+| honk and flash  | 🆗   | 🌍   |
 | odometer  |  🆗  | 🌍   |
-| statistics  |  ❌  | 🌍   |
+| statistics  |  ⏸️  | 🌍   |
 | tyres  | 🆗   | 🌍   |
 | vehicles  | ❌    | 🌍   |
 | get vehicle  | ❌    | 🌍   |
-| get warnigns  | ❌    | 🌍   |
+| get warnigns  | ⏸️    | 🌍   |
 
 
 
 | additional  | status | comments |
 |:----------:|:------------:|:-----------:|
-| dashboard | 🛑 | 🌍   |
+| dashboard | 🆗 | 🌍   |
 | Oauth |  ❌   | 🌍   |
 | example app |  ❌   | 🌍   |
 | internal endpoints for testing errors |     | 🌍   |
