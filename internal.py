@@ -10,8 +10,8 @@ import secrets
 
 
 from notifier import notifier
-from classCar import Car, options, AuthHeader, startUp, timestampGenerator
-from database import database
+from classCar import Car, options, AuthHeader, startUp, timestampGenerator, Oauth2
+from database import database, Oauth2Data
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 
 #internal endpoints 
@@ -24,6 +24,50 @@ def Internal():
 
 def Terminal(VIN: str, key: str, request: Request):
     return templates.TemplateResponse(name="terminal.html", request=request, context={"vin": VIN, "key": key})
+
+
+#OAuth2 endpoints for testing and dashboard purposes. Not part of the official API.
+
+def OAuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...)):
+    try:
+        authenticateInternal(vcc_api_key)
+    except ValueError as e:
+        return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
+    else:
+        if vcc_api_key not in Oauth2Data:
+            oauth2 = Oauth2(client_secret=client_secret)
+            Oauth2Data[vcc_api_key] = oauth2
+            return JSONResponse(content={"message": "OAuth2 activated successfully"}, status_code=200)
+        else:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 already activated for this API key"}}, status_code=400)
+        
+def OAuthDeactivateInternal(vcc_api_key:str = Header(...)):
+    try:
+        authenticateInternal(vcc_api_key)
+    except ValueError as e:
+        return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
+    else:
+        if vcc_api_key not in Oauth2Data:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 already deactivated for this API key"}}, status_code=400)
+        else:
+            del Oauth2Data[vcc_api_key]
+            return JSONResponse(content={"message": "OAuth2 deactivated successfully"}, status_code=200)
+        
+def OAuthRegenerateInternal(vcc_api_key:str = Header(...)):
+    try:
+        authenticateInternal(vcc_api_key)
+    except ValueError as e:
+        return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
+    else:
+        if vcc_api_key not in Oauth2Data:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 not activated for this API key"}}, status_code=400)
+        else:
+            oauth2=Oauth2Data[vcc_api_key]
+            oauth2.client_secret = "client_secret_"+secrets.token_hex(8)
+            oauth2.code = ""
+            oauth2.access_token =  "access_token_"+secrets.token_hex(16)
+            oauth2.refresh_token = "refresh_token_"+secrets.token_hex(16)
+            #oauth2.expires_in = 
 #site section
 
 def DashboardCSS():

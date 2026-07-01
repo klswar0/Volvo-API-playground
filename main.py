@@ -10,7 +10,7 @@ import uvicorn
 import internal
 from notifier import notifier
 from classCar import Car, options, AuthHeader, startUp, timestampGenerator
-from database import database
+from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse
 
 #TODO: redo internal responses
@@ -41,6 +41,75 @@ def VINHandling(VIN:str, auth_header: AuthHeader):
             return car
     raise ValueError("Invalid VIN")
 
+# Oauth2.0 section
+
+# DOES NOT IMPLEMENT THE FULL OAUTH2.0 FLOW. IT IS ONLY A SIMULATION FOR TESTING PURPOSES.
+
+# #FIXME all client id and others
+
+#client id == api key for this playground
+@app.get("/as/authorization.oauth2") #scopes are not checked and dont work
+def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(...),redirect_uri:str=Query(...),scope:str=Query(default=""),state:str=Query(default="")):
+    if response_type != "code":
+        return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>response_type must be 'code'</p>", status_code=400)
+    if client_id not in Oauth2Data:
+        return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid client_id</p>", status_code=400)
+    auth2 = Oauth2Data[client_id]
+    if auth2.redirect_uri != "":
+        if redirect_uri != Oauth2Data[client_id].redirect_uri:
+            return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid redirect_uri</p>", status_code=400)
+    # site needed for "login"
+    return templates.TemplateResponse(name="oauth2login.html", request=request, context={"client_id": client_id, "redirect_uri": redirect_uri, "scope": scope, "state": state})
+    
+    # response = Response()
+    # auth2.code = "code". #generate 
+    # response.headers["HX-Redirect"] = f"{redirect_uri}?code={auth2.code}&state={state}"
+
+@app.post("/as/authorization.internal")
+def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state: str = Form(default=""), login: str = Form(...)):
+    if client_id != login:
+        return HTMLResponse(content="<p style='color: red;'>Wrong client_id or login</p>", status_code=200)
+    auth2 = Oauth2Data[client_id]
+    auth2.code = "code" #generate 
+    url=f"{redirect_uri}?code={auth2.code}"
+    if state != "":
+        url += f"&state={state}"
+    response = Response()
+    response.headers["HX-Redirect"] = url
+    return response
+
+@app.get("/internal/test")
+def test(code:str=Query(...),state:str=Query(default="")):
+    # testing first step of oauth2
+    return HTMLResponse(content=f"<h1>Code: {code}</h1><p>State: {state}</p>", status_code=200)
+
+
+@app.get("/as/authorization.oauth2") #scopes are not checked and dont work
+def oauth2(content_type:str=Header(...,alias="content-type"),authorization:str=Header(...),grant_type:str=Body(...),code:str=Body(...),redirect_uri:str=Body(...)):
+    if content_type != "application/x-www-form-urlencoded":
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "content-type must be 'application/x-www-form-urlencoded'"}}, status_code=400)
+    if grant_type != "authorization_code":
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "grant_type must be 'authorization_code'"}}, status_code=400)
+    authorization_parts = authorization.split(" ")
+    authorization=authorization_parts[1].decode("utf-8") # decode base64
+    authorization = authorization.split(":")
+    if authorization[0] not in Oauth2Data:
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}}, status_code=400)
+    auth2 = Oauth2Data[authorization[0]]
+    if auth2.client_secret != authorization[1]:
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}}, status_code=400)
+    if auth2.code != code:
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "No code available. Please request a new code"}}, status_code=400)
+    else:
+        if auth2.redirect_uri != "":
+            if redirect_uri != auth2.redirect_uri:
+                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid redirect_uri"}}, status_code=400)
+        auth2.access_token = "access_token" #generate
+        auth2.refresh_token = "refresh_token" #generate
+        auth2.code = "" #invalidate code
+       # auth2.expires_in = 
+        data={"access_token": auth2.access_token, "token_type": "Bearer", "expires_in": 3599, "refresh_token": auth2.refresh_token}                                             
+        return JSONResponse(content=data, status_code=200)
 
 
 
@@ -590,7 +659,7 @@ def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
 
-app.get("/vehicles/{VIN}/warnings") #STATIC for now
+@app.get("/vehicles/{VIN}/warnings") #STATIC for now
 def Warnings(VIN:str, auth_header: AuthHeader = Header(...)):
     """get the current warning status for the specified VIN. STATIC for now"""
     try:

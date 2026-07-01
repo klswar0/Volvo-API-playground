@@ -9,6 +9,17 @@ class AuthHeader(BaseModel):
     authorization: str =Field(default="") #= Field(...) # NOT IMPLEMENTED
     vcc_api_key: str =Field(...,alias="vcc-api-key")
 
+class Oauth2(BaseModel):
+    client_secret: str = Field(...)
+    code: str = Field(default="")
+    access_token: str = Field(default="")
+    refresh_token: str = Field(default="")
+    redirect_uri: str = Field(default="")
+    #expires_in: datetime
+    
+
+
+
 
 startUp={
     "Validation": True,
