@@ -63,11 +63,13 @@ def OAuthRegenerateInternal(vcc_api_key:str = Header(...)):
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 not activated for this API key"}}, status_code=400)
         else:
             oauth2=Oauth2Data[vcc_api_key]
-            oauth2.client_secret = "client_secret_"+secrets.token_hex(8)
+            oauth2.client_secret = "client_secret_"+secrets.token_urlsafe(32)
             oauth2.code = ""
-            oauth2.access_token =  "access_token_"+secrets.token_hex(16)
-            oauth2.refresh_token = "refresh_token_"+secrets.token_hex(16)
+            oauth2.access_token =  "access_token_"+secrets.token_urlsafe(32)
+            oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32)
             #oauth2.expires_in = 
+            data={"access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
+            return JSONResponse(content=data, status_code=200)
 #site section
 
 def DashboardCSS():

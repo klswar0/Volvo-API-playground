@@ -15,7 +15,7 @@ class Oauth2(BaseModel):
     access_token: str = Field(default="")
     refresh_token: str = Field(default="")
     redirect_uri: str = Field(default="")
-    #expires_in: datetime
+    #expires_in: datetime #to implement
     
 
 
