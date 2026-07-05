@@ -18,3 +18,9 @@ check ROADMAP.md file in this repositorium for more info about status of this pr
 packages: uvicorn, fastapi
 then:
 `uv run main.py`
+
+
+## Limitions:
+- One API key per user. This means one refresh token, one access token, and so on. Because of this, the project cannot accurately reproduce real-world scenarios involving multiple users.(Could be comming in future but it would require using real database)
+- No expiration of access token (TODO)
+- Only one api and Oauth endpoints

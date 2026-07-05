@@ -10,6 +10,7 @@ class AuthHeader(BaseModel):
     vcc_api_key: str =Field(...,alias="vcc-api-key")
 
 class Oauth2(BaseModel):
+    PCKE:bool = Field(default=False)
     client_secret: str = Field(...)
     code: str = Field(default="")
     access_token: str = Field(default="")

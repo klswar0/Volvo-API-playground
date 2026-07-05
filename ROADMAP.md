@@ -33,8 +33,8 @@ legend:
 | odometer  |  🆗  | 🌍   |
 | statistics  |  ⏸️  | 🌍   |
 | tyres  | 🆗   | 🌍   |
-| vehicles  | ❌    | 🌍   |
-| get vehicle  | ❌    | 🌍   |
+| vehicles  | ⏸️    | 🌍   |
+| get vehicle  | 🆗    | 🌍   |
 | get warnigns  | ⏸️    | 🌍   |
 
 
@@ -42,6 +42,6 @@ legend:
 | additional  | status | comments |
 |:----------:|:------------:|:-----------:|
 | dashboard | 🆗 | 🌍   |
-| Oauth |  ❌   | 🌍   |
+| Oauth2 | 🆗   | 🌍   |
 | example app |  ❌   | 🌍   |
 | internal endpoints for testing errors |     | 🌍   |

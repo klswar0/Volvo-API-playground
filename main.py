@@ -52,7 +52,12 @@ def VINHandling(VIN:str, auth_header: AuthHeader):
 
 # DOES NOT IMPLEMENT THE FULL OAUTH2.0 FLOW. IT IS ONLY A SIMULATION FOR TESTING PURPOSES.
 
-# #FIXME all client id and others
+
+# def PCKE_func(code_challenge:str, code_verifier:str):
+
+
+    
+
 
 #client id == api key for this playground
 @app.get("/as/authorization.oauth2") #scopes are not checked and dont work
@@ -90,7 +95,7 @@ def test(code:str=Query(...),state:str=Query(default="")):
 
 
 @app.post("/as/token.oauth2") #scopes are not checked and dont work
-def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:str=Header(...),grant_type:str=Form(...),refresh_token:str=Form(default=""),code:str=Form(default=""),redirect_uri:str=Form(default="")):
+def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:str=Header(...),grant_type:str=Form(...),refresh_token:str=Form(default=""),code:str=Form(default=""),redirect_uri:str=Form(default=""),code_verifier:str=Form(default="")):
     if content_type != "application/x-www-form-urlencoded":
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "content-type must be 'application/x-www-form-urlencoded'"}}, status_code=400)
     
@@ -110,6 +115,9 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     auth2 = Oauth2Data[client_id]
     if auth2.client_secret != client_secret:
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}}, status_code=400)
+    # if auth2.PCKE == True:
+    #     if PCKECheck(code_verifier,auth2.code_challenge) == False:
+    #         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}}, status_code=400)
     
     if grant_type == "authorization_code":
         if auth2.code != code:
@@ -150,18 +158,14 @@ def listVehicles(auth_header: AuthHeader = Header(...)):
             vehicles.append(vehicle)
         data={"data": vehicles}
         return JSONResponse(content=data, status_code=200)
-    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
-
+    
 @app.get("/vehicles/{VIN}")
 def getVehicle(VIN:str, auth_header: AuthHeader = Header(...)): #TODO: implement the data in car class
     """get vehicle information for the specified VIN. Mostly static data but enough to test your apps"""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        if str(e) == "Invalid API key" or str(e) == "Invalid access token":
-            return UnauthorizedResponse(str(e))
-        elif str(e) == "Invalid VIN":
-            return BadRequestResponse(VIN)
+        return autoErrorResponse(e, VIN)
     else:
         data={
         "data": {
@@ -739,8 +743,27 @@ def Internal():
    return internal.Internal() # here will be displayed any options like authetication using tokens and so on.
 
 
-@app.get("/internal/terminal")
+@app.get("/internal/oauth2")
+def AuthGetInternal(vcc_api_key:str = Header(...)):
+    return internal.OAuthGetInternal()
 
+@app.get("/internal/oauth2/activate")
+def AuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...),PCKE:bool = Body(...)):
+    return internal.OAuthActivateInternal()
+
+
+@app.get("/internal/oauth2/deactivate")
+def AuthDeactivateInternal(vcc_api_key:str = Header(...)):
+    return internal.OAuthDeactivateInternal()
+
+@app.get("/internal/oauth2/regenerate")
+def AuthRegenerateInternal(vcc_api_key:str = Header(...)):
+    return internal.OAuthRegenerateInternal()
+
+
+
+
+@app.get("/internal/terminal")
 def Terminal(VIN:str,key:str, request: Request):
     """For testing and development purposes. Use as help."""
     return internal.Terminal(VIN, key, request) #file response
@@ -825,7 +848,7 @@ def genAPIKey():
     return internal.genAPIKey()
 
 @app.post("/internal/addCar")
-def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: list = Body(...), values: list = Body(...)):
+def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: list = Body(default=[]), values: list = Body(default=[])):
     """internal endpoint for adding a new car to the database"""
     return internal.addCar(vcc_api_key, VIN, attributes, values)
 

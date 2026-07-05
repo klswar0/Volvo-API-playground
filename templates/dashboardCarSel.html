@@ -15,7 +15,29 @@
 
     <body>
         <h1>Car list</h1>
+        <div>
         <p>API key: {{ key }}</p>
+        <div id="OAuth2">  
+            <p>OAuth2 status: {{ oauth2_status }}</p>
+            {% if oauth2_status == "Activated" %}
+            <p>OAuth2 client secret: {{ oauth2_secret }}</p> 
+            {% if oauth2_code == "" %}
+            <p>OAuth2 code: Not requested</p> 
+            {% else %}
+            <p>OAuth2 code: {{ oauth2_code }}</p> 
+            {% endif %}
+            <p>OAuth2 access token: {{ oauth2_access_token }}</p> 
+            <p>OAuth2 refresh token: {{ oauth2_refresh_token }}</p> 
+            {% if oauth2_redirect_uri == "" %}
+            <p>OAuth2 redirect URI is not set. System will not check it.</p>
+            {% else %}
+            <p>OAuth2 redirect URI: {{ oauth2_redirect_uri }}</p>
+            {% endif %}
+            <p>PKCE status: {{ pcke_status }}</p>
+            {% endif %}
+            <p>To change use internal API</p>
+        </div>
+        </div>
         <ul>
             {% for vin in VINs%}
             <li class="premium-card-dark">
