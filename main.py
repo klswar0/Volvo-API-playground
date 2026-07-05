@@ -7,12 +7,13 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field 
 import uvicorn
 import secrets
+import hashlib
 
 
 
 import internal
 from notifier import notifier
-from classCar import Car, options, AuthHeader, startUp, timestampGenerator
+from classCar import Car, options, AuthHeader, startUp, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 
@@ -53,35 +54,67 @@ def VINHandling(VIN:str, auth_header: AuthHeader):
 # DOES NOT IMPLEMENT THE FULL OAUTH2.0 FLOW. IT IS ONLY A SIMULATION FOR TESTING PURPOSES.
 
 
-# def PCKE_func(code_challenge:str, code_verifier:str):
+def PCKE(code_challenge:str, code_challenge_method:str, oauth2: Oauth2):
+    if code_challenge_method == "S256":
+        oauth2.code_challenge = code_challenge
+        oauth2.code_challenge_method = code_challenge_method
+        return True
+    elif code_challenge_method == "plain":
+        oauth2.code_challenge = code_challenge
+        oauth2.code_challenge_method = code_challenge_method
+        return True
+    return False
 
+def PCKECheck(code_verifier: str, oauth2: Oauth2):
+    method = oauth2.code_challenge_method
+    code_challenge = oauth2.code_challenge
+
+    if method == "S256":
+        expected = base64.urlsafe_b64encode(
+            hashlib.sha256(code_verifier.encode()).digest()
+        ).rstrip(b"=").decode()
+        ok = expected == code_challenge
+    elif method == "plain":
+        ok = code_verifier == code_challenge
+    else:
+        ok = False
+
+    if ok:
+        oauth2.code_challenge_method = ""
+        oauth2.code_challenge = ""
+
+    return ok
 
     
 
 
 #client id == api key for this playground
 @app.get("/as/authorization.oauth2") #scopes are not checked and dont work
-def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(...),redirect_uri:str=Query(...),scope:str=Query(default=""),state:str=Query(default="")):
+def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(...),redirect_uri:str=Query(...),scope:str=Query(default=""),state:str=Query(default=""),code_challenge:str=Query(default=""),code_challenge_method:str=Query(default="")):
     if response_type != "code":
         return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>response_type must be 'code'</p>", status_code=400)
     if client_id not in Oauth2Data:
         return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid client_id</p>", status_code=400)
-    auth2 = Oauth2Data[client_id]
-    if auth2.redirect_uri != "":
+    oauth2 = Oauth2Data[client_id]
+    if oauth2.redirect_uri != "":
         if redirect_uri != Oauth2Data[client_id].redirect_uri:
             return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid redirect_uri</p>", status_code=400)
     # site needed for "login"
-    return templates.TemplateResponse(name="oauth2login.html", request=request, context={"client_id": client_id, "redirect_uri": redirect_uri, "scope": scope, "state": state})
+    return templates.TemplateResponse(name="oauth2login.html", request=request, context={"client_id": client_id, "redirect_uri": redirect_uri, "scope": scope, "state": state, "code_challenge": code_challenge, "code_challenge_method": code_challenge_method})
     
  
 
 @app.post("/as/authorization.internal")
-def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state: str = Form(default=""), login: str = Form(...)):
+def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state: str = Form(default=""), login: str = Form(...), code_challenge: str = Form(default=""), code_challenge_method: str = Form(default="")):
     if client_id != login:
         return HTMLResponse(content="<p style='color: red;'>Wrong client_id or login</p>", status_code=200)
-    auth2 = Oauth2Data[client_id]
-    auth2.code = "code_"+secrets.token_urlsafe(32) #generate 
-    url=f"{redirect_uri}?code={auth2.code}"
+    oauth2 = Oauth2Data[client_id]
+
+    if oauth2.PCKE == True :
+        if PCKE(code_challenge, code_challenge_method, oauth2) == False:
+            return HTMLResponse(content="<p style='color: red;'>ERROR with PCKE code_challenge_method</p>", status_code=200)
+    oauth2.code = "code_"+secrets.token_urlsafe(32) #generate 
+    url=f"{redirect_uri}?code={oauth2.code}"
     if state != "":
         url += f"&state={state}"
     response = Response()
@@ -95,7 +128,7 @@ def test(code:str=Query(...),state:str=Query(default="")):
 
 
 @app.post("/as/token.oauth2") #scopes are not checked and dont work
-def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:str=Header(...),grant_type:str=Form(...),refresh_token:str=Form(default=""),code:str=Form(default=""),redirect_uri:str=Form(default=""),code_verifier:str=Form(default="")):
+def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:str=Header(...),grant_type:str=Form(...),refresh_token:str=Form(default=""),code:str=Form(default=""),redirect_uri:str=Form(default=""),code_verifier:str=Form(default=""),):
     if content_type != "application/x-www-form-urlencoded":
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "content-type must be 'application/x-www-form-urlencoded'"}}, status_code=400)
     
@@ -112,34 +145,34 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     
     if client_id not in Oauth2Data:
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}}, status_code=400)
-    auth2 = Oauth2Data[client_id]
-    if auth2.client_secret != client_secret:
+    oauth2 = Oauth2Data[client_id]
+    if oauth2.client_secret != client_secret:
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}}, status_code=400)
-    # if auth2.PCKE == True:
-    #     if PCKECheck(code_verifier,auth2.code_challenge) == False:
-    #         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}}, status_code=400)
     
     if grant_type == "authorization_code":
-        if auth2.code != code:
+        if oauth2.PCKE == True:
+            if PCKECheck(code_verifier,oauth2) == False:
+                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}}, status_code=400)
+    
+        if oauth2.code != code:
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "No code available. Please request a new code"}}, status_code=400)
         else:
-            if auth2.redirect_uri != "":
-                if redirect_uri != auth2.redirect_uri:
+            if oauth2.redirect_uri != "":
+                if redirect_uri != oauth2.redirect_uri:
                  return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid redirect_uri"}}, status_code=400)
     elif grant_type == "refresh_token":
-        if auth2.refresh_token != refresh_token:
+        if oauth2.refresh_token != refresh_token:
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid refresh_token"}}, status_code=400)
     else:
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "grant_type must be 'authorization_code' or 'refresh_token'"}}, status_code=400)
     
-    auth2.access_token = "access_token_"+secrets.token_urlsafe(32) #generate
-    auth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32) #generate
-    auth2.code = "" #invalidate code
-    #auth2.expires_in = 
-    data={"access_token": auth2.access_token, "refresh_token": auth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
+    oauth2.access_token = "access_token_"+secrets.token_urlsafe(32) #generate
+    oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32) #generate
+    oauth2.code = "" #invalidate code
+    #oauth2.expires_in = 
+    data={"access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
     return JSONResponse(content=data, status_code=200)
     
-    #TODO PCKE
 
 
 # https://api.volvocars.com/connected-vehicle/v2/ section

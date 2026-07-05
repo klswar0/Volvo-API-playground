@@ -11,6 +11,10 @@ class AuthHeader(BaseModel):
 
 class Oauth2(BaseModel):
     PCKE:bool = Field(default=False)
+    code_challenge: str = Field(default="")
+    code_challenge_method: str = Field(default="")
+
+
     client_secret: str = Field(...)
     code: str = Field(default="")
     access_token: str = Field(default="")
