@@ -10,7 +10,7 @@ class AuthHeader(BaseModel):
     vcc_api_key: str =Field(...,alias="vcc-api-key")
 
 class Oauth2(BaseModel):
-    PCKE:bool = Field(default=False)
+    PKCE:bool = Field(default=False)
     code_challenge: str = Field(default="")
     code_challenge_method: str = Field(default="")
 
@@ -30,13 +30,17 @@ startUp={
     "Validation": True,
     "Dashboard": True,# not implemented yet
     "Websocket": True,# not implemented yet
-    "TOKENcheck": False, # not implemented yet
     "statusNofication": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes
 }
 
 
 
 options = {
+    "modelYear": "int", 
+    "gearboxType": ["MANUAL", "AUTOMATIC"],
+
+
+
     "fuelType": ["PETROL", "DIESEL", "ELECTRIC", "HYBRID"],
     "fuelICE": "int", # in liters
     "fuelElectric": "int", # in % so 0-100
@@ -70,7 +74,9 @@ options = {
     "frontRight": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
     "rearLeft": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
     "rearRight": ["UNSPECIFIED", "NO_WARNING", "VERY_LOW_PRESSURE", "LOW_PRESSURE", "HIGH_PRESSURE"],
+
     "nextInvoiceStatus": ["RUNNING", "WAITING", "COMPLETED", "REJECTED", "UNKNOWN", "TIMEOUT", "CONNECTION_FAILURE", "VEHICLE_IN_SLEEP", "DELIVERED", "CAR_ERROR", "NOT_ALLOWED_PRIVACY_ENABLED", "NOT_ALLOWED_WRONG_USAGE_MODE",""],
+    
     "brakeLightLeftWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
     "brakeLightCenterWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
     "brakeLightRightWarning": ["UNSPECIFIED", "NO_WARNING", "FAILURE"],
@@ -102,6 +108,8 @@ options = {
 
 class Car(BaseModel):
     VIN: str = Field(...)
+    modelYear: int = Field(2019)
+    gearboxType: str = Field(default="AUTOMATIC") #possible values: MANUAL, AUTOMATIC
     fuelType: str = Field(default="HYBRID") #possible values: PETROL, DIESEL, ELECTRIC, HYBRID
     fuelICE:int = Field(default=0) # fuel level for petrol and diesel cars
     fuelElectric:int = Field(default=0) # fuel level for electric and hybrid cars
@@ -155,6 +163,51 @@ class Car(BaseModel):
     frontRight:str = Field(default="NO_WARNING")
     rearLeft:str = Field(default="NO_WARNING")
     rearRight:str = Field(default="NO_WARNING")
+
+    #lights
+
+    #brake
+    brakeLightLeftWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    brakeLightCenterWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    brakeLightRightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #fog
+    fogLightFrontWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    fogLightRearWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #position
+    positionLightFrontLeftWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    positionLightFrontRightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    positionLightRearLeftWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    positionLightRearRightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #high beam
+    highBeamLeftWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    highBeamRightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #low beam
+    lowBeamLeftWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    lowBeamRightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #daytime running
+    daytimeRunningLightLeftWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    daytimeRunningLightRightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #turn indication
+    turnIndicationFrontLeftWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    turnIndicationFrontRightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    turnIndicationRearLeftWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    turnIndicationRearRightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #registration plate light
+    registrationPlateLightWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #side mark lights
+    sideMarkLightsWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #hazard lights
+    hazardLightsWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+    #reverse lights
+    reverseLightsWarning:str = Field(default="NO_WARNING") #Values: UNSPECIFIED, NO_WARNING, FAILURE.
+
+
+
+
+
+
+
+
     
     lastTimestamp:str = Field(default="") #set if not available
     
@@ -224,7 +277,7 @@ class Car(BaseModel):
             return [self.nextInvoiceStatus,False]
         return [self.nextInvoiceStatus,True]
 
-    def update(self,attribute,value):
+    def update(self,attribute,value,internal=False):
         if self.checkValidity(attribute,value):
                 if startUp["Validation"] == True:
                     if attribute=="fuelElectric":
@@ -238,7 +291,8 @@ class Car(BaseModel):
                         if value<0:
                             value=0
                 setattr(self, attribute, value)
-                notifier.trigger_update(self.VIN, self, changed_attribute=attribute)
+                if not internal:
+                    notifier.trigger_update(self.VIN, self, changed_attribute=attribute)
                 self.updated()
                 # additional coditions for last timestamp and next invoice status if needed
         else:

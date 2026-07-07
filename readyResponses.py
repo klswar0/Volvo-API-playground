@@ -26,7 +26,7 @@ def NotSupportedResponse(command:str):
     return ErrorResponse("NOT_FOUND", f"{command} is not supported by this vehicle", 403)
 
 def NormalResponse(VINL:str, invoiceStatus:str, message:str=None, status_code:int=200):
-    return JSONResponse(content={"vin": VINL ,"invokeStatus": invoiceStatus,"message": message}, status_code=status_code)
+    return JSONResponse(content={ "data": {"vin": VINL ,"invokeStatus": invoiceStatus,"message": message}}, status_code=status_code)
     
 
 

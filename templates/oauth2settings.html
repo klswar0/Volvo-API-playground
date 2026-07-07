@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>  
+    <head>
+        <title>Car dashboard</title>
+            <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js"></script>
+
+            <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.1/ws.js"></script>{#delete if diffrent wy to dashboard#}
+
+            <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+            <link rel="stylesheet" href="dashboardCarSel.css">
+
+    </head>    
+
+    <body>
+
+        <h1>OAuth2 Settings</h1>
+        <p>API key: {{ key }}</p>
+        <div class="premium-card-dark">
+                <form>
+                <p>OAuth2 status: {{ oauth2_status }}</p>
+                {% if oauth2_status == "Activated" %}
+                <p>PKCE status: {{ PKCE }}</p>
+                <button>PKCE activate</button>
+                <p>Client ID: {{ key }}</p>
+                <p>Client Secret: {{ client_secret }}</p>
+                <input type="text" name="client_secret"  placeholder="Enter new client secret">
+                {% if code != "" %}
+                <p>Code: {{ code }}</p>
+                {% endif %}
+                <p>Access Token: {{ access_token }}</p>
+                <input type="text" name="access_token"  placeholder="Enter new access token">
+                <p>Refresh Token: {{ refresh_token }}</p>
+                <input type="text" name="refresh_token"  placeholder="Enter new refresh token">
+                {% if redirect_uri != "" %}
+                <p>Redirect URI: {{ redirect_uri }}</p>
+                <input type="text" name="redirect_uri"  placeholder="Enter new redirect URI">
+                {% else %}
+                <p>Redirect URI: Not set</p>
+                <p>Means all redirects are allowed</p>
+                <input type="text" name="redirect_uri"  placeholder="Enter new redirect URI">
+                {% endif %}
+                <br>
+                <button>Deactivate OAuth2</button>
+                {% else %}
+
+                <p>OAuth2 is not activated for this API key</p>
+                <button>Activate OAuth2</button>
+                {% endif %}
+                </form> 
+    </body>
+    </html>

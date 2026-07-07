@@ -35,7 +35,7 @@ legend:
 | tyres  | 🆗   | 🌍   |
 | vehicles  | ⏸️    | 🌍   |
 | get vehicle  | 🆗    | 🌍   |
-| get warnigns  | ⏸️    | 🌍   |
+| get warnigns  | 🆗    | 🌍   |
 
 
 

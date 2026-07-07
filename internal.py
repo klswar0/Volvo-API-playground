@@ -16,7 +16,6 @@ from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInter
 
 #internal endpoints 
 
-#TODO: add authentication func for internal endpoints API key and VIN without in future bearer token
 
 def Internal():
     return JSONResponse(content={"message": "Welcome to the internal API", "description": startUp}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
@@ -28,18 +27,18 @@ def Terminal(VIN: str, key: str, request: Request):
 
 #OAuth2 endpoints for testing and dashboard purposes. Not part of the official API.
 
-def OAuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...),PCKE:bool = Body(...)):
+def OAuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...),PKCE:bool = Body(...),redirect_uri:str = Body(default="")):
     try:
         authenticateInternal(vcc_api_key)
     except ValueError as e:
         return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
     else:
         if vcc_api_key not in Oauth2Data:
-            oauth2 = Oauth2(client_secret=client_secret, PCKE=PCKE)
+            oauth2 = Oauth2(client_secret=client_secret, PKCE=PKCE,redirect_uri=redirect_uri)
             Oauth2Data[vcc_api_key] = oauth2
             return JSONResponse(content={"message": "OAuth2 activated successfully"}, status_code=200)
-        elif Oauth2Data[vcc_api_key].PCKE != PCKE or Oauth2Data[vcc_api_key].client_secret != client_secret:
-            oauth2 = Oauth2(client_secret=client_secret, PCKE=PCKE)
+        elif Oauth2Data[vcc_api_key].PKCE != PKCE or Oauth2Data[vcc_api_key].client_secret != client_secret or Oauth2Data[vcc_api_key].redirect_uri != redirect_uri:
+            oauth2 = Oauth2(client_secret=client_secret, PKCE=PKCE,redirect_uri=redirect_uri)
             Oauth2Data[vcc_api_key] = oauth2
             return JSONResponse(content={"message": "OAuth2 updated successfully"}, status_code=200)
         else:
@@ -191,25 +190,28 @@ def Dashboard(key: str, request: Request):
             
         else:
             oauth2_status = "Activated"
-            if Oauth2Data[key].PCKE:
-                pcke_status = "Activated"
+            if Oauth2Data[key].PKCE:
+                pkce_status = "Activated"
             else:
-                pcke_status = "Not activated"
-            return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status, "pcke_status": pcke_status, "oauth2_secret": Oauth2Data[key].client_secret, "oauth2_code": Oauth2Data[key].code, "oauth2_access_token": Oauth2Data[key].access_token, "oauth2_refresh_token": Oauth2Data[key].refresh_token, "oauth2_redirect_uri": Oauth2Data[key].redirect_uri})
+                pkce_status = "Not activated"
+            return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status, "pkce_status": pkce_status, "oauth2_secret": Oauth2Data[key].client_secret, "oauth2_code": Oauth2Data[key].code, "oauth2_access_token": Oauth2Data[key].access_token, "oauth2_refresh_token": Oauth2Data[key].refresh_token, "oauth2_redirect_uri": Oauth2Data[key].redirect_uri})
 
         return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status,})
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>") 
 
-def DashboardOauth2(key: str, request: Request):
+def OAuth2Settings(key: str, request: Request):
     try:
         authenticateInternal(key)
         if key not in Oauth2Data:
-            Oauth2Data[key]= Oauth2(client_secret="client_secret_"+secrets.token_urlsafe(32), PCKE=False)
+            oauth2_status = "Not activated"
+            return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status})
         else:
-            del Oauth2Data[key]
-        response = Response()
-        response.headers["HX-Redirect"] = f"/internal/dashboard?key={key}"
+            oauth2_status = "Activated"
+        data=Oauth2Data[key].model_dump()
+        data["oauth2_status"] = oauth2_status
+        data["key"]=key
+        return templates.TemplateResponse(name="oauth2settings.html", request=request, context=data)
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
@@ -239,7 +241,7 @@ def WelcomeAPIKey(request: Request):
     return templates.TemplateResponse(request=request,name="welcomeAPI.html",context={"api_key": data})
 
 
-def WelcomeNewCar(key: str, VIN: str):
+def WelcomeNewCar(key: str, VIN: str,scenario: str):
     try:
         if key not in database:
             raise ValueError("Invalid API key")
@@ -278,7 +280,7 @@ def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
         car = VINHandlingInternal(VIN, vcc_api_key)
         if startUp["statusNofication"] == "SET" or startUp["statusNofication"] == "ALL":
             notifier.trigger_update(VIN, car, attribute)
-        return car.update(attribute, value)
+        return car.update(attribute, value) #FIXME: NOT use the update method becouse it will validate the value and trigger the notifier second time
     except ValueError as e:
         raise ValueError(str(e))
 
@@ -399,3 +401,9 @@ def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: lis
 
     except KeyError:
         return UnauthorizedResponseInternal()
+    
+#def removeCar
+
+   
+
+

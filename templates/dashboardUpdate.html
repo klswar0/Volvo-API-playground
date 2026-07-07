@@ -475,7 +475,454 @@
     </div>
     <div class="info">
 
+
+    <div class="info">
+    <p>Front Left Tire:</p>
+    <div id="frontLeft">
+        <p>{{frontLeft}}</p>
+        <form data-attribute="frontLeft" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                name="attribute" value="frontLeft"><select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="VERY_LOW_PRESSURE">VERY_LOW_PRESSURE</option>
+                <option value="LOW_PRESSURE">LOW_PRESSURE</option>
+                <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
+            </select><input type="submit" value="change"></form>
+    </div>
+
+    <p>Front Right Tire:</p>
+    <div id="frontRight">
+        <p>{{frontRight}}</p>
+        <form data-attribute="frontRight" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                name="attribute" value="frontRight"><select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="VERY_LOW_PRESSURE">VERY_LOW_PRESSURE</option>
+                <option value="LOW_PRESSURE">LOW_PRESSURE</option>
+                <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
+            </select><input type="submit" value="change"></form>
+    </div>
+
+    <p>Rear Left Tire:</p>
+    <div id="rearLeft">
+        <p>{{rearLeft}}</p>
+        <form data-attribute="rearLeft" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                name="attribute" value="rearLeft"><select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="VERY_LOW_PRESSURE">VERY_LOW_PRESSURE</option>
+                <option value="LOW_PRESSURE">LOW_PRESSURE</option>
+                <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
+            </select><input type="submit" value="change"></form>
+    </div>
+
+    <p>Rear Right Tire:</p>
+    <div id="rearRight">
+        <p>{{rearRight}}</p>
+        <form data-attribute="rearRight" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                name="attribute" value="rearRight"><select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="VERY_LOW_PRESSURE">VERY_LOW_PRESSURE</option>
+                <option value="LOW_PRESSURE">LOW_PRESSURE</option>
+                <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
+            </select><input type="submit" value="change"></form>
+    </div>
+    </div>
+
+    <div class="info">
+    <p>Front Left Tire:</p>
+    <div id="frontLeft">
+        <p>{{frontLeft}}</p>
+        <form data-attribute="frontLeft" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                name="attribute" value="frontLeft"><select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="VERY_LOW_PRESSURE">VERY_LOW_PRESSURE</option>
+                <option value="LOW_PRESSURE">LOW_PRESSURE</option>
+                <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
+            </select><input type="submit" value="change"></form>
+    </div>
+
+    <p>Front Right Tire:</p>
+    <div id="frontRight">
+        <p>{{frontRight}}</p>
+        <form data-attribute="frontRight" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                name="attribute" value="frontRight"><select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="VERY_LOW_PRESSURE">VERY_LOW_PRESSURE</option>
+                <option value="LOW_PRESSURE">LOW_PRESSURE</option>
+                <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
+            </select><input type="submit" value="change"></form>
+    </div>
+
+    <p>Rear Left Tire:</p>
+    <div id="rearLeft">
+        <p>{{rearLeft}}</p>
+        <form data-attribute="rearLeft" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                name="attribute" value="rearLeft"><select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="VERY_LOW_PRESSURE">VERY_LOW_PRESSURE</option>
+                <option value="LOW_PRESSURE">LOW_PRESSURE</option>
+                <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
+            </select><input type="submit" value="change"></form>
+    </div>
+
+    <p>Rear Right Tire:</p>
+    <div id="rearRight">
+        <p>{{rearRight}}</p>
+        <form data-attribute="rearRight" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                name="attribute" value="rearRight"><select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="VERY_LOW_PRESSURE">VERY_LOW_PRESSURE</option>
+                <option value="LOW_PRESSURE">LOW_PRESSURE</option>
+                <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
+            </select><input type="submit" value="change"></form>
+    </div>
+    </div>
+
+
+
+    <div class="info">
+
     <p>Commands:</p>
     <p>{{commands}}</p>
+    </div>
+
+    <div class="info">
+    <p>Lights Warning:</p>
+
+    <div id="brakeLightLeftWarning">
+        <p>{{brakeLightLeftWarning}}</p>
+        <form data-attribute="brakeLightLeftWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="brakeLightLeftWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="brakeLightCenterWarning">
+        <p>{{brakeLightCenterWarning}}</p>
+        <form data-attribute="brakeLightCenterWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="brakeLightCenterWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="brakeLightRightWarning">
+        <p>{{brakeLightRightWarning}}</p>
+        <form data-attribute="brakeLightRightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="brakeLightRightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="fogLightFrontWarning">
+        <p>{{fogLightFrontWarning}}</p>
+        <form data-attribute="fogLightFrontWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="fogLightFrontWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="fogLightRearWarning">
+        <p>{{fogLightRearWarning}}</p>
+        <form data-attribute="fogLightRearWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="fogLightRearWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="positionLightFrontLeftWarning">
+        <p>{{positionLightFrontLeftWarning}}</p>
+        <form data-attribute="positionLightFrontLeftWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="positionLightFrontLeftWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="positionLightFrontRightWarning">
+        <p>{{positionLightFrontRightWarning}}</p>
+        <form data-attribute="positionLightFrontRightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="positionLightFrontRightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="positionLightRearLeftWarning">
+        <p>{{positionLightRearLeftWarning}}</p>
+        <form data-attribute="positionLightRearLeftWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="positionLightRearLeftWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="positionLightRearRightWarning">
+        <p>{{positionLightRearRightWarning}}</p>
+        <form data-attribute="positionLightRearRightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="positionLightRearRightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="highBeamLeftWarning">
+        <p>{{highBeamLeftWarning}}</p>
+        <form data-attribute="highBeamLeftWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="highBeamLeftWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="highBeamRightWarning">
+        <p>{{highBeamRightWarning}}</p>
+        <form data-attribute="highBeamRightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="highBeamRightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="lowBeamLeftWarning">
+        <p>{{lowBeamLeftWarning}}</p>
+        <form data-attribute="lowBeamLeftWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="lowBeamLeftWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="lowBeamRightWarning">
+        <p>{{lowBeamRightWarning}}</p>
+        <form data-attribute="lowBeamRightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="lowBeamRightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="daytimeRunningLightLeftWarning">
+        <p>{{daytimeRunningLightLeftWarning}}</p>
+        <form data-attribute="daytimeRunningLightLeftWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="daytimeRunningLightLeftWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="daytimeRunningLightRightWarning">
+        <p>{{daytimeRunningLightRightWarning}}</p>
+        <form data-attribute="daytimeRunningLightRightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="daytimeRunningLightRightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="turnIndicationFrontLeftWarning">
+        <p>{{turnIndicationFrontLeftWarning}}</p>
+        <form data-attribute="turnIndicationFrontLeftWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="turnIndicationFrontLeftWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="turnIndicationFrontRightWarning">
+        <p>{{turnIndicationFrontRightWarning}}</p>
+        <form data-attribute="turnIndicationFrontRightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="turnIndicationFrontRightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="turnIndicationRearLeftWarning">
+        <p>{{turnIndicationRearLeftWarning}}</p>
+        <form data-attribute="turnIndicationRearLeftWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="turnIndicationRearLeftWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="turnIndicationRearRightWarning">
+        <p>{{turnIndicationRearRightWarning}}</p>
+        <form data-attribute="turnIndicationRearRightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="turnIndicationRearRightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="registrationPlateLightWarning">
+        <p>{{registrationPlateLightWarning}}</p>
+        <form data-attribute="registrationPlateLightWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="registrationPlateLightWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="sideMarkLightsWarning">
+        <p>{{sideMarkLightsWarning}}</p>
+        <form data-attribute="sideMarkLightsWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="sideMarkLightsWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="hazardLightsWarning">
+        <p>{{hazardLightsWarning}}</p>
+        <form data-attribute="hazardLightsWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="hazardLightsWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
+
+    <div id="reverseLightsWarning">
+        <p>{{reverseLightsWarning}}</p>
+        <form data-attribute="reverseLightsWarning" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="reverseLightsWarning">
+            <select name="value">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_WARNING">NO_WARNING</option>
+                <option value="FAILURE">FAILURE</option>
+            </select>
+            <input type="submit" value="change">
+        </form>
+    </div>
     </div>
 </div>

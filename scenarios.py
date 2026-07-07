@@ -1,0 +1,132 @@
+from fastapi import Body, Header 
+from fastapi.responses import JSONResponse
+
+from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
+from internal import VINHandlingInternal
+from notifier import notifier
+
+SCENARIO_TEMPLATES = {
+    # Basic states
+    "all_windows_open": {
+        "frontLeftWindow": "OPEN",
+        "frontRightWindow": "OPEN",
+        "rearLeftWindow": "OPEN",
+        "rearRightWindow": "OPEN",
+        "sunroof": "OPEN",
+    },
+    "all_windows_closed": {
+        "frontLeftWindow": "CLOSED",
+        "frontRightWindow": "CLOSED",
+        "rearLeftWindow": "CLOSED",
+        "rearRightWindow": "CLOSED",
+        "sunroof": "CLOSED",
+    },
+    
+    # Door scenarios
+    "all_doors_locked": {"centralLock": "LOCKED"},
+    "all_doors_unlocked": {"centralLock": "UNLOCKED"},
+    "all_doors_open": {
+        "frontLeftDoor": "OPEN",
+        "frontRightDoor": "OPEN",
+        "rearLeftDoor": "OPEN",
+        "rearRightDoor": "OPEN",
+    },
+    "all_doors_closed": {
+        "frontLeftDoor": "CLOSED",
+        "frontRightDoor": "CLOSED",
+        "rearLeftDoor": "CLOSED",
+        "rearRightDoor": "CLOSED",
+    },
+    
+    # Engine states
+    "car_running": {"engineStatus": "RUNNING"},
+    "car_stopped": {"engineStatus": "STOPPED"},
+    
+    # Error/Unavailability scenarios
+    "car_no_internet": {
+        "availabilityStatus_value": "UNAVAILABLE",
+        "availabilityStatus_unavailableReason": "NO_INTERNET",
+    },
+    "car_power_saving": {
+        "availabilityStatus_value": "UNAVAILABLE",
+        "availabilityStatus_unavailableReason": "POWER_SAVING_MODE",
+    },
+    "car_in_use": {
+        "availabilityStatus_value": "UNAVAILABLE",
+        "availabilityStatus_unavailableReason": "CAR_IN_USE",
+    },
+    "car_available": {
+        "availabilityStatus_value": "AVAILABLE",
+        "availabilityStatus_unavailableReason": "",
+    },
+    
+    # Diagnostics/Warnings
+    "engine_low_coolant": {"engineCoolantLever": "TOO_LOW"},
+    "engine_service_soon": {
+        "serviceWarning": "REGULAR_MAINTENANCE_ALMOST_TIME_FOR_SERVICE",
+        "serviceTrigger": "DISTANCE",
+    },
+    "low_fuel": {"fuelICE": 5},  # liters
+    "low_battery": {"fuelElectric": 10},  # percent
+    
+    # Tire issues
+    "tire_low_pressure": {
+        "frontLeft": "LOW_PRESSURE",
+        "frontRight": "LOW_PRESSURE",
+        "rearLeft": "LOW_PRESSURE",
+        "rearRight": "LOW_PRESSURE",
+    },
+    "tire_very_low_pressure": {
+        "frontLeft": "VERY_LOW_PRESSURE",
+        "frontRight": "VERY_LOW_PRESSURE",
+        "rearLeft": "VERY_LOW_PRESSURE",
+        "rearRight": "VERY_LOW_PRESSURE",
+    },
+    
+    # Complex scenarios
+    "car_broken_in": {
+        "engineStatus": "STOPPED",
+        "centralLock": "LOCKED",
+        "frontLeftDoor": "CLOSED",
+        "frontRightDoor": "CLOSED",
+        "rearLeftDoor": "CLOSED",
+        "rearRightDoor": "CLOSED",
+        "hood": "CLOSED",
+        "availabilityStatus_value": "AVAILABLE",
+        "fuelICE": 50,
+        "fuelElectric": 80,
+    },
+    "car_on_vacation": {
+        "engineStatus": "STOPPED",
+        "centralLock": "LOCKED",
+        "frontLeftWindow": "CLOSED",
+        "frontRightWindow": "CLOSED",
+        "rearLeftWindow": "CLOSED",
+        "rearRightWindow": "CLOSED",
+        "sunroof": "CLOSED",
+        "availabilityStatus_value": "UNAVAILABLE",
+        "availabilityStatus_unavailableReason": "POWER_SAVING_MODE",
+    },
+
+}
+
+def scenarios(VIN: str = Header(...),vcc_api_key: str = Header(...),scenario: str = Body(...)):
+    try:
+        car = VINHandlingInternal(VIN, vcc_api_key)
+        if scenario in SCENARIO_TEMPLATES:
+            for key, value in SCENARIO_TEMPLATES[scenario].items():
+                #notifier.notify(VIN, key, value)
+                car.update(key, value,True)
+        else:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid scenario: {scenario}"}}, status_code=400)
+        return JSONResponse(content={"message": f"THIS IS INTERNAL API/Scenario applied successfully: {scenario}"}, status_code=200)
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponseInternal()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponseInternal(VIN)
+        else:
+            return JSONResponse(
+            content={"error": {"message": "VALUE_ERROR", "description": str(e)}}, 
+            status_code=400
+            )

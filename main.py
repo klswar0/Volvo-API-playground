@@ -1,10 +1,9 @@
 
 import base64
 
-from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, WebSocketDisconnect, Form
-from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
+from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form
+from fastapi.responses import JSONResponse ,HTMLResponse 
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel, Field 
 import uvicorn
 import secrets
 import hashlib
@@ -203,8 +202,8 @@ def getVehicle(VIN:str, auth_header: AuthHeader = Header(...)): #TODO: implement
         data={
         "data": {
             "vin": VIN,
-            "modelYear": 2019,
-            "gearbox" : "AUTOMATIC",
+            "modelYear": car.modelYear,
+            "gearbox" : car.gearboxType,
             "fuelType" : car.fuelType,
             "externalColour": "SAVILE GREY STATIC",
             "batteryCapacityKWH": 78.0,
@@ -298,13 +297,14 @@ def engineStatus(VIN:str, auth_header: AuthHeader = Header(...)):
     except ValueError as e:
         return autoErrorResponse(e, VIN)
     else:
-        data = {"vin": VIN, "engineStatus": car.engineStatus}
-        return JSONResponse(content={"data": data}, status_code=200)
+        data = {"data": {"engineStatus": {"value": car.engineStatus, "timestamp": car.timestamp()}}}
+        return JSONResponse(content=data, status_code=200)
 
 
 @app.post("/vehicles/{VIN}/commands/engine-start")
-def engineStart(VIN:str, auth_header: AuthHeader = Header(...), runtimeMinutes:int = Body(...)):
+def engineStart(VIN:str, auth_header: AuthHeader = Header(...), runtimeMinutes:dict = Body(...)):
     """send a command to start the engine for the specified VIN. The runtimeMinutes >0 and <15."""
+    runtimeMinutes = runtimeMinutes.get("runtimeMinutes", 0)
     if runtimeMinutes < 1 or runtimeMinutes >= 15:
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "runtimeMinutes can be maximaly 15 min"}}, status_code=400)
     return engine(VIN, auth_header,command="ENGINE_START", runtimeMinutes=runtimeMinutes)
@@ -326,7 +326,7 @@ def windows(VIN:str, auth_header: AuthHeader = Header(...)):
     except ValueError as e:
         return autoErrorResponse(e, VIN)
     else:
-        data={"data": {"frontLeftWindow": { "value": car.frontLeftWindow, "timestamp": "placeholder"},"frontRightWindow": {"value": car.frontRightWindow,"timestamp": "placeholder"},"rearLeftWindow": { "value": car.rearLeftWindow,"timestamp": "placeholder"}, "rearRightWindow": {"value": car.rearRightWindow,"timestamp": "placeholder"},"sunroof": {"value": car.sunroof,"timestamp": "placeholder"}}}
+        data={"data": {"frontLeftWindow": { "value": car.frontLeftWindow, "timestamp": car.timestamp()},"frontRightWindow": {"value": car.frontRightWindow,"timestamp": car.timestamp()},"rearLeftWindow": { "value": car.rearLeftWindow,"timestamp": car.timestamp()}, "rearRightWindow": {"value": car.rearRightWindow,"timestamp": car.timestamp()},"sunroof": {"value": car.sunroof,"timestamp": car.timestamp()}}}
 
         return JSONResponse(content=data, status_code=200)
 
@@ -368,16 +368,20 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
 #     try:
 #         car =VINHandling(VIN, auth_header)
 #     except ValueError as e:
-#         if str(e) == "Invalid API key":
-#             return JSONResponse(content={ "error": {"message": "UNAUTHORIZED","description": "invalid API key value."}}, status_code=401)
-#         elif str(e) == "Invalid VIN":
-#             return JSONResponse(content={ "error": {"message": "BAD_REQUEST","description": "invalid VIN value. field:{VIN}"}}, status_code=400)
+#         return autoErrorResponse(e, VIN)
 #     else:
-#         invoiceStatus = "COMPLETED" # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
-#         car.update("centralLock", "LOCKED")
-#         data = {{"data": {"vin": VIN,"invokeStatus": invoiceStatus,"message": ""}}}
-#         return JSONResponse(content=data, status_code=200)
-#     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+#         command = "LOCK"
+#         if command not in car.commands:
+#             return NotSupportedResponse(command)
+#         invoiceStatus = car.InvoiceStatus("locks") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+#         if invoiceStatus[1] == True:
+#             car.update("centralLock", "LOCKED")
+#             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
+#             return JSONResponse(content=data, status_code=200)   
+#         else:
+#             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
+#             return JSONResponse(content=data, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
+
 
 @app.post("/vehicles/{VIN}/commands/unlock") # doesnt work like in real life you must click button of the trunk
 def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
@@ -520,7 +524,7 @@ def statistics(VIN:str, auth_header: AuthHeader = Header(...)):
 #tyres
 @app.get("/vehicles/{VIN}/tyres")
 def tyres(VIN:str, auth_header: AuthHeader= Header(...)):
-    """get the current tyre warnings status for the specified VIN."""
+    """get the current tyre warnings status for the specified VIN.""" 
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -671,96 +675,96 @@ def Warnings(VIN:str, auth_header: AuthHeader = Header(...)):
         data={
             "data": {
                 "brakeLightLeftWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.brakeLightLeftWarning,
+                "timestamp": car.timestamp()
                 },
                 "brakeLightCenterWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.brakeLightCenterWarning,
+                "timestamp": car.timestamp()
                 },
                 "brakeLightRightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.brakeLightRightWarning,
+                "timestamp": car.timestamp()
                 },
                 "fogLightFrontWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.fogLightFrontWarning,
+                "timestamp": car.timestamp()
                 },
                 "fogLightRearWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.fogLightRearWarning,
+                "timestamp": car.timestamp()
                 },
                 "positionLightFrontLeftWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.positionLightFrontLeftWarning,
+                "timestamp": car.timestamp()
                 },
                 "positionLightFrontRightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.positionLightFrontRightWarning,
+                "timestamp": car.timestamp()
                 },
                 "positionLightRearLeftWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.positionLightRearLeftWarning,
+                "timestamp": car.timestamp()
                 },
                 "positionLightRearRightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.positionLightRearRightWarning,
+                "timestamp": car.timestamp()
                 },
                 "highBeamLeftWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.highBeamLeftWarning,
+                "timestamp": car.timestamp()
                 },
                 "highBeamRightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.highBeamRightWarning,
+                "timestamp": car.timestamp()
                 },
                 "lowBeamLeftWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.lowBeamLeftWarning,
+                "timestamp": car.timestamp()
                 },
                 "lowBeamRightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.lowBeamRightWarning,
+                "timestamp": car.timestamp()
                 },
                 "daytimeRunningLightLeftWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.daytimeRunningLightLeftWarning,
+                "timestamp": car.timestamp()
                 },
                 "daytimeRunningLightRightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.daytimeRunningLightRightWarning,
+                "timestamp": car.timestamp()
                 },
                 "turnIndicationFrontLeftWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.turnIndicationFrontLeftWarning,
+                "timestamp": car.timestamp()
                 },
                 "turnIndicationFrontRightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.turnIndicationFrontRightWarning,
+                "timestamp": car.timestamp()
                 },
                 "turnIndicationRearLeftWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.turnIndicationRearLeftWarning,
+                "timestamp": car.timestamp()
                 },
                 "turnIndicationRearRightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.turnIndicationRearRightWarning,
+                "timestamp": car.timestamp()
                 },
                 "registrationPlateLightWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.registrationPlateLightWarning,
+                "timestamp": car.timestamp()
                 },
                 "sideMarkLightsWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.sideMarkLightsWarning,
+                "timestamp": car.timestamp()
                 },
                 "hazardLightsWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.hazardLightsWarning,
+                "timestamp": car.timestamp()
                 },
                 "reverseLightsWarning": {
-                "value": "NO_WARNING",
-                "timestamp": timestamp
+                "value": car.reverseLightsWarning,
+                "timestamp": car.timestamp()
                 }
             }
             }
@@ -849,8 +853,12 @@ def WelcomeAPIKey(request: Request):
     return internal.WelcomeAPIKey(request)
 
 @app.post("/internal/dashboard/NewCar", include_in_schema=False) 
-def WelcomeNewCar(key: str, VIN: str):
-    return internal.WelcomeNewCar(key, VIN)
+def WelcomeNewCar(key: str, VIN: str, scenario: str = Query(default=None)):
+    return internal.WelcomeNewCar(key, VIN, scenario)
+
+@app.get("/internal/dashboard/OAuth2settings", include_in_schema=False)
+def OAuth2Settings(key: str, request: Request):
+    return internal.OAuth2Settings(key, request)
 
 #internal endpoints for testing and development. Not part of the official API.
 
@@ -884,5 +892,10 @@ def genAPIKey():
 def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: list = Body(default=[]), values: list = Body(default=[])):
     """internal endpoint for adding a new car to the database"""
     return internal.addCar(vcc_api_key, VIN, attributes, values)
+
+@app.post("/internal/scenario")
+def scenario(vcc_api_key: str = Header(...), VIN: str = Body(...), scenario: str = Body(...)):
+    """internal endpoint for simulating a scenario for the specified VIN"""
+    return internal.scenario(vcc_api_key, VIN, scenario)
 
 uvicorn.run(app)
