@@ -1,0 +1,10 @@
+{    
+    "all_windows_closed": {
+        "frontLeftWindow": "CLOSED",
+        "frontRightWindow": "CLOSED",
+        "rearLeftWindow": "CLOSED",
+        "rearRightWindow": "CLOSED",
+        "sunroof": "CLOSED"
+    }
+
+}

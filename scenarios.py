@@ -1,3 +1,6 @@
+import json
+import os
+
 from fastapi import Body, Header 
 from fastapi.responses import JSONResponse
 
@@ -110,11 +113,23 @@ SCENARIO_TEMPLATES = {
 
 }
 
+
+
+SCENARIO_USER = {}
+#NOTE: NOT TESTED
+if os.path.exists("scenarios.json"):
+    with open("scenarios.json", "r") as f:
+        SCENARIO_TEMPLATES = json.load(f)
+
 def scenarios(VIN: str = Header(...),vcc_api_key: str = Header(...),scenario: str = Body(...)):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
         if scenario in SCENARIO_TEMPLATES:
             for key, value in SCENARIO_TEMPLATES[scenario].items():
+                #notifier.notify(VIN, key, value)
+                car.update(key, value,True)
+        elif scenario in SCENARIO_USER:
+            for key, value in SCENARIO_USER[scenario].items():
                 #notifier.notify(VIN, key, value)
                 car.update(key, value,True)
         else:

@@ -18,11 +18,7 @@
         <div>
         <p>API key: {{ key }}</p>
         <div id="OAuth2">  
-            <p>OAuth2 status: {{ oauth2_status }}</p>
-            {% if oauth2_status == "Activated" %}
-            <p>PKCE status: {{ pkce_status }}</p>
-            {% endif %}
-            <p>To change use internal API</p>
+            <button id="OAuth2-button" hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML">OAuth2 Settings</button>
         </div>
         </div>
         <ul>

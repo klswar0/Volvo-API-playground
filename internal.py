@@ -215,6 +215,49 @@ def OAuth2Settings(key: str, request: Request):
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
+def OAuth2SettingsCSS():
+    return FileResponse("templates/oauth2settings.css")
+
+def OAuth2Change(key: str, attribute: str, value: str, request: Request):
+    try:
+        authenticateInternal(key)
+
+        if key not in Oauth2Data:
+
+            if attribute == "OAuth2":
+                if value.lower() == "true":
+                    oauth2 = Oauth2(client_secret="client_secret_"+secrets.token_urlsafe(12), PKCE=False,redirect_uri="")
+                    Oauth2Data[key] = oauth2
+                    response=Response()
+                    response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
+                    return response
+                
+
+            return HTMLResponse(content="<p style=\"color:red\">OAuth2 not activated for this API key</p>")
+        print(f"Changing OAuth2 attribute {attribute} to {value} for key {key}")
+        if attribute == "client_secret":
+            Oauth2Data[key].client_secret = value
+        elif attribute == "redirect_uri":   
+            Oauth2Data[key].redirect_uri = value
+        elif attribute == "PKCE":
+            if value.lower() == "true":
+                Oauth2Data[key].PKCE = True
+            elif value.lower() == "false":
+                Oauth2Data[key].PKCE = False
+        elif attribute == "access_token":
+            Oauth2Data[key].access_token = value
+        elif attribute == "refresh_token":
+            Oauth2Data[key].refresh_token = value
+        elif attribute == "OAuth2":
+            if value.lower() == "false":
+                del Oauth2Data[key]
+        else:
+            return HTMLResponse(content="<p style=\"color:red\">Invalid attribute</p>")
+        response=Response()
+        response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
+        return response
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
 
 def WelcomeCSS():
     return FileResponse("templates/welcome.css")
@@ -280,7 +323,7 @@ def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
         car = VINHandlingInternal(VIN, vcc_api_key)
         if startUp["statusNofication"] == "SET" or startUp["statusNofication"] == "ALL":
             notifier.trigger_update(VIN, car, attribute)
-        return car.update(attribute, value) #FIXME: NOT use the update method becouse it will validate the value and trigger the notifier second time
+        return car.update(attribute, value,True) #FIXME: NOT use the update method becouse it will validate the value and trigger the notifier second time
     except ValueError as e:
         raise ValueError(str(e))
 
@@ -384,16 +427,16 @@ def genAPIKey():
     return JSONResponse(content={"message": api_key,"description": f"THIS IS INTERNAL API/API key generated successfully"}, status_code=200)
 
 
-def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: list = Body(default=[]), values: list = Body(default=[])):
+def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dict = Body(default={})):
     try:
         cars =database[vcc_api_key]
         if any(car.VIN == VIN for car in cars):
             return BadRequestResponseInternal(VIN)
         
         new_car = Car(VIN=VIN)
-        for attribute in attributes:
+        for attribute in attributes.keys():
             if hasattr(new_car, attribute):
-                setattr(new_car, attribute, values[attributes.index(attribute)])
+                setattr(new_car, attribute, attributes[attribute])
             else:
                 return BadRequestResponseInternal(VIN)
         cars.append(new_car)

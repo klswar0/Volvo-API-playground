@@ -860,6 +860,14 @@ def WelcomeNewCar(key: str, VIN: str, scenario: str = Query(default=None)):
 def OAuth2Settings(key: str, request: Request):
     return internal.OAuth2Settings(key, request)
 
+@app.post("/internal/dashboard/OAuth2change", include_in_schema=False)
+def OAuth2Change(request: Request, attribute: str=Body(...), value: str=Body(...), key: str=Query(...)):
+    return internal.OAuth2Change(key, attribute, value, request)
+
+@app.get("/internal/dashboard/OAuth2settings.css", include_in_schema=False)
+def OAuth2SettingsCSS():
+    return internal.OAuth2SettingsCSS() #file response
+
 #internal endpoints for testing and development. Not part of the official API.
 
 @app.get("/internal/status") 
@@ -889,9 +897,9 @@ def genAPIKey():
     return internal.genAPIKey()
 
 @app.post("/internal/addCar")
-def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: list = Body(default=[]), values: list = Body(default=[])):
+def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dict = Body(default={})):
     """internal endpoint for adding a new car to the database"""
-    return internal.addCar(vcc_api_key, VIN, attributes, values)
+    return internal.addCar(vcc_api_key, VIN, attributes)
 
 @app.post("/internal/scenario")
 def scenario(vcc_api_key: str = Header(...), VIN: str = Body(...), scenario: str = Body(...)):

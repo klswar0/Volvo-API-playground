@@ -6,46 +6,90 @@
 
             <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.1/ws.js"></script>{#delete if diffrent wy to dashboard#}
 
+            <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/head-support.js"></script>
+
             <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
-            <link rel="stylesheet" href="dashboardCarSel.css">
+            <link rel="stylesheet" href="OAuth2settings.css">
 
     </head>    
-
-    <body>
-
-        <h1>OAuth2 Settings</h1>
-        <p>API key: {{ key }}</p>
-        <div class="premium-card-dark">
-                <form>
-                <p>OAuth2 status: {{ oauth2_status }}</p>
-                {% if oauth2_status == "Activated" %}
-                <p>PKCE status: {{ PKCE }}</p>
-                <button>PKCE activate</button>
-                <p>Client ID: {{ key }}</p>
-                <p>Client Secret: {{ client_secret }}</p>
-                <input type="text" name="client_secret"  placeholder="Enter new client secret">
-                {% if code != "" %}
-                <p>Code: {{ code }}</p>
-                {% endif %}
-                <p>Access Token: {{ access_token }}</p>
-                <input type="text" name="access_token"  placeholder="Enter new access token">
-                <p>Refresh Token: {{ refresh_token }}</p>
-                <input type="text" name="refresh_token"  placeholder="Enter new refresh token">
-                {% if redirect_uri != "" %}
-                <p>Redirect URI: {{ redirect_uri }}</p>
-                <input type="text" name="redirect_uri"  placeholder="Enter new redirect URI">
+<body hx-ext="head-support">
+    <h1>OAuth2 Settings</h1>
+    <p>API key: {{ key }}</p>
+    <div class="premium-card-dark-Oauth2">
+           
+        <p>OAuth2 status: {{ oauth2_status }}</p>
+        {% if oauth2_status == "Activated" %}
+            <p>PKCE status: {{ PKCE }}</p>
+            
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="attribute" value="PKCE">
+                {% if PKCE == True %}
+                    <button type="submit" name="value" value="false">Deactivate PKCE</button>
                 {% else %}
+                    <button type="submit" name="value" value="true">Activate PKCE</button>
+                {% endif %}
+            </form>
+
+            <p>Client ID: {{ key }}</p>
+            <p>Client Secret: {{ client_secret }}</p>
+            
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="attribute" value="client_secret">
+                <input type="text" name="value" placeholder="Enter new client secret">
+            </form>
+
+            {% if code != "" %}
+                <p>Code: {{ code }}</p>
+            {% endif %}
+
+            <p>Access Token: {{ access_token }}</p>
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="attribute" value="access_token">
+                <input type="text" name="value" placeholder="Enter new access token">
+            </form>
+
+            <p>Refresh Token: {{ refresh_token }}</p>
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}" >
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="attribute" value="refresh_token">
+                <input type="text" name="value" placeholder="Enter new refresh token">
+            </form>
+
+            {% if redirect_uri != "" %}
+                <p>Redirect URI: {{ redirect_uri }}</p>
+                <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}" >
+                    <input type="hidden" name="key" value="{{ key }}">
+                    <input type="hidden" name="attribute" value="redirect_uri">
+                    <input type="text" name="value" placeholder="Enter new redirect URI">
+                </form>
+            {% else %}
                 <p>Redirect URI: Not set</p>
                 <p>Means all redirects are allowed</p>
-                <input type="text" name="redirect_uri"  placeholder="Enter new redirect URI">
-                {% endif %}
-                <br>
-                <button>Deactivate OAuth2</button>
-                {% else %}
+                <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+                    <input type="hidden" name="key" value="{{ key }}">
+                    <input type="hidden" name="attribute" value="redirect_uri">
+                    <input type="text" name="value" placeholder="Enter new redirect URI">
+                </form>
+            {% endif %}
+            <br>
 
-                <p>OAuth2 is not activated for this API key</p>
-                <button>Activate OAuth2</button>
-                {% endif %}
-                </form> 
-    </body>
-    </html>
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="attribute" value="OAuth2">
+                <button type="submit" name="value" value="false">Deactivate OAuth2</button>
+            </form>
+        {% else %}
+            <p>OAuth2 is not activated for this API key</p>
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="attribute" value="OAuth2">
+                <button type="submit" name="value" value="true">Activate OAuth2</button>
+            </form>
+        {% endif %}
+    </div>
+    <button id="go-back" onclick="history.back()">Go Back</button>
+</body>
+</html>
