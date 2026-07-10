@@ -3,7 +3,8 @@
         hx-target="#response">
         <p>{{ value }}</p>
         <input type="hidden" name="attribute" value="{{ data }}">
-
+        {% if data != "lightTimestamp" %}
+        {% if data != "hornTimestamp" %}
         {% if options == "int" %}
         <input type="number" name="value" min="0">
         {% else %}
@@ -14,6 +15,10 @@
         </select>
         {% endif %}
 
+
+
         <input type="submit" value="change">
+        {% endif %}
+        {% endif %}
     </form>
 </div>

@@ -857,7 +857,11 @@ def WelcomeNewCar(key: str, VIN: str, scenario: str = Query(default=None)):
     return internal.WelcomeNewCar(key, VIN, scenario)
 
 @app.get("/internal/dashboard/OAuth2settings", include_in_schema=False)
-def OAuth2Settings(key: str, request: Request):
+def OAuth2Settings(request: Request,key: str, site: bool = Query(default=False)):
+    if site==True:
+        response=Response()
+        response.headers["hx-redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
+        return response
     return internal.OAuth2Settings(key, request)
 
 @app.post("/internal/dashboard/OAuth2change", include_in_schema=False)

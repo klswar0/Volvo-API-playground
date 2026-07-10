@@ -7,19 +7,19 @@
             <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.1/ws.js"></script>{#delete if diffrent wy to dashboard#}
 
             <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+
+
             <link rel="stylesheet" href="dashboardCarSel.css">
 
     </head>    
 
 
 
-    <body>
+    <body hx-ext="head-support">
         <h1>Car list</h1>
         <div>
-        <p>API key: {{ key }}</p>
-        <div id="OAuth2">  
-            <button id="OAuth2-button" hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML">OAuth2 Settings</button>
-        </div>
+            <p>API key: {{ key }}</p>
+            <button id="go" hx-get="/internal/dashboard/OAuth2settings?key={{ key }}&site=True" hx-swap="none">OAuth2 Settings</button>
         </div>
         <ul>
             {% for vin in VINs%}

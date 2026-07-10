@@ -1,4 +1,7 @@
 <div id="car-info">
+
+    {# need to add all fields #}
+
     <p>VIN: {{VIN}}</p>
     <div class="info">
     <p>Availability Status:</p>
@@ -32,6 +35,20 @@
             <input type="submit" value="change">
         </form>
     </div>
+    </div>
+
+    <div class="info">
+        <p>Timestamps:</p>
+        <p>Light Timestamp:</p>
+        <div id="lightTimestamp">
+            
+            <p>{{lightTimestamp}}</p>
+        </div>
+        <p>Horn Timestamp:</p>     
+        <div id="hornTimestamp">
+            
+            <p>{{hornTimestamp}}</p>
+        </div>
     </div>
 
     <div class="info">
@@ -473,7 +490,6 @@
             </select><input type="submit" value="change"></form>
     </div>
     </div>
-    <div class="info">
 
 
     <div class="info">
@@ -598,12 +614,14 @@
 
     <p>Commands:</p>
     <p>{{commands}}</p>
+    <p>Please edit the values using API calls</p>
     </div>
 
     <div class="info">
     <p>Lights Warning:</p>
 
     <div id="brakeLightLeftWarning">
+        <p>Brake Light Left Warning</p>
         <p>{{brakeLightLeftWarning}}</p>
         <form data-attribute="brakeLightLeftWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -618,6 +636,7 @@
     </div>
 
     <div id="brakeLightCenterWarning">
+        <p>Brake Light Center Warning</p>
         <p>{{brakeLightCenterWarning}}</p>
         <form data-attribute="brakeLightCenterWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -632,6 +651,7 @@
     </div>
 
     <div id="brakeLightRightWarning">
+        <p>Brake Light Right Warning</p>
         <p>{{brakeLightRightWarning}}</p>
         <form data-attribute="brakeLightRightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -646,6 +666,7 @@
     </div>
 
     <div id="fogLightFrontWarning">
+        <p>Fog Light Front Warning</p>
         <p>{{fogLightFrontWarning}}</p>
         <form data-attribute="fogLightFrontWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -660,6 +681,7 @@
     </div>
 
     <div id="fogLightRearWarning">
+        <p>Fog Light Rear Warning</p>
         <p>{{fogLightRearWarning}}</p>
         <form data-attribute="fogLightRearWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -674,6 +696,7 @@
     </div>
 
     <div id="positionLightFrontLeftWarning">
+        <p>Position Light Front Left Warning</p>
         <p>{{positionLightFrontLeftWarning}}</p>
         <form data-attribute="positionLightFrontLeftWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -688,6 +711,7 @@
     </div>
 
     <div id="positionLightFrontRightWarning">
+        <p>Position Light Front Right Warning</p>
         <p>{{positionLightFrontRightWarning}}</p>
         <form data-attribute="positionLightFrontRightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -702,6 +726,7 @@
     </div>
 
     <div id="positionLightRearLeftWarning">
+        <p>Position Light Rear Left Warning</p>
         <p>{{positionLightRearLeftWarning}}</p>
         <form data-attribute="positionLightRearLeftWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -716,6 +741,7 @@
     </div>
 
     <div id="positionLightRearRightWarning">
+        <p>Position Light Rear Right Warning</p>
         <p>{{positionLightRearRightWarning}}</p>
         <form data-attribute="positionLightRearRightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -730,6 +756,7 @@
     </div>
 
     <div id="highBeamLeftWarning">
+        <p>High Beam Left Warning</p>
         <p>{{highBeamLeftWarning}}</p>
         <form data-attribute="highBeamLeftWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -744,6 +771,7 @@
     </div>
 
     <div id="highBeamRightWarning">
+        <p>High Beam Right Warning</p>
         <p>{{highBeamRightWarning}}</p>
         <form data-attribute="highBeamRightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -758,6 +786,7 @@
     </div>
 
     <div id="lowBeamLeftWarning">
+        <p>Low Beam Left Warning</p>
         <p>{{lowBeamLeftWarning}}</p>
         <form data-attribute="lowBeamLeftWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -772,6 +801,7 @@
     </div>
 
     <div id="lowBeamRightWarning">
+        <p>Low Beam Right Warning</p>
         <p>{{lowBeamRightWarning}}</p>
         <form data-attribute="lowBeamRightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -786,6 +816,7 @@
     </div>
 
     <div id="daytimeRunningLightLeftWarning">
+        <p>Daytime Running Light Left Warning</p>
         <p>{{daytimeRunningLightLeftWarning}}</p>
         <form data-attribute="daytimeRunningLightLeftWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -800,6 +831,7 @@
     </div>
 
     <div id="daytimeRunningLightRightWarning">
+        <p>Daytime Running Light Right Warning</p>
         <p>{{daytimeRunningLightRightWarning}}</p>
         <form data-attribute="daytimeRunningLightRightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -814,6 +846,7 @@
     </div>
 
     <div id="turnIndicationFrontLeftWarning">
+        <p>Turn Indication Front Left Warning</p>
         <p>{{turnIndicationFrontLeftWarning}}</p>
         <form data-attribute="turnIndicationFrontLeftWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -828,6 +861,7 @@
     </div>
 
     <div id="turnIndicationFrontRightWarning">
+        <p>Turn Indication Front Right Warning</p>
         <p>{{turnIndicationFrontRightWarning}}</p>
         <form data-attribute="turnIndicationFrontRightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -842,6 +876,7 @@
     </div>
 
     <div id="turnIndicationRearLeftWarning">
+        <p>Turn Indication Rear Left Warning</p>
         <p>{{turnIndicationRearLeftWarning}}</p>
         <form data-attribute="turnIndicationRearLeftWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -856,6 +891,7 @@
     </div>
 
     <div id="turnIndicationRearRightWarning">
+        <p>Turn Indication Rear Right Warning</p>
         <p>{{turnIndicationRearRightWarning}}</p>
         <form data-attribute="turnIndicationRearRightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -870,6 +906,7 @@
     </div>
 
     <div id="registrationPlateLightWarning">
+        <p>Registration Plate Light Warning</p>
         <p>{{registrationPlateLightWarning}}</p>
         <form data-attribute="registrationPlateLightWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -884,6 +921,7 @@
     </div>
 
     <div id="sideMarkLightsWarning">
+        <p>Side Mark Lights Warning</p>
         <p>{{sideMarkLightsWarning}}</p>
         <form data-attribute="sideMarkLightsWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -898,6 +936,7 @@
     </div>
 
     <div id="hazardLightsWarning">
+        <p>Hazard Lights Warning</p>
         <p>{{hazardLightsWarning}}</p>
         <form data-attribute="hazardLightsWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -912,6 +951,7 @@
     </div>
 
     <div id="reverseLightsWarning">
+        <p>Reverse Lights Warning</p>
         <p>{{reverseLightsWarning}}</p>
         <form data-attribute="reverseLightsWarning" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -924,5 +964,5 @@
             <input type="submit" value="change">
         </form>
     </div>
-    </div>
+
 </div>
