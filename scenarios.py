@@ -129,7 +129,7 @@ def scenarios(VIN: str = Header(...),vcc_api_key: str = Header(...),scenario: st
         car = VINHandlingInternal(VIN, vcc_api_key)
         if scenario in SCENARIO_TEMPLATES:
             for key, value in SCENARIO_TEMPLATES[scenario].items():
-                #notifier.notify(VIN, key, value)
+                notifier.notify(VIN, key, value)
                 car.update(key, value,True)
         elif scenario in SCENARIO_USER:
             for key, value in SCENARIO_USER[scenario].items():

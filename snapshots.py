@@ -24,12 +24,13 @@ def snapshots(vcc_api_key:str,command:str,name:str):
         if command == "save":
             storage = Snapshots(mainData=database[vcc_api_key], OuathData=Oauth2Data[vcc_api_key])
             snapshots[name] = storage
-            
+            return JSONResponse(content={"message": f"Snapshot '{name}' saved successfully."}, status_code=200)
         elif command == "load":
             if name in snapshots.keys():
                 storage = snapshots[name]
                 database[vcc_api_key] = storage.mainData
                 Oauth2Data[vcc_api_key] = storage.OuathData
+                return JSONResponse(content={"message": f"Snapshot '{name}' loaded successfully."}, status_code=200)
             else:
                 return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid snapshot name: {name}"}}, status_code=400)
     except:

@@ -8,9 +8,9 @@ import uvicorn
 import secrets
 import hashlib
 
-
-
+from snapshots import snapshots
 import internal
+import dashboard
 from notifier import notifier
 from classCar import Car, options, AuthHeader, startUp, timestampGenerator, Oauth2
 from database import database, Oauth2Data
@@ -807,53 +807,53 @@ def Terminal(VIN:str,key:str, request: Request):
 #site section
 @app.get("/internal/dashboard/dashboardWS.css", include_in_schema=False)
 def DashboardCSS():
-    return internal.DashboardCSS() #file response
+    return dashboard.DashboardCSS() #file response
 
 
 @app.get("/internal/dashboard/car", include_in_schema=False)
 def DashboardCar(key: str,VIN: str, request: Request):
-    return internal.DashboardCar(key, VIN, request)
+    return dashboard.DashboardCar(key, VIN, request)
     
 @app.get("/internal/dashboard/redirect", include_in_schema=False)
 def DashboardRedirect(key: str,VIN: str, request: Request):
-    return internal.DashboardRedirect(key, VIN, request)
+    return dashboard.DashboardRedirect(key, VIN, request)
     
 @app.websocket("/internal/dashboard/ws")
 async def DashboardWS(websocket: WebSocket):
-    return await internal.DashboardWS(websocket)
+    return await dashboard.DashboardWS(websocket)
     
 @app.post("/internal/dashboard/update", include_in_schema=False) # html request here for dashboard
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
-    return internal.DashboardUpdate(key, VIN, request, attribute, value)
-    
-    
+    return dashboard.DashboardUpdate(key, VIN, request, attribute, value)
+
+
 @app.get("/internal/dashboardCarSel.css", include_in_schema=False)
 def DashboardCarCSS():
-    return internal.DashboardCarCSS() #file response
+    return dashboard.DashboardCarCSS() #file response
 
 @app.get("/internal/dashboard", include_in_schema=False)
 def Dashboard(key: str, request: Request):
-    return internal.Dashboard(key, request)
+    return dashboard.Dashboard(key, request)
 
 @app.get("/internal/welcome.css", include_in_schema=False)
 def WelcomeCSS():
-    return internal.WelcomeCSS() #file response
+    return dashboard.WelcomeCSS() #file response
 
 @app.get("/internal/welcome", include_in_schema=False)
 def Welcome():
-    return internal.Welcome() #file response
+    return dashboard.Welcome() #file response
 
 @app.get("/internal/welcome/Check", include_in_schema=False)
 def WelcomeCheck(vcc_api_key: str):
-    return internal.WelcomeCheck(vcc_api_key)
+    return dashboard.WelcomeCheck(vcc_api_key)
 
 @app.get("/internal/welcome/APIKey", include_in_schema=False) 
 def WelcomeAPIKey(request: Request):
-    return internal.WelcomeAPIKey(request)
+    return dashboard.WelcomeAPIKey(request)
 
 @app.post("/internal/dashboard/NewCar", include_in_schema=False) 
 def WelcomeNewCar(key: str, VIN: str, scenario: str = Query(default=None)):
-    return internal.WelcomeNewCar(key, VIN, scenario)
+    return dashboard.WelcomeNewCar(key, VIN, scenario)
 
 @app.get("/internal/dashboard/OAuth2settings", include_in_schema=False)
 def OAuth2Settings(request: Request,key: str, site: bool = Query(default=False)):
@@ -861,15 +861,15 @@ def OAuth2Settings(request: Request,key: str, site: bool = Query(default=False))
         response=Response()
         response.headers["hx-redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
         return response
-    return internal.OAuth2Settings(key, request)
+    return dashboard.OAuth2Settings(key, request)
 
 @app.post("/internal/dashboard/OAuth2change", include_in_schema=False)
 def OAuth2Change(request: Request, attribute: str=Body(...), value: str=Body(...), key: str=Query(...)):
-    return internal.OAuth2Change(key, attribute, value, request)
+    return dashboard.OAuth2Change(key, attribute, value, request)
 
 @app.get("/internal/dashboard/OAuth2settings.css", include_in_schema=False)
 def OAuth2SettingsCSS():
-    return internal.OAuth2SettingsCSS() #file response
+    return dashboard.OAuth2SettingsCSS() #file response
 
 #internal endpoints for testing and development. Not part of the official API.
 
@@ -908,5 +908,14 @@ def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dic
 def scenario(vcc_api_key: str = Header(...), VIN: str = Body(...), scenario: str = Body(...)):
     """internal endpoint for simulating a scenario for the specified VIN"""
     return internal.scenario(vcc_api_key, VIN, scenario)
+
+
+
+#experimental func NOT TESTED:
+
+@app.post("/internal/snapshot")
+def snapshot(vcc_api_key: str = Header(...), command: str = Body(...), name: str = Body(...)):
+    """internal endpoint for taking a snapshot of the current status for the specified VIN"""
+    return snapshots(vcc_api_key, command, name)
 
 uvicorn.run(app)
