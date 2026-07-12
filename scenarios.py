@@ -5,8 +5,11 @@ from fastapi import Body, Header
 from fastapi.responses import JSONResponse
 
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
-from internal import VINHandlingInternal
+from internal import VINHandlingInternal, authenticateInternal
 from notifier import notifier
+from database import databse
+
+#NOTE: NOT TESTED
 
 SCENARIO_TEMPLATES = {
     # Basic states
@@ -120,7 +123,7 @@ SCENARIO_USER = {}
 if os.path.exists("scenarios.json"):
     with open("scenarios.json", "r") as f:
         SCENARIO_TEMPLATES = json.load(f)
-
+#NOTE: NOT TESTED
 def scenarios(VIN: str = Header(...),vcc_api_key: str = Header(...),scenario: str = Body(...)):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
@@ -145,3 +148,7 @@ def scenarios(VIN: str = Header(...),vcc_api_key: str = Header(...),scenario: st
             content={"error": {"message": "VALUE_ERROR", "description": str(e)}}, 
             status_code=400
             )
+
+
+
+

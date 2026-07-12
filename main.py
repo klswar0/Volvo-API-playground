@@ -782,20 +782,19 @@ def Internal():
 
 @app.get("/internal/oauth2")
 def AuthGetInternal(vcc_api_key:str = Header(...)):
-    return internal.OAuthGetInternal()
+    return internal.OAuthGetInternal(vcc_api_key)
 
-@app.get("/internal/oauth2/activate")
-def AuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...),PCKE:bool = Body(...)):
-    return internal.OAuthActivateInternal()
+@app.post("/internal/oauth2/activate")
+def AuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...),PCKE:bool = Body(...),redirect_uri:str = Body(default="")):
+    return internal.OAuthActivateInternal(vcc_api_key, client_secret, PCKE, redirect_uri)
 
-
-@app.get("/internal/oauth2/deactivate")
+@app.post("/internal/oauth2/deactivate")
 def AuthDeactivateInternal(vcc_api_key:str = Header(...)):
-    return internal.OAuthDeactivateInternal()
+    return internal.OAuthDeactivateInternal(vcc_api_key)
 
-@app.get("/internal/oauth2/regenerate")
+@app.post("/internal/oauth2/regenerate")
 def AuthRegenerateInternal(vcc_api_key:str = Header(...)):
-    return internal.OAuthRegenerateInternal()
+    return internal.OAuthRegenerateInternal(vcc_api_key)
 
 
 

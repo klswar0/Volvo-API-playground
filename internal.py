@@ -323,7 +323,7 @@ def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
         car = VINHandlingInternal(VIN, vcc_api_key)
         if startUp["statusNofication"] == "SET" or startUp["statusNofication"] == "ALL":
             notifier.trigger_update(VIN, car, attribute)
-        return car.update(attribute, value,True) #FIXME: NOT use the update method becouse it will validate the value and trigger the notifier second time
+        return car.update(attribute, value,True) #NOTE: most likely works now /NOT use the update method becouse it will validate the value and trigger the notifier second time
     except ValueError as e:
         raise ValueError(str(e))
 
@@ -435,10 +435,11 @@ def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dic
         
         new_car = Car(VIN=VIN)
         for attribute in attributes.keys():
-            if hasattr(new_car, attribute):
-                setattr(new_car, attribute, attributes[attribute])
-            else:
-                return BadRequestResponseInternal(VIN)
+            try:
+                new_car.update(attribute, attributes[attribute],True)
+            except ValueError:
+                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute}"}}, status_code=400)
+
         cars.append(new_car)
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/Car added successfully: {VIN}"}, status_code=200)
 

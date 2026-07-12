@@ -6,7 +6,7 @@ You can use official docs for every endpoint that isnt /internal/* but you can u
 This GET endpoint creates a new API key 
 
 ### '/internal/addCar'
-This GET endpoint creates a new Car.
+This POST endpoint creates a new Car.
 Header:
 - ***vcc-api-key*** the api key created or the ready scenario key
 Body:
@@ -17,7 +17,7 @@ Body:
 info: attribute and values lenght should be the same
 
 ### '/internal/update'
-This GET endpoint updates a specific car attributes.
+This POST endpoint updates a specific car attributes.
 Header:
 - ***vcc-api-key*** the api key created or the ready scenario key
 Body:
@@ -39,6 +39,70 @@ Header:
 - ***VIN*** VIN of virtual vehicle you want to monitor
 - ***key*** api key
 
+### '/internal/oauth2
+This GET endpoint sends all information about Oauth2 settings
+header:
+- ***vcc_api_key*** api key with enabled Oauth2
+```
+{
+  "client_secret": <str>,
+  "code": <str>,
+  "access_token": <str>,
+  "refresh_token": <str>,
+  "token_type": <str>,
+  "expires_in": 3599, # doesn't change and doesnt work
+  "redirect_uri": <str> # if nothing then all redirects are alowed. This examptions is made for testing and doesnt exist in volvo api
+}
+```
+
+### '/internal/oauth2/deactivate
+This POST endpoint disable Oauth2 flow for provided API key
+header:
+- ***vcc_api_key*** api key with enabled Oauth2
+```
+{
+  "message": "OAuth2 deactivated successfully"
+}
+```
+
+### '/internal/oauth2/regenerate
+This POST endpoint creates new access and refresh tokens
+header:
+- ***vcc_api_key*** api key with enabled Oauth2
+```
+{
+  "access_token": <str>,
+  "refresh_token": <str>,
+  "token_type": "Bearer", #static
+  "expires_in": 3599 #static
+}
+```
+
+### '/internal/oauth2/activate
+This POST endpoint activate Oauth2 flow for provided API key
+header:
+- ***vcc_api_key*** api key with enabled Oauth2
+body:
+```
+{
+  "client_secret": <str>,
+  "PCKE": <bool>,
+  "redirect_uri": <str/optional>
+}
+```
+```
+{
+    "message": "OAuth2 activated successfully"
+}
+```
+
+### Errors
+If an error is returned and it is not caused by missing data, the response will have the following format:
+```
+{ "error": {"message": "THIS IS INTERNAL API/<Error text>","description": <error description>"}}
+```
+
+
 ## Playground sites:
 
 ### '/internal/terminal'
@@ -52,11 +116,6 @@ This site give you away to generate or login with api key.
 Then give away to select a car and modifier data.
 It redirects to the rest of the pages.
 
-### Errors
-If an error is returned and it is not caused by missing data, the response will have the following format:
-```
-{ "error": {"message": "THIS IS INTERNAL API/<Error text>","description": <error description>"}}
-```
 
 
 
