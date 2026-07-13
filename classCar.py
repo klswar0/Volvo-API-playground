@@ -6,7 +6,7 @@ import configparser #TODO use it
 
 class AuthHeader(BaseModel):
     content_type: str = Field(default="application/json", alias="Content-Type")
-    accessToken: str =Field(default="") #= Field(...) # NOT IMPLEMENTED
+    authorization: str =Field(default="") #= Field(...) # NOT IMPLEMENTED
     vcc_api_key: str =Field(...,alias="vcc-api-key")
 
 class Oauth2(BaseModel):
