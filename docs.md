@@ -133,7 +133,7 @@ Exception: RUNNING for sure can only go to engine and climate endpoints
 
 #### auth header
 - ***Content-Type*** always application/json
-- ***authorization*** access token generated thru Oauth. Not checked in this playground if disabled Oauth2
+- ***accesToken*** access token generated thru Oauth. Not checked in this playground if disabled Oauth2
 - ***vcc-api-key*** your api key (dont use your official api key in this playground for safety)
 ### List vehicles
 /vehicles

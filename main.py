@@ -30,7 +30,7 @@ def authenticate(auth_header: AuthHeader):
     if auth_header.vcc_api_key not in database:
         raise ValueError("Invalid API key")
     if auth_header.vcc_api_key in Oauth2Data:
-        if auth_header.authorization != f"Bearer {Oauth2Data[auth_header.vcc_api_key].access_token}":
+        if auth_header.accessToken != f"Bearer {Oauth2Data[auth_header.vcc_api_key].access_token}":
             raise ValueError("Invalid access token")
     return True
 

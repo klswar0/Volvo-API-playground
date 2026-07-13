@@ -14,7 +14,7 @@ from notifier import notifier
 from classCar import Car, options, AuthHeader, startUp, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
-from internal import VINHandlingInternal, authenticateInternal, update
+from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
 
 
 #site section
