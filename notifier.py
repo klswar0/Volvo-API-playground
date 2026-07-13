@@ -1,7 +1,7 @@
 import asyncio
 from typing import Dict, Set
 
-
+#TODO: trigger update with more than one attribute at a time. (for scenarios)
 class websocketNotifier:
     def __init__(self):
         self._subscribers: Dict[str, Set[asyncio.Queue]] = {}
@@ -26,5 +26,6 @@ class websocketNotifier:
             }
             for queue in self._subscribers[vin]:
                 queue.put_nowait(update_packet)
+
         
 notifier = websocketNotifier()
