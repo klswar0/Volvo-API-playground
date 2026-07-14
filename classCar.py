@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field 
 from notifier import notifier
 from datetime import datetime, timezone
-import configparser #TODO use it
+# import configparser #TODO use it
 
 
 class AuthHeader(BaseModel):

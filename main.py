@@ -167,6 +167,7 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     
     oauth2.access_token = "access_token_"+secrets.token_urlsafe(32) #generate
     oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32) #generate
+    # added the acces_token for simplicity of development but Bearer is still ineeded
     oauth2.code = "" #invalidate code
     #oauth2.expires_in = 
     data={"access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
@@ -874,7 +875,7 @@ def OAuth2SettingsCSS():
 #internal endpoints for testing and development. Not part of the official API.
 
 @app.get("/internal/status") 
-def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)): 
+def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="vcc-api-key")): 
     """internal endpoint for getting car status without using commands and without a token"""
     return internal.getStatus(VIN, vcc_api_key)
         
@@ -883,13 +884,13 @@ async def statusWS(websocket: WebSocket):
     return await internal.statusWS(websocket)
 
 @app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) #TODO: implement this to html
-def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: str = Body(...), value: str = Body(...)):
+def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="vcc-api-key"),attribute: str = Body(...), value: str = Body(...)):
     """internal endpoint for updating car without using commands and without a token"""
     return internal.internal_update(VIN, vcc_api_key, attribute, value)
 
 
 @app.post("/internal/updates") # to redo
-def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: list = Body(...), value: list = Body(...)):
+def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="vcc-api-key"),attribute: list = Body(...), value: list = Body(...)):
     """internal endpoint for updating multiple car attributes without using commands and without a token/ NEED TO BE REWRITTEN"""
     return internal.internal_updates(VIN, vcc_api_key, attribute, value)
 
@@ -900,12 +901,14 @@ def genAPIKey():
     return internal.genAPIKey()
 
 @app.post("/internal/addCar")
-def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dict = Body(default={})):
+def addCar(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(...), attributes: dict = Body(default={})):
     """internal endpoint for adding a new car to the database"""
     return internal.addCar(vcc_api_key, VIN, attributes)
 
+
+
 @app.post("/internal/scenario")
-def scenario(vcc_api_key: str = Header(...), VIN: str = Body(...), scenario: str = Body(...)):
+def scenario(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(...), scenario: str = Body(...)):
     """internal endpoint for simulating a scenario for the specified VIN"""
     return internal.scenario(vcc_api_key, VIN, scenario)
 
@@ -914,8 +917,9 @@ def scenario(vcc_api_key: str = Header(...), VIN: str = Body(...), scenario: str
 #experimental func NOT TESTED:
 
 @app.post("/internal/snapshot")
-def snapshot(vcc_api_key: str = Header(...), command: str = Body(...), name: str = Body(...)):
+def snapshot(vcc_api_key: str = Header(...,alias="vcc-api-key"), command: str = Body(...), name: str = Body(...)):
     """internal endpoint for taking a snapshot of the current status for the specified VIN"""
     return snapshots(vcc_api_key, command, name)
+
 
 uvicorn.run(app)

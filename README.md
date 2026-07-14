@@ -4,19 +4,29 @@ This projects aims to provide dynamic alternative to official volvo API sandbox 
 >[!WARNING]
 >This project is still a work in progress, but it is already in a good state. If you don’t rely on comprehensive documentation, you should find it useful for developing applications for Volvo Connected Vehicles.
 
-## Roadmap
-- Virtual car reacts to commands send to API
-- Dashboard to see how car reacts to commands
-- additional APIs to force errors and state change 
-- Working Authorisation code flow with oauth2
+## Key features:
+- Car that reacts to commands
+- Interactive Dashboard
+- Additional APIs endpoints for faster mainupulating satets and forcing errors
+- Simplified Oauth 2.0 with PCKE to test your app if it is ready for real API
 
-check ROADMAP.md file in this repositorium for more info about status of this project
+## Roadmap
+- Scenarios and snapshots system (WIP)
+- More error testing
+- Persistant storage
+- Energy and location API
+
 
 
 ## How to run:
-packages: uvicorn, fastapi
+Download the repository.
+Packages: fastapi uvicorn pydantic jinja2 websockets:
+`uv add fastapi uvicorn pydantic jinja2 websockets`
 then:
 `uv run main.py`
+
+## Are you not sure?
+You can check the diffrences in the companion app: PLACEHOLDER
 
 
 ## Limitions:
