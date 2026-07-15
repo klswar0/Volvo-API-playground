@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal
 from notifier import notifier
-from database import databse
 
 #NOTE: NOT TESTED
 
@@ -124,12 +123,12 @@ if os.path.exists("scenarios.json"):
     with open("scenarios.json", "r") as f:
         SCENARIO_TEMPLATES = json.load(f)
 #NOTE: NOT TESTED
-def scenarios(VIN: str = Header(...),vcc_api_key: str = Header(...),scenario: str = Body(...)):
+def scenariosFunc(vcc_api_key: str = Header(...), VIN: str = Header(...),scenario: str = Body(...)):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
         if scenario in SCENARIO_TEMPLATES:
             for key, value in SCENARIO_TEMPLATES[scenario].items():
-                notifier.notify(VIN, key, value)
+                #notifier.notify(VIN, key, value)
                 car.update(key, value,True)
         elif scenario in SCENARIO_USER:
             for key, value in SCENARIO_USER[scenario].items():

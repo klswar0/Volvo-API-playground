@@ -45,3 +45,5 @@ legend:
 | Oauth2 | 🆗   | 🌍   |
 | example app |  ❌   | 🌍   |
 | internal endpoints for testing errors |     | 🌍   |
+| scenarios |     | 🌍   |
+| snapshots |     | 🌍   |

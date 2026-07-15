@@ -8,7 +8,8 @@ import uvicorn
 import secrets
 import hashlib
 
-from snapshots import snapshots
+from scenarios import scenariosFunc
+from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
 import dashboard
 from notifier import notifier
@@ -22,6 +23,7 @@ templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
 
+loadFileSnapshots()  # Load snapshots from file at startup
 
 
 
@@ -398,7 +400,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
         invoiceStatus = car.InvoiceStatus("UNLOCK") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
         if invoiceStatus[1] == True:
             car.update("centralLock","UNLOCKED")
-            data={"vin": VIN,"invokeStatus": invoiceStatus[0],"message": "","readyToUnlock": True ,"readyToUnlockUntil": 5} #whend would readyToUnlock be false?
+            data={"vin": VIN,"invokeStatus": invoiceStatus[0],"message": "","readyToUnlock": True ,"readyToUnlockUntil": 5,"details": "Not fully implemented manual button press needed in real life"} #whend would readyToUnlock be false?
             return JSONResponse(content=data, status_code=200)
         else:
             return NormalResponse(VIN, invoiceStatus[0],409)
@@ -906,11 +908,11 @@ def addCar(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(.
     return internal.addCar(vcc_api_key, VIN, attributes)
 
 
-
+#experimental func NOT TESTED:
 @app.post("/internal/scenario")
 def scenario(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(...), scenario: str = Body(...)):
     """internal endpoint for simulating a scenario for the specified VIN"""
-    return internal.scenario(vcc_api_key, VIN, scenario)
+    return scenariosFunc(vcc_api_key, VIN, scenario)
 
 
 
@@ -923,3 +925,5 @@ def snapshot(vcc_api_key: str = Header(...,alias="vcc-api-key"), command: str = 
 
 
 uvicorn.run(app)
+
+saveFileSnapshots()  # Save snapshots to file on shutdown

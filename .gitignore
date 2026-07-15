@@ -218,3 +218,4 @@ __marimo__/
 .streamlit/secrets.toml
 .python-version
 .vscode/settings.json
+uv.lock

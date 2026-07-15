@@ -1,5 +1,7 @@
 
 
+import json
+
 from fastapi import Body, Header 
 from fastapi.responses import JSONResponse
 from classCar import Oauth2
@@ -18,6 +20,30 @@ class Snapshots:
 
 snapshotsData = {}
 
+def loadFileSnapshots():
+    try:
+        with open("snapshots.json","r") as file:
+            data = json.load(file)
+            for name, snapshot in data.items():
+                mainData = snapshot.get("mainData", [])
+                oauth_data_dict = snapshot.get("OauthData")
+                if oauth_data_dict is not None:
+                    oauth_data = Oauth2(**oauth_data_dict)
+                else:
+                    oauth_data = None
+                snapshotsData[name] = Snapshots(mainData=mainData, OauthData=oauth_data)
+    except FileNotFoundError:
+        print("snapshots.json file not found. Starting with an empty snapshotsData.")
+
+def saveFileSnapshots():
+    data_to_save = {}
+    for name, snapshot in snapshotsData.items():
+        data_to_save[name] = {
+            "mainData": snapshot.mainData,
+            "OauthData": snapshot.OauthData.model_dump() if snapshot.OauthData is not None else None
+        }
+    with open("snapshots.json", "w") as file:
+        json.dump(data_to_save, file, indent=4)
 
 
 
