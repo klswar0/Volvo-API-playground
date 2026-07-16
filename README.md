@@ -1,3 +1,5 @@
+![VOLVO API Playgroound baner](Baner.png)
+
 # Volvo-API-playground
 This projects aims to provide dynamic alternative to official volvo API sandbox giving developers ways to test every possibility.
 
@@ -24,6 +26,10 @@ Packages: fastapi uvicorn pydantic jinja2 websockets:
 `uv add fastapi uvicorn pydantic jinja2 websockets`
 then:
 `uv run main.py`
+
+### Want to try it out?
+You can explore the public instance here:
+[Public instance](https://playground.kls.hackclub.app/internal/welcome)
 
 > [!TIP]
 > Are you not sure?
