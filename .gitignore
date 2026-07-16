@@ -219,3 +219,4 @@ __marimo__/
 .python-version
 .vscode/settings.json
 uv.lock
+snapshots.json

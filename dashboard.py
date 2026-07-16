@@ -144,7 +144,7 @@ def OAuth2Settings(key: str, request: Request):
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
 def OAuth2SettingsCSS():
-    return FileResponse("templates/oauth2settings.css")
+    return FileResponse("templates/OAuth2settings.css")
 
 def OAuth2Change(key: str, attribute: str, value: str, request: Request):
     try:

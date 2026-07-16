@@ -14,7 +14,7 @@
         <h1>Car dashboard</h1>
         <p>API Key: {{key}}</p>
         
-        <div hx-ext="ws" ws-connect="ws://127.0.0.1:8000/internal/dashboard/ws?VIN={{VIN}}&key={{key}}">
+        <div hx-ext="ws" ws-connect="/internal/dashboard/ws?VIN={{VIN}}&key={{key}}">
             <div id="car-info" hx-swap-oob="true">   
                 <p>Awaiting real-time vehicle data connection...</p>
             </div>

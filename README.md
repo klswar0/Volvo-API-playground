@@ -9,13 +9,13 @@ This projects aims to provide dynamic alternative to official volvo API sandbox 
 ## Key features:
 - Car that reacts to commands
 - Interactive Dashboard
-- Additional APIs endpoints for faster mainupulating states and forcing errors
-- Simplified Oauth 2.0 with PCKE to test your app if it is ready for real API
+- Additional APIs endpoints for faster manipulating states and forcing errors
+- Simplified Oauth 2.0 with PKCE to test your app if it is ready for real API
 
 ## Roadmap
 - Scenarios and snapshots system (WIP)
 - More error testing
-- Persistant storage
+- Persistent storage
 - Energy and location API
 
 
@@ -36,10 +36,10 @@ You can explore the public instance here:
 > You can check the diffrences in the companion app: PLACEHOLDER
 
 
-## Limitions:
+## Limitations:
 - One API key per user. This means one refresh token, one access token, and so on. Because of this, the project cannot accurately reproduce real-world scenarios involving multiple users.(Could be comming in future but it would require using real database)
 - No expiration of access token (TODO)
-- Only one api and Oauth endpoints. More comming in future
+- Only one api and Oauth endpoints. More coming in future
 
 # Contributions
 When contributing to this project, please keep in mind that it was created for the Hack Club YSWS Stardance event. Contributions that align with the project’s goals and maintain its quality are greatly appreciated even if you don't take part in that event.

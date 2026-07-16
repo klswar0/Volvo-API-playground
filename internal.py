@@ -22,7 +22,7 @@ def Internal():
 
 
 def Terminal(VIN: str, key: str, request: Request):
-    return templates.TemplateResponse(name="terminal.html", request=request, context={"vin": VIN, "key": key})
+    return templates.TemplateResponse(name="terminal.html", request=request, context={"VIN": VIN, "key": key})
 
 
 #OAuth2 endpoints for testing and dashboard purposes. Not part of the official API.

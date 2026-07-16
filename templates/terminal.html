@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- this is AI generated code, when rewritten please remove this comment -->
 <html>  
 <head>
     <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js"></script>
@@ -40,7 +41,8 @@
     <script>
         
       
-        const wsUrl = `ws://127.0.0.1:8000/internal/status/ws?VIN={{vin}}&key={{key}}`;
+        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const wsUrl = `${wsScheme}://${window.location.host}/internal/status/ws?VIN={{VIN}}&key={{key}}`;
         const socket = new WebSocket(wsUrl);
         
         const terminalLog = document.getElementById('terminal-log');

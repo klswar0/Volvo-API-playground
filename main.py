@@ -923,7 +923,7 @@ def snapshot(vcc_api_key: str = Header(...,alias="vcc-api-key"), command: str = 
     """internal endpoint for taking a snapshot of the current status for the specified VIN"""
     return snapshots(vcc_api_key, command, name)
 
-
-uvicorn.run(app)
+if __name__ == "__main__":
+    uvicorn.run(app,host="0.0.0.0",port=8000)
 
 saveFileSnapshots()  # Save snapshots to file on shutdown
