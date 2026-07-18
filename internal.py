@@ -110,7 +110,7 @@ def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
         value = car.update(attribute, value,True)
-        if value == True and (startUp["statusNofication"] == "SET" or startUp["statusNofication"] == "ALL"):
+        if value == True and (startUp["statusNotification"] == "SET" or startUp["statusNotification"] == "ALL"):
             notifier.trigger_update(VIN, car, attribute)
         return value #NOTE: most likely works now /NOT use the update method becouse it will validate the value and trigger the notifier second time
     except ValueError as e:

@@ -31,7 +31,7 @@ startUp={
     "Validation": True,
     "Dashboard": True,# not implemented yet
     "Websocket": True,# not implemented yet
-    "statusNofication": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes
+    "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes
 }
 
 
@@ -241,6 +241,25 @@ class Car(BaseModel):
                 return True
             if value not in valid:
                 return False
+        return True
+    #NOTE:needs checking implement with notifier trigger update multiple
+    def checkValidityMultiple(self, attributes_values: dict):
+        if startUp["Validation"] == False:
+            return True
+        
+        for attribute, value in attributes_values.items():
+            if attribute in options:
+                valid = options[attribute]
+                if valid == "":
+                    continue
+                if valid == "int":
+                    try:
+                        int(value)  # Check if value can be converted to int
+                    except ValueError:
+                        return False,attribute
+                    continue
+                if value not in valid:
+                    return False,attribute
         return True
     
     #TODO: invoices are difrent for locks 

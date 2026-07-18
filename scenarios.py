@@ -4,6 +4,8 @@ import os
 from fastapi import Body, Header 
 from fastapi.responses import JSONResponse
 
+
+from classCar import startUp
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal
 from notifier import notifier
@@ -119,21 +121,30 @@ SCENARIO_TEMPLATES = {
 
 SCENARIO_USER = {}
 #NOTE: NOT TESTED
-if os.path.exists("scenarios.json"):
-    with open("scenarios.json", "r") as f:
-        SCENARIO_TEMPLATES = json.load(f)
+try:
+    if os.path.exists("scenarios_user.json"):
+        with open("scenarios_user.json", "r") as f:
+            SCENARIO_USER = json.load(f)
+except Exception as e:
+    print(f"Error loading user scenarios: {e}")
+
 #NOTE: NOT TESTED
 def scenariosFunc(vcc_api_key: str = Header(...), VIN: str = Header(...),scenario: str = Body(...)):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
         if scenario in SCENARIO_TEMPLATES:
             for key, value in SCENARIO_TEMPLATES[scenario].items():
-                #notifier.notify(VIN, key, value)
+
                 car.update(key, value,True)
+                if startUp["statusNotification"] == "ALL" or startUp["statusNotification"] == "SET":
+                    notifier.trigger_update(VIN, car, key)
         elif scenario in SCENARIO_USER:
             for key, value in SCENARIO_USER[scenario].items():
-                #notifier.notify(VIN, key, value)
+
                 car.update(key, value,True)
+                if startUp["statusNotification"] == "ALL" or startUp["statusNotification"] == "SET":
+                    notifier.trigger_update(VIN, car, key)
+
         else:
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid scenario: {scenario}"}}, status_code=400)
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/Scenario applied successfully: {scenario}"}, status_code=200)
