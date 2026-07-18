@@ -2,10 +2,10 @@
 You can use official docs for every endpoint that isnt /internal/* but you can use this docs to learn how volvo apis work (CONNECTED VEHICLE API other APIs are in works)
 ## Playground APIs
 
-### '/internal/APIKey'
+### /internal/APIKey
 This GET endpoint creates a new API key 
 
-### '/internal/addCar'
+### /internal/addCar
 This POST endpoint creates a new Car.
 Header:
 - ***vcc-api-key*** the api key created or the ready scenario key
@@ -16,7 +16,7 @@ Body:
 
 info: attribute and values lenght should be the same
 
-### '/internal/update'
+### /internal/update
 This POST endpoint updates a specific car attributes.
 Header:
 - ***vcc-api-key*** the api key created or the ready scenario key
@@ -27,19 +27,19 @@ Body:
 
 info:need to fix updates and this enpoints so doesnt call notifier 2 times
 
-### '/internal/ws'
+### /internal/ws
 Websocket on start sends all data about the car then sends data only of changed attributes.
 Query:
 - ***VIN*** VIN of virtual vehicle you want to monitor
 - ***key*** api key
 
-### '/internal/status'
+### /internal/status
 This GET endpoint  all data about the car.
 Header:
 - ***VIN*** VIN of virtual vehicle you want to monitor
 - ***key*** api key
 
-### '/internal/oauth2
+### /internal/oauth2
 This GET endpoint sends all information about Oauth2 settings
 header:
 - ***vcc_api_key*** api key with enabled Oauth2
@@ -55,7 +55,7 @@ header:
 }
 ```
 
-### '/internal/oauth2/deactivate
+### /internal/oauth2/deactivate
 This POST endpoint disable Oauth2 flow for provided API key
 header:
 - ***vcc_api_key*** api key with enabled Oauth2
@@ -65,7 +65,7 @@ header:
 }
 ```
 
-### '/internal/oauth2/regenerate
+### /internal/oauth2/regenerate
 This POST endpoint creates new access and refresh tokens
 header:
 - ***vcc_api_key*** api key with enabled Oauth2
@@ -78,7 +78,7 @@ header:
 }
 ```
 
-### '/internal/oauth2/activate
+### /internal/oauth2/activate
 This POST endpoint activate Oauth2 flow for provided API key
 header:
 - ***vcc_api_key*** api key with enabled Oauth2
@@ -120,6 +120,13 @@ It redirects to the rest of the pages.
 
 
 ## official endpoints:
+
+Errors catched in official docs and specification.
+docs are outdated (more than one diffrences between specification)
+specification dont says responses are in {data: <what specification says>} 
+
+### Error responses
+Error responses could not be the same as in official API. Could be more informative or less informative. This project is WORK IN PROGRESS in the future it could change.
 ### Reused terms
 ### Timestamp
 Timestamp in ISO-8601 format ~~when the value has been last retrieved from the vehicle~~ in this plaground the current time or if car is unavailble then the time when car is set to that.
@@ -153,7 +160,7 @@ It only needs ***auth header***
 ```
 
 ### Get vehicle information
-/vehicle/{VIN}
+/vehicles/{VIN}
 This endpoints send information about the car.
 It needs ***auth header*** and VIN
 ```
@@ -183,7 +190,7 @@ legend:
 info: mostly static in playground but in future you will be able to change the static data
 
 ### engine status
-/vehicle/{VIN}/engine-status
+/vehicles/{VIN}/engine-status
 Vehicle's latest engine status value.
 It needs ***auth header*** and VIN (PATH)
 TODO: check with volvo specification why there is unit????
@@ -201,10 +208,10 @@ legend:
 - value: RUNNING or STOPPED
 
 ### engine start
-/vehicle/{VIN}/commands/engine-start
+/vehicles/{VIN}/commands/engine-start
 Starts the engine.
 It needs ***auth header*** and VIN (PATH)
-Bod: {runtimeMinutes: <int>} (range from 1-15)
+Body: {runtimeMinutes: <int>} (range from 1-15)
 
 ```
 {
@@ -219,7 +226,7 @@ legend:
 - invokeStatus read reused terms
 
 ### engine stop
-/vehicle/{VIN}/commands/engine-stop
+/vehicles/{VIN}/commands/engine-stop
 Stops the engine.
 It needs ***auth header*** and VIN (PATH)
 ```
@@ -231,5 +238,49 @@ It needs ***auth header*** and VIN (PATH)
   }
 }
 ```
-legend:
-- invokeStatus read reused terms
+
+
+
+## Climate start
+/vehicles/{VIN}/commands/climate-start
+Starts the climate.
+It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "vin": <str>,
+    "invokeStatus": <str>,
+    "message": "" # realy dont know what to put here
+  }
+}
+```
+
+
+## Climate stop
+/vehicles/{VIN}/commands/climate-stop
+Stops the climate.
+It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "vin": <str>,
+    "invokeStatus": <str>,
+    "message": "" # realy dont know what to put here
+  }
+}
+```
+
+## Windows Status
+/vehicles/{VIN}/windows-status
+Status of the windows.
+It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "windowsStatus": {
+      "value": <str>,
+      "timestamp": "2026-07-06T20:32:17.170Z"
+    }
+  }
+}
+```
