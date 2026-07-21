@@ -9,6 +9,8 @@ legend:
 - real life testing needed:🌍
 - rework needed:🛑
 
+## before first ship:
+
 | endpoints  | status | comments |
 |:----------:|:------------:|:-----------:|
 | climatization-start | 🆗  | 🌍   |
@@ -43,7 +45,15 @@ legend:
 |:----------:|:------------:|:-----------:|
 | dashboard | 🆗 | 🌍   |
 | Oauth2 | 🆗   | 🌍   |
-| example app |  ❌   | 🌍   |
+| example app |   🆗    | 🌍   | companion/compare app
 | internal endpoints for testing errors |     | 🌍   |
 | scenarios |     | 🌍   |
 | snapshots |     | 🌍   |
+| docs |     |    |
+
+## after 2 ship...
+- Notification system improvements for better real-time updates (more than one updated attribute at the same time).
+- update the updates endpoint
+- logging solution for error and debug information
+- 2 response modes (1:1 volvo API and helpful error messages)
+- the rest API (wihout energy device api)

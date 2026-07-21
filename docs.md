@@ -142,6 +142,10 @@ Exception: RUNNING for sure can only go to engine and climate endpoints
 - ***Content-Type*** always application/json
 - ***authorization*** access token generated thru Oauth. Not checked in this playground if disabled Oauth2
 - ***vcc-api-key*** your api key (dont use your official api key in this playground for safety)
+
+### INFO:
+ ~~The official Volvo Connected Vehicle API rejects requests with Content-Type: application/json;charset=UTF-8 for some endpoints and only accepts Content-Type: application/json. This behavior will be  replicated by the playground for compatibility.~~ More diging needed
+
 ### List vehicles
 /vehicles
 This endpoints sends all cars VINs.
@@ -284,3 +288,98 @@ It needs ***auth header*** and VIN (PATH)
   }
 }
 ```
+## Doors Status
+/vehicles/{VIN}/doors-status
+Status of the doors and locks.
+It needs ***auth header*** and VIN (PATH)
+
+
+
+
+
+
+## locking the car
+/vehicles/{VIN}/commands/lock
+Locks the car.
+It needs ***auth header*** and VIN (PATH)
+
+
+
+
+## locking the car (reduced)
+**DISABLED**
+/vehicles/{VIN}/commands/lock-reduced-guard
+Locks the car.
+It needs ***auth header*** and VIN (PATH)
+
+
+## Unlocking the car
+/vehicles/{VIN}/commands/unlock
+Unlocks the car.
+It needs ***auth header*** and VIN (PATH)
+
+## flashing the lights
+/vehicles/{VIN}/commands/flash-lights
+Flashes the lights.
+It needs ***auth header*** and VIN (PATH)
+
+
+## horn
+/vehicles/{VIN}/commands/horn
+Sounds the horn.
+It needs ***auth header*** and VIN (PATH)
+
+## horn and flash lights
+/vehicles/{VIN}/commands/horn-and-flash
+Sounds the horn and flashes the lights.
+It needs ***auth header*** and VIN (PATH)
+
+## statistics
+/vehicles/{VIN}/statistics
+Statistics of the car.
+It needs ***auth header*** and VIN (PATH)
+
+## tyres
+/vehicles/{VIN}/tyres
+Status of tyres.
+It needs ***auth header*** and VIN (PATH)
+
+## fuel
+/vehicles/{VIN}/fuel
+Status of fuel.
+It needs ***auth header*** and VIN (PATH)
+
+## odometer
+/vehicles/{VIN}/odometer
+Status of odometer.
+It needs ***auth header*** and VIN (PATH)
+
+## engine
+/vehicles/{VIN}/engine
+diagnostics of engine.
+It needs ***auth header*** and VIN (PATH)
+
+## diagnostics
+/vehicles/{VIN}/diagnostics
+diagnostics of the car.
+It needs ***auth header*** and VIN (PATH) 
+
+## brakes
+/vehicles/{VIN}/brakes
+diagnostics of brake fluid.
+It needs ***auth header*** and VIN (PATH)
+
+## warnings
+/vehicles/{VIN}/warnings
+Shows a lot of warnings for the lights
+It needs ***auth header*** and VIN (PATH)
+
+## commands
+/vehicles/{VIN}/commands
+List of commands available for the car.
+It needs ***auth header*** and VIN (PATH)
+
+## command accessability
+/vehicles/{VIN}/commands-accessibility
+Returns if the car is able to execute commands.
+It needs ***auth header*** and VIN (PATH)
