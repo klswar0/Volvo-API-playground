@@ -8,6 +8,8 @@ def autoErrorResponse(e:str, VIN:str=None):
         return UnauthorizedResponse(str(e))
     elif str(e) == "Invalid VIN":
         return BadRequestResponse(VIN)
+    elif str(e) == "Invalid Content-Type":
+        return ErrorResponse("BAD_REQUEST", "Invalid Content-Type. Only 'application/json' is accepted.", 400)
     else:
         return ErrorResponse("INTERNAL_SERVER_ERROR", f"An unexpected error occurred. INFO:{e}", 500)
 

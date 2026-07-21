@@ -45,6 +45,9 @@ def VINHandling(VIN:str, auth_header: AuthHeader):
             raise ValueError("Invalid API key") 
         if str(e) == "Invalid access token":
             raise ValueError("Invalid access token") #implement it everwhere
+    
+    if auth_header.content_type.split(";")[0] != "application/json":
+        raise ValueError("Invalid Content-Type")
     for car in database[auth_header.vcc_api_key]:
         if car.VIN == VIN:
             return car
@@ -366,25 +369,25 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
             return JSONResponse(content=data, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
 
 
-# @app.post("/vehicles/{VIN}/commands/lock-reduced-guard") #only for AAOS not Sensus
-# def doorLockReduce(VIN:str, auth_header: AuthHeader = Header(...)):
-#     try:
-#         car =VINHandling(VIN, auth_header)
-#     except ValueError as e:
-#         return autoErrorResponse(e, VIN)
-#     else:
-#         command = "LOCK"
-#         if command not in car.commands:
-#             return NotSupportedResponse(command)
-#         invoiceStatus = car.InvoiceStatus("locks") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
-#         if invoiceStatus[1] == True:
-#             car.update("centralLock", "LOCKED")
-#             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-#             return JSONResponse(content=data, status_code=200)   
-#         else:
-#             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-#             return JSONResponse(content=data, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
-
+@app.post("/vehicles/{VIN}/commands/lock-reduced-guard") #only for AAOS not Sensus
+def doorLockReduce(VIN:str, auth_header: AuthHeader = Header(...)):
+    """send a command to lock the doors with reduced guard for the specified VIN. Only for AAOS not Sensus."""
+    try:
+        car =VINHandling(VIN, auth_header)
+    except ValueError as e:
+        return autoErrorResponse(e, VIN)
+    else:
+        command = "LOCK_REDUCED_GUARD"
+        if command not in car.commands:
+            return NotSupportedResponse(command)
+        invoiceStatus = car.InvoiceStatus("locks") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
+        if invoiceStatus[1] == True:
+            car.update("centralLock", "LOCKED")
+            data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
+            return JSONResponse(content=data, status_code=200)   
+        else:
+            data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
+            return JSONResponse(content=data, status_code=500) # what
 
 @app.post("/vehicles/{VIN}/commands/unlock") # doesnt work like in real life you must click button of the trunk
 def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
@@ -665,7 +668,7 @@ def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
 
 
-@app.get("/vehicles/{VIN}/warnings") #STATIC for now
+@app.get("/vehicles/{VIN}/warnings") 
 def Warnings(VIN:str, auth_header: AuthHeader = Header(...)):
     """get the current warning status for the specified VIN. STATIC for now"""
     try:

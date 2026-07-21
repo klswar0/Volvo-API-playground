@@ -1,3 +1,5 @@
+
+
 from pydantic import BaseModel, Field 
 from notifier import notifier
 from datetime import datetime, timezone
@@ -5,7 +7,7 @@ from datetime import datetime, timezone
 
 
 class AuthHeader(BaseModel):
-    content_type: str = Field(default="application/json", alias="Content-Type")
+    content_type: str = Field(default="",alias="Content-Type") #Field(default="application/json", alias="Content-Type")
     authorization: str =Field(default="") #= Field(...) # NOT IMPLEMENTED
     vcc_api_key: str =Field(...,alias="vcc-api-key")
 
@@ -263,7 +265,7 @@ class Car(BaseModel):
         return True
     
     #TODO: invoices are difrent for locks 
-    def InvoiceStatus(self, command, status=None): #status true turning ON false turning off TODO update climate and engine becouse know its not working for climate stop and engine stop
+    def InvoiceStatus(self, command, status=None): 
         if self.nextInvoiceStatus == "":
             if self.availabilityStatus_value == "UNAVAILABLE":
                 if self.availabilityStatus_unavailableReason == "NO_INTERNET":
