@@ -1,38 +1,45 @@
 <!DOCTYPE html>
-    <html>
-    <head>
-   
-        <title>Playground login</title>
-        <script src="https://unpkg.com/htmx.org@2.0.10/dist/htmx.min.js"></script>
+<html lang="en">
 
-        <link rel="stylesheet" href="welcome.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground login</title>
+    <script src="https://unpkg.com/htmx.org@2.0.10/dist/htmx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="welcome.css">
 
-        
-    </head>
-    <body>
-        <div class="premium-card-dark">
-        <div id="welcome-form">
-        <h1>Welcome to Volvo API Playground Dashboard</h1>
-        <p>Please enter your API key to access the playground.</p>
-        <form hx-get="/internal/welcome/Check" hx-target="#error-message" class="input-form">
-            <label>Enter your API Key:</label><br>
-            <input type="text" id="vcc_api_key" name="vcc_api_key" required >
-            <input id="submit-btn" type="submit" value="Submit">
-        </form>
-        <div id="error-message"></div>
-        </div>
-        <div id="generate-api-key">
-        <p>No API key? Generate one.</p>
-        <button 
-            class="generate-button" 
-            hx-get="/internal/welcome/APIKey" 
-            hx-target="#generate-api-key" 
-            hx-swap="outerHTML"
-            
-        >
-        Generate API Key
-        </button>
-        </div>
-    </div>
-    </body>
-    </html>
+</head>
+
+<body class="min-h-screen text-zinc-200 flex flex-col items-center justify-center p-6 md:p-16 selection:bg-sky-300 selection:text-white ">
+    <div class="flex-1"></div>
+    <header class="max-w-4xl w-full text-center mb-12 space-y-4">
+        <h1 class="text-4xl  md:text-5xl">Volvo API Playground Dashboard</h1>
+    </header>
+    <main class="w-full max-w-md">
+        <section class="p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4">
+
+            <div class=" flex flex-col gap-4 text-center">
+                <p>Please enter your API key to access the playground.</p>
+            <form hx-get="/internal/welcome/Check" hx-target="#error-message" class="flex flex-col gap-4" >
+    
+                <label>Enter your API Key:</label>
+                <input type="text" id="vcc_api_key" name="vcc_api_key" placeholder="API Key" required class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <input id="submit-btn" type="submit" value="Submit" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all">
+            </form>
+            <div id="error-message"></div>
+            <hr class="border-slate-500 my-1">
+            <div id="generate-api-key">
+                <p>No API key? Generate one.</p>
+                <button hx-get="/internal/welcome/APIKey" hx-target="#generate-api-key"
+                    hx-swap="outerHTML"  class="w-full mt-2 px-4 py-2.5 bg-blue-500 hover:bg-sky-700 text-zinc-200 rounded-xl border border-zinc-700/50 transition-colors whitespace-nowrap">                    
+                    Generate API Key
+                </button>
+            </div>
+            </div>
+        </section>
+    </main>
+    <div class="flex-2"></div>
+</body>
+
+</html>
