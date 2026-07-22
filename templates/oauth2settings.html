@@ -1,93 +1,126 @@
 <!DOCTYPE html>
-<html>  
-    <head>
-        <title>Car dashboard</title>
-            <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js"></script>
+<html>
 
-            <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.1/ws.js"></script>{#delete if diffrent wy to dashboard#}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car dashboard</title>
+    <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js"></script>
 
-            <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
-            <link rel="stylesheet" href="OAuth2settings.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-    </head>    
-<body>
-    <h1>OAuth2 Settings</h1>
-    <p>API key: {{ key }}</p>
-    <div class="premium-card-dark-Oauth2">
-           
-        <p>OAuth2 status: {{ oauth2_status }}</p>
-        {% if oauth2_status == "Activated" %}
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+    <link rel="stylesheet" href="OAuth2settings.css">
+
+</head>
+
+<body
+    class="min-h-screen text-zinc-200 flex flex-col items-center justify-center p-6 md:p-16 selection:bg-sky-300 selection:text-white ">
+    <header class="max-w-4xl w-full text-center mb-12 space-y-4">
+        <h1 class="text-4xl  md:text-5xl">OAuth2 Settings</h1>
+        <p class="text-lg  md:text-">API key: {{ key }}</p>
+    </header>
+    <main>
+        <section
+            class=" min-w-md p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center flex flex-col ">
+            <p class="text-lg  md:text-xl">OAuth2 status: {{ oauth2_status }}</p>
+            {% if oauth2_status == "Activated" %}
             <p>PKCE status: {{ PKCE }}</p>
-            
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
+                hx-swap="innerHTML transition:true ">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="PKCE">
                 {% if PKCE == True %}
-                    <button type="submit" name="value" value="false">Deactivate PKCE</button>
+                <button type="submit" name="value" value="false"
+                    class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    Deactivate PKCE
+                </button>
                 {% else %}
-                    <button type="submit" name="value" value="true">Activate PKCE</button>
+                <button type="submit" name="value" value="true"
+                    class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    Activate PKCE
+                </button>
                 {% endif %}
             </form>
 
             <p>Client ID: {{ key }}</p>
-            <p>Client Secret: {{ client_secret }}</p>
-            
+            <p class="text-sm text-zinc-400">Always is the same as the API key</p>
+            <p>Client Secret: {% if client_secret != "" %}{{ client_secret }}{% else %}Not set{% endif %}</p>
+
             <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="client_secret">
-                <input type="text" name="value" placeholder="Enter new client secret">
+                <input type="text" name="value" placeholder="Enter new client secret"
+                    class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
             </form>
 
             {% if code != "" %}
-                <p>Code: {{ code }}</p>
+            <p>Code: {{ code }}</p>
             {% endif %}
 
-            <p>Access Token: {{ access_token }}</p>
+            <p>Access Token: {% if access_token != "" %}{{ access_token }}{% else %}Not set{% endif %}</p>
             <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="access_token">
-                <input type="text" name="value" placeholder="Enter new access token">
+                <input type="text" name="value" placeholder="Enter new access token"
+                    class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
             </form>
 
-            <p>Refresh Token: {{ refresh_token }}</p>
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}" >
+            <p>Refresh Token: {% if refresh_token != "" %}{{ refresh_token }}{% else %}Not set{% endif %}</p>
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="refresh_token">
-                <input type="text" name="value" placeholder="Enter new refresh token">
+                <input type="text" name="value" placeholder="Enter new refresh token"
+                    class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
             </form>
 
             {% if redirect_uri != "" %}
-                <p>Redirect URI: {{ redirect_uri }}</p>
-                <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}" >
-                    <input type="hidden" name="key" value="{{ key }}">
-                    <input type="hidden" name="attribute" value="redirect_uri">
-                    <input type="text" name="value" placeholder="Enter new redirect URI">
-                </form>
+            <p>Redirect URI: {{ redirect_uri }}</p>
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="attribute" value="redirect_uri">
+                <input type="text" name="value" placeholder="Enter new redirect URI"
+                    class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+            </form>
             {% else %}
-                <p>Redirect URI: Not set</p>
-                <p>Means all redirects are allowed</p>
-                <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
-                    <input type="hidden" name="key" value="{{ key }}">
-                    <input type="hidden" name="attribute" value="redirect_uri">
-                    <input type="text" name="value" placeholder="Enter new redirect URI">
-                </form>
+            <p>Redirect URI: Not set</p>
+            <p class="text-sm text-zinc-400 gap-0">Means all redirects are allowed</p>
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="attribute" value="redirect_uri">
+                <input type="text" name="value" placeholder="Enter new redirect URI"
+                    class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+            </form>
             {% endif %}
             <br>
 
             <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="OAuth2">
-                <button type="submit" name="value" value="false">Deactivate OAuth2</button>
+                <button type="submit" name="value" value="false"
+                    class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    Deactivate OAuth2
+                </button>
             </form>
-        {% else %}
-            <p>OAuth2 is not activated for this API key</p>
+            {% else %}
+            <p class="mb-5 text-base  md:text-lg">OAuth2 is not activated for this API key</p>
             <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="OAuth2">
-                <button type="submit" name="value" value="true">Activate OAuth2</button>
+                <button type="submit" name="value" value="true"
+                    class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    Activate OAuth2
+                </button>
             </form>
-        {% endif %}
-    </div>
-    <button id="go-back" onclick="history.back()">Go Back</button>
+            {% endif %}
+        </section>
+    </main>
+    <button
+        class="min-w-30px mt-4 px-4 py-2.5 bg-blue-500/30 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer"
+        onclick="history.back()">
+        Go Back
+    </button>
 </body>
+
 </html>
