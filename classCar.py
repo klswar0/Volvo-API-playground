@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 
 class AuthHeader(BaseModel):
-    content_type: str = Field(default="",alias="Content-Type") #Field(default="application/json", alias="Content-Type")
+    content_type: str =  Field(default="application/json", alias="Content-Type")#Field(default="",alias="Content-Type")
     authorization: str =Field(default="") #= Field(...) # NOT IMPLEMENTED
     vcc_api_key: str =Field(...,alias="vcc-api-key")
 

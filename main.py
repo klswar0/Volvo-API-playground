@@ -46,8 +46,8 @@ def VINHandling(VIN:str, auth_header: AuthHeader):
         if str(e) == "Invalid access token":
             raise ValueError("Invalid access token") #implement it everwhere
     
-    if auth_header.content_type.split(";")[0] != "application/json":
-        raise ValueError("Invalid Content-Type")
+    # if auth_header.content_type.split(";")[0] != "application/json":
+    #     raise ValueError("Invalid Content-Type")
     for car in database[auth_header.vcc_api_key]:
         if car.VIN == VIN:
             return car
