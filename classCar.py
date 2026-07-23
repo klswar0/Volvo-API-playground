@@ -50,7 +50,6 @@ options = {
     "odometer": "int", # 0-infinity in km
 
     "climate": [True, False],
-    "engine": ["ENGINE_START", "ENGINE_STOP"],
     "availabilityStatus_value": ["AVAILABLE", "UNAVAILABLE", "UNSPECIFIED"],
     "availabilityStatus_unavailableReason": ["UNSPECIFIED", "NO_INTERNET", "POWER_SAVING_MODE", "CAR_IN_USE",""],
     "engineStatus": ["STOPPED", "RUNNING"],

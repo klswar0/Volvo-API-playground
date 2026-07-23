@@ -5,46 +5,48 @@ body {
   background-attachment: fixed; 
   color: #ffffff;   
   font-family: "Source Sans 3", sans-serif;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-
-  display: grid;
-  place-items: center;     
-  min-height: 100vh;
 }
 
 h1 {
   font-family: "Arimo", sans-serif;
   font-weight: 350; 
   letter-spacing: -0.02em;
-  padding: 10px;
-  margin: 0 0 20px 0;
+}
+
+.htmx-swapping {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.25s ease-out;
+}
+
+.htmx-settling {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 
-#car-info {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.info {
-  background-color: rgba(255, 255, 255, 0.03); 
-  backdrop-filter: blur(12px); 
-  border: 1px solid rgba(255, 255, 255, 0.08); 
-  border-radius: 12px; 
-  padding: 20px;
-  width: 60%;
-  max-width: 600px;
-  margin: 20px auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
-  text-align: center;
+.animate-fade-in {
+    animation: fadeInSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-#Iframe {
-  width: 100%;
-  max-width: 800px;
-  margin: 20px auto;
-  overflow: hidden; 
+.sec:hover {
+  transform: translateY(-2px);
+  border-color: rgba(8, 86, 187, 0.5);
+  
+}
+
+.sec {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); 
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }

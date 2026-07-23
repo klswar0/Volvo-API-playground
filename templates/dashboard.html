@@ -2,25 +2,30 @@
 <html>  
     <head>
         <title>Car dashboard</title>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js"></script>
 
             <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.1/ws.js"></script>
-
+            <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
             <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
             <link rel="stylesheet" href="dashboardWS.css">
     </head>    
 
-    <body>
-        <h1>Car dashboard</h1>
-        <p>API Key: {{key}}</p>
-        
+    <body  class="min-h-screen text-zinc-200 flex flex-col items-center justify-center p-6 md:p-16 selection:bg-sky-300 selection:text-white ">
+        <header class="text-center" >
+            <h1 class="text-3xl md:text-5xl">Car dashboard</h1>
+            <p class="text-lg md:text-xl">API Key: {{key}}</p>
+        </header>
+        <main>
         <div hx-ext="ws" ws-connect="/internal/dashboard/ws?VIN={{VIN}}&key={{key}}">
             <div id="car-info" hx-swap-oob="true">   
                 <p>Awaiting real-time vehicle data connection...</p>
             </div>
         </div>
-
-        <div id="Iframe">
+        </main>
+        <div id="Iframe" class="mt-6 md:mt-12 w-full max-w-4xl">
             <iframe src="/internal/terminal?VIN={{VIN}}&key={{key}}" width="100%" height="400px" style="border: none;"></iframe>
         </div>
 

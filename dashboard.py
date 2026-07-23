@@ -56,7 +56,7 @@ async def DashboardWS(websocket: WebSocket):
         car_data = car.model_dump()
         
         car_data["key"] = api_key
-        template = templates.get_template("dashboardUpdate.html")
+        template = templates.get_template("dashboardSetup.html")
         html=template.render(car_data)
         await websocket.send_text(html)
         

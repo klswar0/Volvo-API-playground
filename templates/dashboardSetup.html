@@ -1,0 +1,152 @@
+<div id="car-info"   >
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+    <section class="order-first md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center flex flex-col ">
+        <p class="text-lg md:text-2xl">VIN</p>
+        <p class="text-base md:text-lg">{{VIN}}</p>
+    </section>
+
+
+    <section class=" order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center items-center flex flex-col">
+        <p>Model Year:</p>
+        <div id="modelYear">
+            <p>{{modelYear}}</p>
+            <form data-attribute="modelYear" hx-ext="json-enc"
+                hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                <input type="hidden" name="attribute" value="modelYear">
+                <input type="number" name="value" min="0" placeholder="Enter new model year" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <input type="submit" value="change" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+
+            </form>
+        </div>
+    </section>
+
+
+    <section class=" order-3 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center items-center flex flex-col">
+        <p>Gearbox Type:</p>
+        <div id="gearboxType">
+            <p>{{gearboxType}}</p>
+            <form data-attribute="gearboxType" hx-ext="json-enc"
+                hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                <input type="hidden" name="attribute" value="gearboxType">
+                <select name="value" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    <option value="AUTOMATIC">AUTOMATIC</option>
+                    <option value="MANUAL">MANUAL</option>
+                </select>
+                <input type="submit" value="change" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+            </form>
+        </div>
+    </section>
+
+
+    <section class=" order-4 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center items-center flex flex-col">
+        <p>Odometer:</p>
+        <div id="odometer">
+            <p>{{odometer}}</p>
+            <form data-attribute="odometer" hx-ext="json-enc"
+                hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                <input type="hidden" name="attribute" value="odometer">
+                <input type="number" name="value" min="0" placeholder="Enter new odometer reading" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <input type="submit" value="change" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+            </form>
+        </div>
+
+    </section>
+
+    <section class=" order-5 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center items-center flex flex-col">
+        <p class="text-base md:text-lg">Availability Status:</p>    
+        <div id="availabilityStatus_value">
+        <p>{{ availabilityStatus_value }}</p>
+        <form data-attribute="availabilityStatus_value" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="availabilityStatus_value">
+            <select name="value" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <option value="AVAILABLE">AVAILABLE</option>
+                <option value="UNAVAILABLE">UNAVAILABLE</option>
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+            </select>
+            <input type="submit" value="change" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+        </form>
+    </div>
+    </section>
+
+
+    <section class=" order-6 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center items-center flex flex-col">
+    <p>Availability Status Unavailable Reason:</p>
+    {# if car is available this should be displayed TODO #}
+    <div id="availabilityStatus_unavailableReason">
+        <p>{{availabilityStatus_unavailableReason}}</p>
+        <form data-attribute="availabilityStatus_unavailableReason" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="availabilityStatus_unavailableReason">
+            <select name="value" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <option value="UNSPECIFIED">UNSPECIFIED</option>
+                <option value="NO_INTERNET">NO_INTERNET</option>
+                <option value="POWER_SAVING_MODE">POWER_SAVING_MODE</option>
+                <option value="CAR_IN_USE">CAR_IN_USE</option>
+            </select>
+            <input type="submit" value="change" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+        </form>
+    </div>
+    </section>
+    </div>
+    <h2 class="mt-6 text-center text-2xl md:text-4xl">Fuel and Battery</h2>
+    {% update system need to send this whole block of code #}
+        {% if fuelType == "HYBRID" %}
+        <div id="fuelAndBattery" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        {% else %}
+        <div id="fuelAndBattery" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        {% endif %}
+        <section class=" order-first md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center items-center flex flex-col">
+            <p>Fuel Type:</p>
+            <div id="fuelType">
+                <p>{{fuelType}}</p>
+                <form data-attribute="fuelType" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="fuelType">
+                    <select name="value" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                        <option value="PETROL">PETROL</option>
+                        <option value="DIESEL">DIESEL</option>
+                        <option value="HYBRID">HYBRID</option>
+                        <option value="ELECTRIC">ELECTRIC</option>
+                    </select>
+                    <input type="submit" value="change" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+
+                </form>
+            </div>
+        </section>
+        {% if fuelType != "ELECTRIC" %}
+        <section class=" order-first md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center items-center flex flex-col">
+            <p>Fuel Level:</p>
+            <div id="fuelLevel">
+                <p>{{fuelLevel}}</p>
+                <form data-attribute="fuelLevel" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="fuelLevel">
+                    <select name="number" min="0" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    </select>
+                    <input type="submit" value="change" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+
+                </form>
+            </div>
+        </section>
+        {% endif %}
+
+        {% if fuelType == "HYBRID" or fuelType == "ELECTRIC" %}
+        <section class=" order-first md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 sec text-center items-center flex flex-col">
+            <p>Battery Level:</p>
+            <div id="batteryLevel">
+                <p>{{batteryLevel}}</p>
+                <form data-attribute="batteryLevel" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="batteryLevel">
+                    <select name="number" min="0" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    </select>
+                    <input type="submit" value="change" class="w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+
+                </form>
+            </div>
+        </section>
+        {% endif %}
+        </div>
+
+</div>
