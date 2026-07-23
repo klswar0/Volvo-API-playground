@@ -292,6 +292,47 @@ It needs ***auth header*** and VIN (PATH)
 /vehicles/{VIN}/doors-status
 Status of the doors and locks.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "centralLock": {
+      "value": <str>,
+      "timestamp": "2026-07-21T12:48:31.896Z"
+    },
+    "frontLeftDoor": {
+      "value": <str>,
+      "timestamp": "2026-07-21T12:48:31.896Z"
+    },
+    "frontRightDoor": {
+      "value": <str>,
+      "timestamp": "2026-07-21T12:48:31.896Z"
+    },
+    "hood": {
+      "value": <str>,
+      "timestamp": "2026-07-21T12:48:31.896Z"
+    },
+    "rearLeftDoor": {
+      "value": <str>,
+      "timestamp": "2026-07-21T12:48:31.896Z"
+    },
+    "rearRightDoor": {
+      "value": <str>,
+      "timestamp": "2026-07-21T12:48:31.896Z"
+    },
+    "tailGate": {
+      "value": <str>,
+      "timestamp": "2026-07-21T12:48:31.896Z"
+    },
+    "tankLid": {
+      "value": <str>,
+      "timestamp": "2026-07-21T12:48:31.896Z"
+    }
+  }
+}
+```
+legend:
+- value (cental lock): LOCKED, UNLOCKED, UNSPECIFIED
+- value (doors): CLOSED, OPEN, AJAR, UNSPECIFIED
 
 
 
@@ -302,77 +343,268 @@ It needs ***auth header*** and VIN (PATH)
 /vehicles/{VIN}/commands/lock
 Locks the car.
 It needs ***auth header*** and VIN (PATH)
-
+```
+{
+  "data": {
+    "vin": <str>,
+    "invokeStatus": <str>,
+    "message": <str> 
+  }
+}
+```
 
 
 
 ## locking the car (reduced)
-**DISABLED**
+**DISABLED** Manual support can be enabled (work like lock) 
 /vehicles/{VIN}/commands/lock-reduced-guard
 Locks the car.
 It needs ***auth header*** and VIN (PATH)
-
+```
+PLACEHOLDER
+```
 
 ## Unlocking the car
 /vehicles/{VIN}/commands/unlock
 Unlocks the car.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "vin": <str>,
+  "invokeStatus": <str>,
+  "message": <str>,
+  "readyToUnlock": True,
+  "readyToUnlockUntil": 5,
+  "details": "Not fully implemented manual button press needed in real life" #added as warning
+}
+```
 
 ## flashing the lights
 /vehicles/{VIN}/commands/flash-lights
 Flashes the lights.
 It needs ***auth header*** and VIN (PATH)
-
+```
+{
+  "data": {
+    "vin": <str>,
+    "invokeStatus": <str>,
+    "message": <str>
+  }
+}
+```
 
 ## horn
 /vehicles/{VIN}/commands/horn
 Sounds the horn.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "vin": <str>,
+    "invokeStatus": <str>,
+    "message": <str>
+  }
+}
+```
 
 ## horn and flash lights
 /vehicles/{VIN}/commands/horn-and-flash
 Sounds the horn and flashes the lights.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "vin": <str>,
+    "invokeStatus": <str>,
+    "message": <str>
+  }
+}
+```
 
 ## statistics
+**STATIC**
 /vehicles/{VIN}/statistics
 Statistics of the car.
 It needs ***auth header*** and VIN (PATH)
+```{
+  "data": {
+    "averageFuelConsumption": {
+      "value": 7.2374,
+      "unit": "l/100km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "averageEnergyConsumption": {
+      "value": 7.2374,
+      "unit": "kWh/100km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "averageFuelConsumptionAutomatic": {
+      "value": 7.4732,
+      "unit": "l/100km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "averageEnergyConsumptionAutomatic": {
+      "value": 7.4732,
+      "unit": "kWh/100km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "averageEnergyConsumptionSinceCharge": {
+      "value": 7.4732,
+      "unit": "kWh/100km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "averageSpeed": {
+      "value": 50,
+      "unit": "km/h",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "averageSpeedAutomatic": {
+      "value": 66,
+      "unit": "km/h",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "tripMeterManual": {
+      "value": 500,
+      "unit": "km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "tripMeterAutomatic": {
+      "value": 420,
+      "unit": "km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "distanceToEmptyTank": {
+      "value": 1312,
+      "unit": "km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    },
+    "distanceToEmptyBattery": {
+      "value": 312,
+      "unit": "km",
+      "timestamp": "2026-07-21T12:58:33.226Z"
+    }
+  }
+}
+```
 
 ## tyres
 /vehicles/{VIN}/tyres
 Status of tyres.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "frontLeft": {
+      "value":  <str>,
+      "timestamp": "2026-07-22T11:34:06.553Z"
+    },
+    "frontRight": {
+      "value": <str>,
+      "timestamp": "2026-07-22T11:34:06.553Z"
+    },
+    "rearLeft": {
+      "value": <str>,
+      "timestamp": "2026-07-22T11:34:06.553Z"
+    },
+    "rearRight": {
+      "value": <str>,
+      "timestamp": "2026-07-22T11:34:06.553Z"
+    }
+  }
+}
+```
+legend:
+- value: UNSPECIFIED, NO_WARNING, VERY_LOW_PRESSURE, LOW_PRESSURE, HIGH_PRESSURE.
 
 ## fuel
 /vehicles/{VIN}/fuel
 Status of fuel.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "fuelAmount": {
+      "value": <int>, # 0-inf
+      "unit": "l",
+      "timestamp": "2026-07-22T11:35:44.174Z"
+    },
+    "batteryChargeLevel": {
+      "value": <int>, # 0-100
+      "unit": "%",
+      "timestamp": "2026-07-22T11:35:44.174Z"
+    }
+  }
+}
+```
+INFO: if car is electric then the fuel Amount isnt sent and if the car is petrol/diesel then the batteryChargeLevel isnt sent. If the car is hybrid then both are sent.
+
+
 
 ## odometer
 /vehicles/{VIN}/odometer
 Status of odometer.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "odometer": {
+      "value": 0, # 0-inf
+      "unit": "km",
+      "timestamp": "2026-07-22T11:37:42.485Z"
+    }
+  }
+}
+```
 
 ## engine
 /vehicles/{VIN}/engine
 diagnostics of engine.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "engineCoolantLevelWarning": {
+      "value": <str>,
+      "timestamp": "2026-07-22T11:38:59.340Z"
+    },
+    "oilLevelWarning": {
+      "value": <str>,
+      "timestamp": "2026-07-22T11:38:59.340Z"
+    }
+  }
+}
+```
+values: UNSPECIFIED, NO_WARNING, TOO_LOW
 
 ## diagnostics
 /vehicles/{VIN}/diagnostics
 diagnostics of the car.
 It needs ***auth header*** and VIN (PATH) 
+**checks needed**
 
 ## brakes
 /vehicles/{VIN}/brakes
 diagnostics of brake fluid.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "brakeFluidLevelWarning": {
+      "value": "<str>",
+      "timestamp": "2026-07-22T11:43:11.924Z"
+    }
+  }
+}
+```
+legend:
+values: UNSPECIFIED, NO_WARNING, TOO_LOW
 
 ## warnings
 /vehicles/{VIN}/warnings
 Shows a lot of warnings for the lights
 It needs ***auth header*** and VIN (PATH)
+**classic cars different from new cars. Need to check with volvo specification**
+Some data will diffrent from car to car.
 
 ## commands
 /vehicles/{VIN}/commands
