@@ -64,10 +64,16 @@ async def DashboardWS(websocket: WebSocket):
             packet = await queue.get()
     
             packet["key"] = api_key
-            
-            data={"data": packet["attribute_name"],"value": packet["current_value"],"options":options[packet["attribute_name"]],"VIN": packet["VIN"],"key": api_key}
-            template = templates.get_template("dashboardTemplate.html")
-            html = template.render(data)
+            #NOTE: OLD CODE
+            #data={"data": packet["attribute_name"],"value": packet["current_value"],"options":options[packet["attribute_name"]],"VIN": packet["VIN"],"key": api_key}
+            #template = templates.get_template("dashboardTemplate.html")
+            #html = template.render(data)
+            if packet["attribute_name"] == "fuelType":
+                # Need to make template becouse it needs to updaye the whole fuel and battery section
+                html=""
+            elif packet["attribute_name"] == "availabilityStatus_unavailableReason":
+                html=""
+            html=f"<p class=\"text-base md:text-lg mt-2 mb-4\" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
             
             await websocket.send_text(html)
             
@@ -84,7 +90,12 @@ async def DashboardWS(websocket: WebSocket):
 
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
     try:
-        response=update(VIN, attribute, value, key)
+        if value == "True":
+            value = True
+        elif value == "False":
+            value = False
+            
+        response = update( VIN, attribute, value, key)
         if response:
             return JSONResponse(content={"message": f"THIS IS INTERNAL API/attribute {attribute} updated successfully"}, status_code=200)
         else:

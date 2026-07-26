@@ -240,6 +240,10 @@ class Car(BaseModel):
             if valid == "int":
                 value=int(value) #check if value is int todo
                 return True
+            # if valid == [True, False]: #temporary solution
+            #     if bool(value) not in valid:
+            #         return False
+            #     return True
             if value not in valid:
                 return False
         return True
@@ -298,7 +302,7 @@ class Car(BaseModel):
             return [self.nextInvoiceStatus,False]
         return [self.nextInvoiceStatus,True]
 
-    def update(self,attribute,value,internal=False):
+    def update(self,attribute,value,internal=False): #update to send inforamtion if the attribute or value is invalid
         if self.checkValidity(attribute,value):
                 if startUp["Validation"] == True:
                     if attribute=="fuelElectric":

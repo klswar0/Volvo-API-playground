@@ -3,8 +3,8 @@
 
     <section class=" min-w-[300px] max-w-[400px]  lg:order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Model Year:</p>
-        <div id="modelYear">
-            <p class="text-base md:text-lg mt-2 mb-4">{{modelYear}}</p>
+
+            <p class="text-base md:text-lg mt-2 mb-4" id="modelYear">{{modelYear}}</p>
             <form data-attribute="modelYear" hx-ext="json-enc" 
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="modelYear">
@@ -12,14 +12,14 @@
                 <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
             </form>
-        </div>
+
     </section>
 
 
     <section class=" min-w-[400px] max-w-[500px] order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Gearbox Type:</p>
-        <div id="gearboxType">
-            <p class="text-base md:text-lg mt-2 mb-4">{{gearboxType}}</p>
+
+            <p class="text-base md:text-lg mt-2 mb-4" id="gearboxType">{{gearboxType}}</p>
             <form data-attribute="gearboxType" hx-ext="json-enc"
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="gearboxType">
@@ -29,21 +29,21 @@
                 </select>
                 <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
-        </div>
+
     </section>
 
 
     <section class=" min-w-[300px] max-w-[400px] lg:order-3 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Odometer:</p>
-        <div id="odometer">
-            <p class="text-base md:text-lg mt-2 mb-4">{{odometer}}</p>
+   
+            <p class="text-base md:text-lg mt-2 mb-4" id="odometer">{{odometer}}</p>
             <form data-attribute="odometer" hx-ext="json-enc"
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="odometer">
                 <input type="number" name="value" min="0" placeholder="Enter new odometer reading" class="min-w-[200px] max-w-[300px] px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
                 <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
-        </div>
+
 
     </section>
 
@@ -54,8 +54,8 @@
     <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
         <section class=" min-w-[400px] max-w-[500px] order-5 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Availability Status:</p>    
-            <div id="availabilityStatus_value">
-            <p class="text-base md:text-lg mt-2 mb-4">{{ availabilityStatus_value }}</p>
+
+            <p class="text-base md:text-lg mt-2 mb-4" id="availabilityStatus_value">{{ availabilityStatus_value }}</p>
             <form data-attribute="availabilityStatus_value" hx-ext="json-enc"
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="availabilityStatus_value">
@@ -66,18 +66,18 @@
                 </select>
                 <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
-        </div>
+
         </section>
 
 
         <section class="min-w-[400px] max-w-[500px] order-6 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Availability Status Unavailable Reason:</p>
         {# if car is available this should be displayed TODO #}
-        <div id="availabilityStatus_unavailableReason">
+
             {% if availabilityStatus_unavailableReason != "" %}
-            <p class="text-base md:text-lg mt-2 mb-4">{{ availabilityStatus_unavailableReason }}</p>
+            <p class="text-base md:text-lg mt-2 mb-4" id="availabilityStatus_unavailableReason">{{ availabilityStatus_unavailableReason }}</p>
             {% else %}
-            <p class="text-base md:text-lg mt-2 mb-4">NOT SET</p>
+            <p class="text-base md:text-lg mt-2 mb-4" id="availabilityStatus_unavailableReason">NOT SET</p>
             {% endif %}
             <form data-attribute="availabilityStatus_unavailableReason" hx-ext="json-enc"
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
@@ -90,7 +90,7 @@
                 </select>
                 <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
-        </div>
+
         </section>
     </div>
 
@@ -99,8 +99,8 @@
     <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
         <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Engine Status:</p>
-            <div id="engineStatus">
-                <p class="text-base md:text-lg mt-2 mb-4">{{engineStatus}}</p>
+
+                <p class="text-base md:text-lg mt-2 mb-4 " id="engineStatus">{{engineStatus}}</p>
                 <form data-attribute="engineStatus" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="engineStatus">
@@ -110,13 +110,13 @@
                     </select>
                     <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
-            </div>
+
         </section>
 
         <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Climate Status:</p>
-            <div id="climate">
-                <p class="text-base md:text-lg mt-2 mb-4">{{climate}}</p>
+
+                <p class="text-base md:text-lg mt-2 mb-4" id="climate">{{climate}}</p>
                <form data-attribute="climate" hx-ext="json-enc"
             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
             <input type="hidden" name="attribute" value="climate">
@@ -126,7 +126,7 @@
             </select>
             <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         </form>
-            </div>
+
         </section>
     </div>
 
@@ -139,8 +139,8 @@
         {% endif %}
         <section class=" min-w-[400px] max-w-[500px] order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Fuel Type:</p>
-            <div id="fuelType">
-                <p class="text-base md:text-lg mt-2 mb-4">{{fuelType}}</p>
+
+                <p class="text-base md:text-lg mt-2 mb-4" id="fuelType">{{fuelType}}</p>
                 <form data-attribute="fuelType" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelType">
@@ -152,13 +152,13 @@
                     </select>
                     <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
-            </div>
+
         </section>
         {% if fuelType != "ELECTRIC" %}
         <section class="min-w-[300px] max-w-[400px] order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Fuel Level:</p>
-            <div id="fuelICE">
-                <p class="text-base md:text-lg mt-2 mb-4">{{fuelICE}}</p>
+
+                <p class="text-base md:text-lg mt-2 mb-4" id="fuelICE">{{fuelICE}}</p>
                 <form data-attribute="fuelICE" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelICE">
@@ -166,22 +166,22 @@
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
-            </div>
+
         </section>
         {% endif %}
 
         {% if fuelType == "HYBRID" or fuelType == "ELECTRIC" %}
         <section class="min-w-[300px] max-w-[400px] order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Battery Level:</p>
-            <div id="fuelElectric">
-                <p class="text-base md:text-lg mt-2 mb-4">{{fuelElectric}}</p>
+
+                <p class="text-base md:text-lg mt-2 mb-4" id="fuelElectric">{{fuelElectric}}</p>
                 <form data-attribute="fuelElectric" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelElectric">
                     <input type="number" name="value" min="0" class="min-w-[200px] max-w-[300px] px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
-            </div>
+
         </section>
         {% endif %}
         </div>
@@ -190,8 +190,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-[800px] mx-auto">
             <section class="min-w-[300px] p-6 max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Left:</p>
-                <div id="frontLeft">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{frontLeft}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="frontLeft">{{frontLeft}}</p>
                 <form data-attribute="frontLeft" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                         name="attribute" value="frontLeft">
@@ -205,12 +205,12 @@
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
-            </div>
+
             </section>
             <section class="min-w-[300px] p-6 max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Right:</p>
-                <div id="frontRight">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{frontRight}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="frontRight">{{frontRight}}</p>
                 <form data-attribute="frontRight" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                         name="attribute" value="frontRight">
@@ -224,13 +224,13 @@
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
-            </div>
+
             </section>
 
             <section class="min-w-[300px] p-6 max-w-[400px]  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Left:</p>
-                <div id="rearLeft">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{rearLeft}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="rearLeft">{{rearLeft}}</p>
                 <form data-attribute="rearLeft" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                         name="attribute" value="rearLeft">
@@ -243,12 +243,12 @@
                     </select>
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
-            </div>
+
             </section>
             <section class="min-w-[300px] p-6 max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Right:</p>
-                <div id="rearRight">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{rearRight}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="rearRight">{{rearRight}}</p>
                 <form data-attribute="rearRight" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                         name="attribute" value="rearRight">
@@ -261,7 +261,7 @@
                     </select>
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
-            </div>
+
             </section>
 
 
@@ -272,8 +272,8 @@
             <div class="flex flex-col gap-4 mt-6 items-center justify-center">
                 <section class=" min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                     <p class="text-lg md:text-xl">Central Lock:</p>
-                    <div id="centralLock">
-                        <p class="text-base md:text-lg mt-2 mb-4">{{centralLock}}</p>
+    
+                        <p class="text-base md:text-lg mt-2 mb-4" id="centralLock">{{centralLock}}</p>
                         <form data-attribute="centralLock" hx-ext="json-enc"
                             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                             <input type="hidden" name="attribute" value="centralLock">
@@ -284,15 +284,15 @@
                             </select>
                             <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                         </form>
-                    </div>
+
                 </section>
             </div>
         
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
                 <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Left Door:</p>
-                <div id="frontLeftDoor">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{frontLeftDoor}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="frontLeftDoor">{{frontLeftDoor}}</p>
                     <form data-attribute="frontLeftDoor" hx-ext="json-enc"
                         hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                             name="attribute" value="frontLeftDoor">
@@ -304,12 +304,12 @@
                             </select>
                         <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
-                </div>
+
                 </section>
                 <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Right Door:</p>
-                <div id="frontRightDoor">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{frontRightDoor}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="frontRightDoor">{{frontRightDoor}}</p>
                     <form data-attribute="frontRightDoor" hx-ext="json-enc"
                         hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                             name="attribute" value="frontRightDoor">
@@ -321,15 +321,15 @@
                             </select>
                         <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
-                </div>
+
                 </section>
 
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
                 <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Left Door:</p>
-                <div id="rearLeftDoor">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{rearLeftDoor}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="rearLeftDoor">{{rearLeftDoor}}</p>
                     <form data-attribute="rearLeftDoor" hx-ext="json-enc"
                         hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                             name="attribute" value="rearLeftDoor">
@@ -341,12 +341,12 @@
                             </select>
                         <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
-                </div>
+
                 </section>
                 <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Right Door:</p>
-                <div id="rearRightDoor">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{rearRightDoor}}</p>
+   
+                    <p class="text-base md:text-lg mt-2 mb-4" id="rearRightDoor">{{rearRightDoor}}</p>
                     <form data-attribute="rearRightDoor" hx-ext="json-enc"
                         hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                             name="attribute" value="rearRightDoor">
@@ -358,15 +358,15 @@
                             </select>
                         <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
-                </div>
+
                 </section>
 
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
                 <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                     <p class="text-lg md:text-xl">Tail Gate:</p>
-                    <div id="tailGate">
-                        <p class="text-base md:text-lg mt-2 mb-4">{{tailGate}}</p>
+
+                        <p class="text-base md:text-lg mt-2 mb-4" id="tailGate">{{tailGate}}</p>
                         <form data-attribute="tailGate" hx-ext="json-enc"
                             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                                 name="attribute" value="tailGate">
@@ -378,13 +378,13 @@
                             </select>
                             <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                         </form>
-                    </div>
+
                     
                 </section>
                 <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col ">
                     <p class="text-lg md:text-xl">Hood:</p>
-                    <div id="hood">
-                        <p class="text-base md:text-lg mt-2 mb-4">{{hood}}</p>
+
+                        <p class="text-base md:text-lg mt-2 mb-4" id="hood">{{hood}}</p>
                         <form data-attribute="hood" hx-ext="json-enc"
                             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                                 name="attribute" value="hood">
@@ -396,14 +396,14 @@
                             </select>
                             <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                         </form>
-                    </div>
+
                 </section>
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
                 <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col ">
                     <p class="text-lg md:text-xl">Tank Lid:</p>
-                    <div id="tankLid">
-                        <p class="text-base md:text-lg mt-2 mb-4">{{tankLid}}</p>
+
+                        <p class="text-base md:text-lg mt-2 mb-4" id="tankLid">{{tankLid}}</p>
                         <form data-attribute="tankLid" hx-ext="json-enc"
                             hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                                 name="attribute" value="tankLid">
@@ -415,7 +415,6 @@
                             </select>
                             <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                         </form>
-                    </div>
                     
                 </section>
             </div>
@@ -426,8 +425,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-[800px] mx-auto">
             <section class="min-w-[300px] p-6 max-w-[400px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Oil level:</p>
-                <div id="oillevel">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{oillevel}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="oillevel">{{oillevel}}</p>
                 <form data-attribute="oillevel" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                         name="attribute" value="oillevel">
@@ -441,12 +440,12 @@
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
-            </div>
+
             </section>
             <section class="min-w-[300px] p-6 max-w-[400px]  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Engine Coolant Level:</p>
-                <div id="engineCoolantLever">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{engineCoolantLever}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="engineCoolantLever">{{engineCoolantLever}}</p>
                 <form data-attribute="engineCoolantLever" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                         name="attribute" value="engineCoolantLever">
@@ -458,13 +457,13 @@
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
-            </div>
+
             </section>
 
             <section class="p-6 min-w-[300px] max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Brake fluid:</p>
-                <div id="brakeFluidLevel">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{brakeFluidLevel}}</p>
+        
+                    <p class="text-base md:text-lg mt-2 mb-4" id="brakeFluidLevel">{{brakeFluidLevel}}</p>
                 <form data-attribute="brakeFluidLevel" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                         name="attribute" value="brakeFluidLevel">
@@ -475,12 +474,12 @@
                     </select>
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
-            </div>
+
             </section>
             <section class="p-6 min-w-[300px] max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Washer Fluid:</p>
-                <div id="washerFluidLevelWarning">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{washerFluidLevelWarning}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="washerFluidLevelWarning">{{washerFluidLevelWarning}}</p>
                 <form data-attribute="washerFluidLevelWarning" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
                         name="attribute" value="washerFluidLevelWarning">
@@ -491,7 +490,7 @@
                     </select>
                     <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
-            </div>
+
             </section>
 
 
@@ -503,8 +502,8 @@
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
             <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Service warning:</p>
-                <div id="serviceWarning">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{serviceWarning}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="serviceWarning">{{serviceWarning}}</p>
                     <form data-attribute="serviceWarning" hx-ext="json-enc"
                         hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                         <input type="hidden" name="attribute" value="serviceWarning">
@@ -524,13 +523,13 @@
                         </select>
                         <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
-                </div>
+
             </section>
 
             <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Service trigger:</p>
-                <div id="serviceTrigger">
-                    <p class="text-base md:text-lg mt-2 mb-4">{{serviceTrigger}}</p>
+
+                    <p class="text-base md:text-lg mt-2 mb-4" id="serviceTrigger">{{serviceTrigger}}</p>
                 <form data-attribute="serviceTrigger" hx-ext="json-enc"
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="serviceTrigger">
@@ -543,7 +542,7 @@
                 </select>
                 <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
-                </div>
+
             </section>
         </div>
 
@@ -553,9 +552,9 @@
                 <p class="text-lg md:text-xl">lights timestamp</p>
                 <div id="lightTimestamp">
                     {% if lightTimestamp != "" %}
-                    <p class="text-base md:text-lg mt-2 mb-4">{{lightTimestamp}}</p>
+                    <p class="text-base md:text-lg mt-2 mb-4" id="lightTimestamp">{{lightTimestamp}}</p>
                     {% else %}
-                    <p class="text-base md:text-lg mt-2 mb-4">Not used</p>
+                    <p class="text-base md:text-lg mt-2 mb-4" id="lightTimestamp">Not used</p>
                     {% endif %}
                 </div>
             </section>
@@ -563,9 +562,9 @@
                 <p class="text-lg md:text-xl">horn timestamp</p>
                 <div id="hornTimestamp">
                     {% if hornTimestamp != "" %}
-                    <p class="text-base md:text-lg mt-2 mb-4">{{hornTimestamp}}</p>
+                    <p class="text-base md:text-lg mt-2 mb-4" id="hornTimestamp">{{hornTimestamp}}</p>
                     {% else %}
-                    <p class="text-base md:text-lg mt-2 mb-4">Not used</p>
+                    <p class="text-base md:text-lg mt-2 mb-4" id="hornTimestamp">Not used</p>
                     {% endif %}
                 </div>
             </section>
