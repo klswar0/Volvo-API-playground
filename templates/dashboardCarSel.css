@@ -40,6 +40,10 @@ h1 {
     animation: fadeInSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.animate-fade-in-long {
+    animation: fadeInSlide 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .sec:hover {
   transform: translateY(-2px);
   border-color: rgba(8, 86, 187, 0.5);

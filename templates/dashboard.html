@@ -21,7 +21,7 @@
         </header>
         <main>
         <div hx-ext="ws" ws-connect="/internal/dashboard/ws?VIN={{VIN}}&key={{key}}">
-            <div id="car-info" hx-swap-oob="true">   
+            <div id="car-info" hx-swap-oob="true" hx-swap="innerHTML transition:true">   
                 <p>Awaiting real-time vehicle data connection...</p>
             </div>
         </div>
