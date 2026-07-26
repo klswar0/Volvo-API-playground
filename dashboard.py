@@ -64,6 +64,8 @@ async def DashboardWS(websocket: WebSocket):
             packet = await queue.get()
     
             packet["key"] = api_key
+            if packet["current_value"] == "":
+                packet["current_value"] = "NOT SET"
             #NOTE: OLD CODE
             #data={"data": packet["attribute_name"],"value": packet["current_value"],"options":options[packet["attribute_name"]],"VIN": packet["VIN"],"key": api_key}
             #template = templates.get_template("dashboardTemplate.html")
@@ -74,7 +76,7 @@ async def DashboardWS(websocket: WebSocket):
             # elif packet["attribute_name"] == "availabilityStatus_unavailableReason":
             #     html=""
             else:
-                html=f"<p class=\"text-base md:text-lg mt-2 mb-4\" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
+                html=f"<p class=\"text-base md:text-lg \" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
             
             await websocket.send_text(html)
             
