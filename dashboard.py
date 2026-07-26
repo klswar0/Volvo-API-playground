@@ -69,11 +69,12 @@ async def DashboardWS(websocket: WebSocket):
             #template = templates.get_template("dashboardTemplate.html")
             #html = template.render(data)
             if packet["attribute_name"] == "fuelType":
-                # Need to make template becouse it needs to updaye the whole fuel and battery section
-                html=""
-            elif packet["attribute_name"] == "availabilityStatus_unavailableReason":
-                html=""
-            html=f"<p class=\"text-base md:text-lg mt-2 mb-4\" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
+                template = templates.get_template("TempDash/fuelsection.html")
+                html=template.render({"VIN": packet["VIN"],"key": api_key,"fuelType":packet["current_value"],"fuelICE":car.fuelICE,"fuelElectric": car.fuelElectric})
+            # elif packet["attribute_name"] == "availabilityStatus_unavailableReason":
+            #     html=""
+            else:
+                html=f"<p class=\"text-base md:text-lg mt-2 mb-4\" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
             
             await websocket.send_text(html)
             
