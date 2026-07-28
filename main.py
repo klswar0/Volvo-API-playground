@@ -824,7 +824,7 @@ def DashboardCar(key: str,VIN: str, request: Request):
     
 @app.get("/internal/dashboard/redirect", include_in_schema=False)
 def DashboardRedirect(key: str,VIN: str, request: Request):
-    return dashboard.DashboardRedirect(key, VIN, request) #check usefulness of this endpoint
+    return dashboard.DashboardRedirect(key, VIN, request) 
     
 @app.websocket("/internal/dashboard/ws")
 async def DashboardWS(websocket: WebSocket):

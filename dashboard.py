@@ -18,6 +18,10 @@ from database import database, Oauth2Data
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
 
+error_headers = {
+    "HX-Retarget": "#error-response",
+    "HX-Reswap": "innerHTML"
+    }
 
 #site section
 
@@ -234,10 +238,7 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
             raise ValueError("Invalid API key")
         try:
            car = VINHandlingInternal(VIN, key)
-           error_headers = {
-            "HX-Retarget": "#error-response",
-            "HX-Reswap": "innerHTML"
-            }
+           
            return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car already exists</p></div>", headers=error_headers)
         except ValueError:
             new_car = Car(VIN=VIN)
@@ -249,8 +250,5 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
             return Dashboard(key, request)
        
     except ValueError as e:
-        error_headers = {
-            "HX-Retarget": "#error-response",
-            "HX-Reswap": "innerHTML"
-        }
+
         return HTMLResponse(content=f"<div id=\"Error-response\"><p style=\"color:red\">Car already exists/internal error {e}</p></div>", headers=error_headers)
