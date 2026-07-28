@@ -858,8 +858,8 @@ def WelcomeAPIKey(request: Request):
     return dashboard.WelcomeAPIKey(request)
 
 @app.post("/internal/dashboard/NewCar", include_in_schema=False) 
-def WelcomeNewCar(key: str, VIN: str, scenario: str = Query(default=None)):
-    return dashboard.WelcomeNewCar(key, VIN, scenario)
+def WelcomeNewCar(request: Request, key: str, VIN: str):
+    return dashboard.WelcomeNewCar(request, key, VIN)
 
 @app.get("/internal/dashboard/OAuth2settings", include_in_schema=False)
 def OAuth2Settings(request: Request,key: str, site: bool = Query(default=False)):

@@ -27,7 +27,7 @@
             <p>PKCE status: {{ PKCE }}</p>
 
             <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
-                hx-swap="innerHTML transition:true ">
+                hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="PKCE">
                 {% if PKCE == True %}
@@ -47,7 +47,8 @@
             <p class="text-sm text-zinc-400">Always is the same as the API key</p>
             <p>Client Secret: {% if client_secret != "" %}{{ client_secret }}{% else %}Not set{% endif %}</p>
 
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
+            hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="client_secret">
                 <input type="text" name="value" placeholder="Enter new client secret"
@@ -59,7 +60,8 @@
             {% endif %}
 
             <p>Access Token: {% if access_token != "" %}{{ access_token }}{% else %}Not set{% endif %}</p>
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
+                hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="access_token">
                 <input type="text" name="value" placeholder="Enter new access token"
@@ -67,7 +69,8 @@
             </form>
 
             <p>Refresh Token: {% if refresh_token != "" %}{{ refresh_token }}{% else %}Not set{% endif %}</p>
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
+                hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="refresh_token">
                 <input type="text" name="value" placeholder="Enter new refresh token"
@@ -76,7 +79,8 @@
 
             {% if redirect_uri != "" %}
             <p>Redirect URI: {{ redirect_uri }}</p>
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
+                hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="redirect_uri">
                 <input type="text" name="value" placeholder="Enter new redirect URI"
@@ -85,7 +89,8 @@
             {% else %}
             <p>Redirect URI: Not set</p>
             <p class="text-sm text-zinc-400 gap-0">Means all redirects are allowed</p>
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
+                hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="redirect_uri">
                 <input type="text" name="value" placeholder="Enter new redirect URI"
@@ -94,7 +99,8 @@
             {% endif %}
             <br>
 
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
+                hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="OAuth2">
                 <button type="submit" name="value" value="false"
@@ -104,7 +110,8 @@
             </form>
             {% else %}
             <p class="mb-5 text-base  md:text-lg">OAuth2 is not activated for this API key</p>
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}">
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/OAuth2change?key={{ key }}"
+                hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="hidden" name="key" value="{{ key }}">
                 <input type="hidden" name="attribute" value="OAuth2">
                 <button type="submit" name="value" value="true"

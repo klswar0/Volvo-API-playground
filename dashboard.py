@@ -1,4 +1,6 @@
-from fastapi import Body ,Request , Response, WebSocket, WebSocketDisconnect
+
+
+from fastapi import Body, Query ,Request , Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
 from fastapi.templating import Jinja2Templates
 
@@ -18,6 +20,9 @@ from internal import VINHandlingInternal, authenticateInternal, update, genAPIKe
 
 
 #site section
+
+def style():
+    return FileResponse("templates/style.css")
 
 def DashboardCSS():
     return FileResponse("templates/dashboardWS.css")
@@ -76,7 +81,7 @@ async def DashboardWS(websocket: WebSocket):
             # elif packet["attribute_name"] == "availabilityStatus_unavailableReason":
             #     html=""
             else:
-                html=f"<p class=\"text-base md:text-lg \" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
+                html=f"<p class=\"text-base md:text-lg animate-fade-in\" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
             
             await websocket.send_text(html)
             
@@ -170,10 +175,10 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
                 if value.lower() == "true":
                     oauth2 = Oauth2(client_secret="client_secret_"+secrets.token_urlsafe(12), PKCE=False,redirect_uri="")
                     Oauth2Data[key] = oauth2
-                    response=Response()
-                    response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
-                    return response
-                
+                    # response=Response()
+                    # response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
+                    # return response
+                    return OAuth2Settings(key, request)
 
             return HTMLResponse(content="<p style=\"color:red\">OAuth2 not activated for this API key</p>")
         print(f"Changing OAuth2 attribute {attribute} to {value} for key {key}")
@@ -195,9 +200,10 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
                 del Oauth2Data[key]
         else:
             return HTMLResponse(content="<p style=\"color:red\">Invalid attribute</p>")
-        response=Response()
-        response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
-        return response
+        # response=Response()
+        # response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
+        # return response
+        return OAuth2Settings(key, request)
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
 
@@ -226,19 +232,29 @@ def WelcomeAPIKey(request: Request):
     return templates.TemplateResponse(request=request,name="welcomeAPI.html",context={"api_key": data})
 
 
-def WelcomeNewCar(key: str, VIN: str,scenario: str):
+def WelcomeNewCar(request: Request, key: str, VIN: str):
     try:
         if key not in database:
             raise ValueError("Invalid API key")
         try:
            car = VINHandlingInternal(VIN, key)
-           return HTMLResponse(content="<p style=\"color:red\">Car already exists</p>")
+           error_headers = {
+            "HX-Retarget": "#error-response",
+            "HX-Reswap": "innerHTML"
+            }
+           return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car already exists</p></div>", headers=error_headers)
         except ValueError:
             new_car = Car(VIN=VIN)
             database[key].append(new_car)
-            response = Response()
-            response.headers["HX-Redirect"] = f"/internal/dashboard/car?key={key}&VIN={VIN}"
-            return response
+            # response = Response()
+            # response.headers["HX-Redirect"] = f"/internal/dashboard/car?key={key}&VIN={VIN}"
+            
+            # return response
+            return Dashboard(key, request)
        
     except ValueError as e:
-        return HTMLResponse(content="<p style=\"color:red\">Car already exists/internal error {e}</p>")
+        error_headers = {
+            "HX-Retarget": "#error-response",
+            "HX-Reswap": "innerHTML"
+        }
+        return HTMLResponse(content=f"<div id=\"Error-response\"><p style=\"color:red\">Car already exists/internal error {e}</p></div>", headers=error_headers)
