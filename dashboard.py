@@ -24,8 +24,7 @@ from internal import VINHandlingInternal, authenticateInternal, update, genAPIKe
 def style():
     return FileResponse("templates/style.css")
 
-def DashboardCSS():
-    return FileResponse("templates/dashboardWS.css")
+
 
 
 
@@ -121,8 +120,7 @@ def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(.
     
     
 
-def DashboardCarCSS():
-    return FileResponse("templates/dashboardCarSel.css")
+
 
 
 def Dashboard(key: str, request: Request):
@@ -162,8 +160,7 @@ def OAuth2Settings(key: str, request: Request):
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
-def OAuth2SettingsCSS():
-    return FileResponse("templates/OAuth2settings.css")
+
 
 def OAuth2Change(key: str, attribute: str, value: str, request: Request):
     try:
@@ -207,8 +204,7 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
 
-def WelcomeCSS():
-    return FileResponse("templates/welcome.css")
+
 
 def Welcome():
     return FileResponse("templates/welcome.html")

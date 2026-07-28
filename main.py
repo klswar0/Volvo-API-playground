@@ -811,9 +811,11 @@ def Terminal(VIN:str,key:str, request: Request):
     return internal.Terminal(VIN, key, request) #file response
 
 #site section
-@app.get("/internal/dashboard/dashboardWS.css", include_in_schema=False)
-def DashboardCSS():
-    return dashboard.DashboardCSS() #file response
+@app.get("/internal/style.css", include_in_schema=False)
+def Style():
+    return dashboard.style() #file response
+
+
 
 
 @app.get("/internal/dashboard/car", include_in_schema=False)
@@ -822,7 +824,7 @@ def DashboardCar(key: str,VIN: str, request: Request):
     
 @app.get("/internal/dashboard/redirect", include_in_schema=False)
 def DashboardRedirect(key: str,VIN: str, request: Request):
-    return dashboard.DashboardRedirect(key, VIN, request)
+    return dashboard.DashboardRedirect(key, VIN, request) #check usefulness of this endpoint
     
 @app.websocket("/internal/dashboard/ws")
 async def DashboardWS(websocket: WebSocket):
@@ -833,17 +835,13 @@ def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(.
     return dashboard.DashboardUpdate(key, VIN, request, attribute, value)
 
 
-@app.get("/internal/dashboardCarSel.css", include_in_schema=False)
-def DashboardCarCSS():
-    return dashboard.DashboardCarCSS() #file response
+
 
 @app.get("/internal/dashboard", include_in_schema=False)
 def Dashboard(key: str, request: Request):
     return dashboard.Dashboard(key, request)
 
-@app.get("/internal/welcome.css", include_in_schema=False)
-def WelcomeCSS():
-    return dashboard.WelcomeCSS() #file response
+
 
 @app.get("/internal/welcome", include_in_schema=False)
 def Welcome():
@@ -862,20 +860,14 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
     return dashboard.WelcomeNewCar(request, key, VIN)
 
 @app.get("/internal/dashboard/OAuth2settings", include_in_schema=False)
-def OAuth2Settings(request: Request,key: str, site: bool = Query(default=False)):
-    if site==True:
-        response=Response()
-        response.headers["hx-redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
-        return response
+def OAuth2Settings(request: Request,key: str):
     return dashboard.OAuth2Settings(key, request)
 
 @app.post("/internal/dashboard/OAuth2change", include_in_schema=False)
 def OAuth2Change(request: Request, attribute: str=Body(...), value: str=Body(...), key: str=Query(...)):
     return dashboard.OAuth2Change(key, attribute, value, request)
 
-@app.get("/internal/dashboard/OAuth2settings.css", include_in_schema=False)
-def OAuth2SettingsCSS():
-    return dashboard.OAuth2SettingsCSS() #file response
+
 
 #internal endpoints for testing and development. Not part of the official API.
 
