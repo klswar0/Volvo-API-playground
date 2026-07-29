@@ -7,13 +7,14 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 import secrets
 import hashlib
+from typing import Union
 
 from scenarios import scenariosFunc
 from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
 import dashboard
 from notifier import notifier
-from classCar import Car, options, AuthHeader, startUp, timestampGenerator, Oauth2
+from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET, startUp, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 
@@ -25,7 +26,7 @@ app = FastAPI()
 
 loadFileSnapshots()  # Load snapshots from file at startup
 
-
+AuthHeader = Union[AuthHeaderPOST, AuthHeaderGET]
 
 
 def authenticate(auth_header: AuthHeader):
@@ -34,20 +35,25 @@ def authenticate(auth_header: AuthHeader):
     if auth_header.vcc_api_key in Oauth2Data:
         if auth_header.authorization != f"Bearer {Oauth2Data[auth_header.vcc_api_key].access_token}":
             raise ValueError("Invalid access token")
+    if isinstance(auth_header, AuthHeaderPOST):
+        if auth_header.content_type.split(";")[0].lower() != "application/json": #NOTE: lower case to avoid case sensitivity issues checks needed
+            raise ValueError("Invalid Content-Type")
+    elif isinstance(auth_header, AuthHeaderGET):
+        output = auth_header.accept.split(";")[0].lower()
+        if output != "application/json" and output != "*/*" and output != "application/*": 
+            raise ValueError("Invalid Accept header")
+    else:
+        raise ValueError("Invalid auth header type")
+        
     return True
 
 
 def VINHandling(VIN:str, auth_header: AuthHeader):
     try:
         authenticate(auth_header)
-    except ValueError as e:
-        if str(e) == "Invalid API key":
-            raise ValueError("Invalid API key") 
-        if str(e) == "Invalid access token":
-            raise ValueError("Invalid access token") #implement it everwhere
+    except Exception as e:
+        raise ValueError(str(e))
     
-    # if auth_header.content_type.split(";")[0] != "application/json":
-    #     raise ValueError("Invalid Content-Type")
     for car in database[auth_header.vcc_api_key]:
         if car.VIN == VIN:
             return car
@@ -183,7 +189,7 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
 # https://api.volvocars.com/connected-vehicle/v2/ section
 
 @app.get("/vehicles")
-def listVehicles(auth_header: AuthHeader = Header(...)):
+def listVehicles(auth_header: AuthHeaderGET = Header(...)):
     """list all vehicles associated with the provided API key."""
     try:
         authenticate(auth_header)
@@ -198,7 +204,7 @@ def listVehicles(auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
     
 @app.get("/vehicles/{VIN}")
-def getVehicle(VIN:str, auth_header: AuthHeader = Header(...)): #TODO: implement the data in car class
+def getVehicle(VIN:str, auth_header: AuthHeaderGET = Header(...)): #TODO: implement the data in car class
     """get vehicle information for the specified VIN. Mostly static data but enough to test your apps"""
     try:
         car = VINHandling(VIN, auth_header)
@@ -253,13 +259,13 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
 # What if climate is already off?
 
 @app.post("/vehicles/{VIN}/commands/climatization-start")
-def climateStart(VIN:str, auth_header: AuthHeader = Header(...)):
+def climateStart(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to start the climatization."""
     return climate(VIN, auth_header, command="CLIMATIZATION_START")
 
 
 @app.post("/vehicles/{VIN}/commands/climatization-stop")
-def climateStop(VIN:str, auth_header: AuthHeader = Header(...)):
+def climateStop(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to stop the climatization."""
     return climate(VIN, auth_header, command="CLIMATIZATION_STOP")
 
@@ -296,7 +302,7 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
 
 
 @app.get("/vehicles/{VIN}/engine-status")
-def engineStatus(VIN:str, auth_header: AuthHeader = Header(...)):
+def engineStatus(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current engine status for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
@@ -308,7 +314,7 @@ def engineStatus(VIN:str, auth_header: AuthHeader = Header(...)):
 
 
 @app.post("/vehicles/{VIN}/commands/engine-start")
-def engineStart(VIN:str, auth_header: AuthHeader = Header(...), runtimeMinutes:dict = Body(...)):
+def engineStart(VIN:str, auth_header: AuthHeaderPOST = Header(...), runtimeMinutes:dict = Body(...)):
     """send a command to start the engine for the specified VIN. The runtimeMinutes >0 and <15."""
     runtimeMinutes = runtimeMinutes.get("runtimeMinutes", 0)
     if runtimeMinutes < 1 or runtimeMinutes >= 15:
@@ -316,7 +322,7 @@ def engineStart(VIN:str, auth_header: AuthHeader = Header(...), runtimeMinutes:d
     return engine(VIN, auth_header,command="ENGINE_START", runtimeMinutes=runtimeMinutes)
 
 @app.post("/vehicles/{VIN}/commands/engine-stop")
-def engineStop(VIN:str, auth_header: AuthHeader = Header(...)):
+def engineStop(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to stop the engine for the specified VIN."""
     return engine(VIN, auth_header,command="ENGINE_STOP")
 
@@ -325,7 +331,7 @@ def engineStop(VIN:str, auth_header: AuthHeader = Header(...)):
 
 
 @app.get("/vehicles/{VIN}/windows")
-def windows(VIN:str, auth_header: AuthHeader = Header(...)):
+def windows(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current status of the windows and sunroof for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
@@ -337,7 +343,7 @@ def windows(VIN:str, auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
 
 @app.get("/vehicles/{VIN}/doors")
-def doors(VIN:str, auth_header: AuthHeader = Header(...)):
+def doors(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current status of the doors and locks for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
@@ -349,7 +355,7 @@ def doors(VIN:str, auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
 
 @app.post("/vehicles/{VIN}/commands/lock")
-def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
+def doorLock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to lock the doors for the specified VIN."""
     try:
         car =VINHandling(VIN, auth_header)
@@ -370,7 +376,7 @@ def doorLock(VIN:str, auth_header: AuthHeader = Header(...)):
 
 
 @app.post("/vehicles/{VIN}/commands/lock-reduced-guard") #only for AAOS not Sensus
-def doorLockReduce(VIN:str, auth_header: AuthHeader = Header(...)):
+def doorLockReduce(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to lock the doors with reduced guard for the specified VIN. Only for AAOS not Sensus."""
     try:
         car =VINHandling(VIN, auth_header)
@@ -390,7 +396,7 @@ def doorLockReduce(VIN:str, auth_header: AuthHeader = Header(...)):
             return JSONResponse(content=data, status_code=500) # what
 
 @app.post("/vehicles/{VIN}/commands/unlock") # doesnt work like in real life you must click button of the trunk
-def doorUnlock(VIN:str, auth_header: AuthHeader = Header(...)):
+def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to unlock the doors for the specified VIN."""
     try:
         car =VINHandling(VIN, auth_header)
@@ -437,26 +443,26 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
                 return NormalResponse(VIN, invoiceStatus[0],409) 
 
 @app.post("/vehicles/{VIN}/commands/flash")
-def flash(VIN:str, auth_header: AuthHeader = Header(...)):
+def flash(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to flash the lights for the specified VIN."""
     return lightsAndHorn(VIN, auth_header, command="FLASH")
             
     
 @app.post("/vehicles/{VIN}/commands/honk")
-def honk(VIN:str, auth_header: AuthHeader = Header(...)):
+def honk(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to honk the horn for the specified VIN."""
     return lightsAndHorn(VIN, auth_header, command="HONK")
 
 
 @app.post("/vehicles/{VIN}/commands/honk-and-flash")
-def honkAndFlash(VIN:str, auth_header: AuthHeader = Header(...)):
+def honkAndFlash(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to honk the horn and flash the lights for the specified VIN."""
     return lightsAndHorn(VIN, auth_header, command="HONK_AND_FLASH")
 
 #statistics
 
 @app.get("/vehicles/{VIN}/statistics") #STATIC
-def statistics(VIN:str, auth_header: AuthHeader = Header(...)):
+def statistics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get vehicle statistics for the specified VIN. Mostly static data but enough to test your apps"""
     try:
         car = VINHandling(VIN, auth_header)
@@ -529,7 +535,7 @@ def statistics(VIN:str, auth_header: AuthHeader = Header(...)):
 
 #tyres
 @app.get("/vehicles/{VIN}/tyres")
-def tyres(VIN:str, auth_header: AuthHeader= Header(...)):
+def tyres(VIN:str, auth_header: AuthHeaderGET= Header(...)):
     """get the current tyre warnings status for the specified VIN.""" 
     try:
         car = VINHandling(VIN, auth_header)
@@ -544,7 +550,7 @@ def tyres(VIN:str, auth_header: AuthHeader= Header(...)):
 
 #commands 
 @app.get("/vehicles/{VIN}/commands")
-def commands(VIN:str, auth_header: AuthHeader = Header(...)):
+def commands(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get a list of available commands for the specified VIN."""
     href=f"/v2/vehicles/{VIN}/commands/" 
     try:
@@ -564,7 +570,7 @@ def commands(VIN:str, auth_header: AuthHeader = Header(...)):
 
 
 @app.get("/vehicles/{VIN}/command-accessibility")
-def commandAccessibility(VIN:str, auth_header: AuthHeader = Header(...)):
+def commandAccessibility(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """check if the car is ready to receive commands or why it is not for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
@@ -582,7 +588,7 @@ def commandAccessibility(VIN:str, auth_header: AuthHeader = Header(...)):
                      
 #Fuel section
 @app.get("/vehicles/{VIN}/fuel")
-def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
+def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current fuel level or/and battery charge level"""
     try:
         car = VINHandling(VIN, auth_header)
@@ -606,7 +612,7 @@ def getFuel(VIN:str, auth_header: AuthHeader = Header(...)):
     
 #Odometer section
 @app.get("/vehicles/{VIN}/odometer")
-def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
+def getOdometer(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current odometer reading for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
@@ -621,7 +627,7 @@ def getOdometer(VIN:str, auth_header: AuthHeader = Header(...)):
     
 #diagnostic section
 @app.get("/vehicles/{VIN}/engine")
-def engineDiagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
+def engineDiagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current engine diagnostics for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
@@ -632,7 +638,7 @@ def engineDiagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
         return JSONResponse(content=data, status_code=200)
 
 @app.get("/vehicles/{VIN}/diagnostics")  # there is additional washer fluid data sent by the api but docs dont talk about it there ? and units?
-def diagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
+def diagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current diagnostics for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
@@ -657,7 +663,7 @@ def diagnostics(VIN:str, auth_header: AuthHeader = Header(...)):
 
 
 @app.get("/vehicles/{VIN}/brakes")
-def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
+def Brakes(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current brake status for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
@@ -669,7 +675,7 @@ def Brakes(VIN:str, auth_header: AuthHeader = Header(...)):
 
 
 @app.get("/vehicles/{VIN}/warnings") 
-def Warnings(VIN:str, auth_header: AuthHeader = Header(...)):
+def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current warning status for the specified VIN. STATIC for now"""
     try:
         car = VINHandling(VIN, auth_header)

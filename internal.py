@@ -10,7 +10,7 @@ import secrets
 
 
 from notifier import notifier
-from classCar import Car, options, AuthHeader, startUp, timestampGenerator, Oauth2
+from classCar import Car, options, startUp, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 

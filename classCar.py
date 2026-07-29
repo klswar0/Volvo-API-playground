@@ -6,9 +6,16 @@ from datetime import datetime, timezone
 # import configparser #TODO use it
 
 
-class AuthHeader(BaseModel):
-    content_type: str =  Field(default="application/json", alias="Content-Type")#Field(default="",alias="Content-Type")
-    authorization: str =Field(default="") #= Field(...) # NOT IMPLEMENTED
+class AuthHeaderPOST(BaseModel):
+    content_type: str =  Field(alias="Content-Type")#Field(default="application/json", alias="Content-Type")
+
+    authorization: str =Field(default="") #= Field(...) 
+    vcc_api_key: str =Field(...,alias="vcc-api-key")
+    
+class AuthHeaderGET(BaseModel):
+    accept: str =  Field(default="application/json") #Field(...)
+
+    authorization: str =Field(default="") #= Field(...) 
     vcc_api_key: str =Field(...,alias="vcc-api-key")
 
 class Oauth2(BaseModel):
@@ -105,6 +112,7 @@ options = {
 
     "lightTimestamp": "", 
     "hornTimestamp": "",
+    "commands": ""
 }
 
 

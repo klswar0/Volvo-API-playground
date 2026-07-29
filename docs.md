@@ -139,7 +139,10 @@ Exception: RUNNING for sure can only go to engine and climate endpoints
 
 
 #### auth header
+if POST
 - ***Content-Type*** always application/json
+if GET
+- ***Accept*** always application/json or */* (likely optional)
 - ***authorization*** access token generated thru Oauth. Not checked in this playground if disabled Oauth2
 - ***vcc-api-key*** your api key (dont use your official api key in this playground for safety)
 
@@ -147,6 +150,7 @@ Exception: RUNNING for sure can only go to engine and climate endpoints
  ~~The official Volvo Connected Vehicle API rejects requests with Content-Type: application/json;charset=UTF-8 for some endpoints and only accepts Content-Type: application/json. This behavior will be  replicated by the playground for compatibility.~~ More diging needed
 
 ### List vehicles
+GET
 /vehicles
 This endpoints sends all cars VINs.
 It only needs ***auth header***
@@ -164,6 +168,7 @@ It only needs ***auth header***
 ```
 
 ### Get vehicle information
+GET
 /vehicles/{VIN}
 This endpoints send information about the car.
 It needs ***auth header*** and VIN
@@ -194,6 +199,7 @@ legend:
 info: mostly static in playground but in future you will be able to change the static data
 
 ### engine status
+GET
 /vehicles/{VIN}/engine-status
 Vehicle's latest engine status value.
 It needs ***auth header*** and VIN (PATH)
@@ -212,6 +218,7 @@ legend:
 - value: RUNNING or STOPPED
 
 ### engine start
+POST
 /vehicles/{VIN}/commands/engine-start
 Starts the engine.
 It needs ***auth header*** and VIN (PATH)
@@ -230,6 +237,7 @@ legend:
 - invokeStatus read reused terms
 
 ### engine stop
+POST
 /vehicles/{VIN}/commands/engine-stop
 Stops the engine.
 It needs ***auth header*** and VIN (PATH)
@@ -246,6 +254,7 @@ It needs ***auth header*** and VIN (PATH)
 
 
 ## Climate start
+POST
 /vehicles/{VIN}/commands/climate-start
 Starts the climate.
 It needs ***auth header*** and VIN (PATH)
@@ -261,6 +270,7 @@ It needs ***auth header*** and VIN (PATH)
 
 
 ## Climate stop
+POST
 /vehicles/{VIN}/commands/climate-stop
 Stops the climate.
 It needs ***auth header*** and VIN (PATH)
@@ -275,6 +285,7 @@ It needs ***auth header*** and VIN (PATH)
 ```
 
 ## Windows Status
+GET
 /vehicles/{VIN}/windows-status
 Status of the windows.
 It needs ***auth header*** and VIN (PATH)
@@ -289,6 +300,7 @@ It needs ***auth header*** and VIN (PATH)
 }
 ```
 ## Doors Status
+GET
 /vehicles/{VIN}/doors-status
 Status of the doors and locks.
 It needs ***auth header*** and VIN (PATH)
@@ -340,6 +352,7 @@ legend:
 
 
 ## locking the car
+POST
 /vehicles/{VIN}/commands/lock
 Locks the car.
 It needs ***auth header*** and VIN (PATH)
@@ -356,6 +369,7 @@ It needs ***auth header*** and VIN (PATH)
 
 
 ## locking the car (reduced)
+POST
 **DISABLED** Manual support can be enabled (work like lock) 
 /vehicles/{VIN}/commands/lock-reduced-guard
 Locks the car.
@@ -365,6 +379,7 @@ PLACEHOLDER
 ```
 
 ## Unlocking the car
+POST
 /vehicles/{VIN}/commands/unlock
 Unlocks the car.
 It needs ***auth header*** and VIN (PATH)
@@ -380,6 +395,7 @@ It needs ***auth header*** and VIN (PATH)
 ```
 
 ## flashing the lights
+POST
 /vehicles/{VIN}/commands/flash-lights
 Flashes the lights.
 It needs ***auth header*** and VIN (PATH)
@@ -394,6 +410,7 @@ It needs ***auth header*** and VIN (PATH)
 ```
 
 ## horn
+POST
 /vehicles/{VIN}/commands/horn
 Sounds the horn.
 It needs ***auth header*** and VIN (PATH)
@@ -408,6 +425,7 @@ It needs ***auth header*** and VIN (PATH)
 ```
 
 ## horn and flash lights
+POST
 /vehicles/{VIN}/commands/horn-and-flash
 Sounds the horn and flashes the lights.
 It needs ***auth header*** and VIN (PATH)
@@ -423,6 +441,7 @@ It needs ***auth header*** and VIN (PATH)
 
 ## statistics
 **STATIC**
+GET
 /vehicles/{VIN}/statistics
 Statistics of the car.
 It needs ***auth header*** and VIN (PATH)
@@ -488,6 +507,7 @@ It needs ***auth header*** and VIN (PATH)
 ```
 
 ## tyres
+GET
 /vehicles/{VIN}/tyres
 Status of tyres.
 It needs ***auth header*** and VIN (PATH)
@@ -517,6 +537,7 @@ legend:
 - value: UNSPECIFIED, NO_WARNING, VERY_LOW_PRESSURE, LOW_PRESSURE, HIGH_PRESSURE.
 
 ## fuel
+GET
 /vehicles/{VIN}/fuel
 Status of fuel.
 It needs ***auth header*** and VIN (PATH)
@@ -541,6 +562,7 @@ INFO: if car is electric then the fuel Amount isnt sent and if the car is petrol
 
 
 ## odometer
+GET
 /vehicles/{VIN}/odometer
 Status of odometer.
 It needs ***auth header*** and VIN (PATH)
@@ -557,6 +579,7 @@ It needs ***auth header*** and VIN (PATH)
 ```
 
 ## engine
+GET
 /vehicles/{VIN}/engine
 diagnostics of engine.
 It needs ***auth header*** and VIN (PATH)
@@ -577,12 +600,14 @@ It needs ***auth header*** and VIN (PATH)
 values: UNSPECIFIED, NO_WARNING, TOO_LOW
 
 ## diagnostics
+GET
 /vehicles/{VIN}/diagnostics
 diagnostics of the car.
 It needs ***auth header*** and VIN (PATH) 
 **checks needed**
 
 ## brakes
+GET
 /vehicles/{VIN}/brakes
 diagnostics of brake fluid.
 It needs ***auth header*** and VIN (PATH)
@@ -600,6 +625,7 @@ legend:
 values: UNSPECIFIED, NO_WARNING, TOO_LOW
 
 ## warnings
+GET
 /vehicles/{VIN}/warnings
 Shows a lot of warnings for the lights
 It needs ***auth header*** and VIN (PATH)
@@ -607,11 +633,74 @@ It needs ***auth header*** and VIN (PATH)
 Some data will diffrent from car to car.
 
 ## commands
+GET
 /vehicles/{VIN}/commands
 List of commands available for the car.
 It needs ***auth header*** and VIN (PATH)
+INFO: It is made tool like official
+```
+{
+  "data": [
+    {
+      "command": "CLIMATIZATION_START",
+      "href": "/v2/vehicles/VIN123/commands/climatization-start"
+    },
+    {
+      "command": "CLIMATIZATION_STOP",
+      "href": "/v2/vehicles/VIN123/commands/climatization-stop"
+    },
+    {
+      "command": "ENGINE_START",
+      "href": "/v2/vehicles/VIN123/commands/engine-start"
+    },
+    {
+      "command": "ENGINE_STOP",
+      "href": "/v2/vehicles/VIN123/commands/engine-stop"
+    },
+    {
+      "command": "FLASH",
+      "href": "/v2/vehicles/VIN123/commands/flash"
+    },
+    {
+      "command": "HONK",
+      "href": "/v2/vehicles/VIN123/commands/honk"
+    },
+    {
+      "command": "HONK_AND_FLASH",
+      "href": "/v2/vehicles/VIN123/commands/honk-and-flash"
+    },
+    {
+      "command": "LOCK",
+      "href": "/v2/vehicles/VIN123/commands/lock"
+    },
+    {
+      "command": "UNLOCK",
+      "href": "/v2/vehicles/VIN123/commands/unlock"
+    }
+  ]
+}
+```
+legend:
+- href doesn't point to playground url but real life api endpoints (when more than one api will be implented then it will match)
+- addtional command exists REDUCED_GUARD_LOCK it is not default added (it would be like lock/only on AAOS cars)
 
 ## command accessability
+GET
 /vehicles/{VIN}/commands-accessibility
 Returns if the car is able to execute commands.
 It needs ***auth header*** and VIN (PATH)
+```
+{
+  "data": {
+    "availabilityStatus": {
+      "value": <str>,
+      "unavailableReason": <str>,
+      "timestamp": "2026-07-28T21:25:29.446Z"
+    }
+  }
+}
+```
+legend:
+- unavailableReason only sent if not available
+"UNSPECIFIED", "NO_INTERNET", "POWER_SAVING_MODE", "CAR_IN_USE" also "" if you want to reset it ( if set to one of them auto invoice selection will be activated)
+- value:  "AVAILABLE", "UNAVAILABLE", "UNSPECIFIED"

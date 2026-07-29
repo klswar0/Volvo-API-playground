@@ -10,6 +10,8 @@ def autoErrorResponse(e:str, VIN:str=None):
         return BadRequestResponse(VIN)
     elif str(e) == "Invalid Content-Type":
         return ErrorResponse("BAD_REQUEST", "Invalid Content-Type. Only 'application/json' is accepted.", 400)
+    elif str(e) == "Invalid Accept header":
+            return ErrorResponse("BAD_REQUEST", "Invalid Accept header. Only 'application/json' is accepted.", 406)
     else:
         return ErrorResponse("INTERNAL_SERVER_ERROR", f"An unexpected error occurred. INFO:{e}", 500)
 
