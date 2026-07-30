@@ -219,7 +219,7 @@ def scenarios(key: str,VIN: str, request: Request):
         data={"vin":VIN,"key":key,"scenarios":scenarios}
         return templates.TemplateResponse(name="loading.html", request=request, context=data)
     except ValueError as e:
-        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+        return HTMLResponse(content="<p style=\"color:red\">internal error occurred. details: {e}</p>",headers=error_headers)
 
 def scenarioLoad(key: str,VIN: str,name: str, request: Request):
     try:
@@ -231,9 +231,9 @@ def scenarioLoad(key: str,VIN: str,name: str, request: Request):
             response.headers["HX-Redirect"] = f"/internal/dashboard/car?key={key}&VIN={VIN}"
             return response
         else:
-            return HTMLResponse(content="<p style=\"color:red\">Error occurred while loading scenario</p>")
+            return HTMLResponse(content="<p style=\"color:red\">Error occurred while loading scenario. Is the json file corrupted?</p>",headers=error_headers)
     except ValueError as e:
-        return HTMLResponse(content="<p style=\"color:red\">Error occurred while loading scenario</p>")
+        return HTMLResponse(content="<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
 
 def Welcome():
