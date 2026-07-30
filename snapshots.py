@@ -2,6 +2,7 @@
 
 import json
 from copy import deepcopy
+from os import name
 
 from fastapi.encoders import jsonable_encoder
 from fastapi import Body, Header 
@@ -61,31 +62,45 @@ def saveFileSnapshots():
         json.dump(data_to_save, file, indent=4)
 
 
-
+def loadSnapshots(vcc_api_key:str, name:str):
+    if name in snapshotsData.keys():
+        storage = snapshotsData[name]
+        database[vcc_api_key] = deepcopy(storage.mainData)
+        for car in database[vcc_api_key]:
+            car_instance = VINHandlingInternal(car.VIN, vcc_api_key)
+            notifier.trigger_update_multiple(car.VIN, car_instance, list(car.model_dump().keys()))
+        if storage.OauthData is not None:
+            Oauth2Data[vcc_api_key] = deepcopy(storage.OauthData)
+        else:
+            if vcc_api_key in Oauth2Data:
+                del Oauth2Data[vcc_api_key]
+        return True,name
+    else:
+        return False, name
+  
+def saveSnapshots(vcc_api_key:str, name:str):
+    if vcc_api_key not in Oauth2Data.keys():
+        storage = Snapshots(mainData=deepcopy(database[vcc_api_key]), OauthData=None)
+    else:
+        storage = Snapshots(mainData=deepcopy(database[vcc_api_key]), OauthData=deepcopy(Oauth2Data[vcc_api_key]))
+    snapshotsData[name] = storage
+    return True,name
+   
 def snapshots(vcc_api_key:str,command:str,name:str):
     try:
         authenticateInternal(vcc_api_key)
         if command == "save":
-            if vcc_api_key not in Oauth2Data.keys():
-                storage = Snapshots(mainData=deepcopy(database[vcc_api_key]), OauthData=None)
-            else:
-                storage = Snapshots(mainData=deepcopy(database[vcc_api_key]), OauthData=deepcopy(Oauth2Data[vcc_api_key]))
-            snapshotsData[name] = storage
-            return JSONResponse(content={"message": f"Snapshot '{name}' saved successfully."}, status_code=200)
+            response = saveSnapshots(vcc_api_key, name)
+            if response[0] == True:
+                return JSONResponse(content={"message": f"Snapshot '{response[1]}' saved successfully."}, status_code=200)
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/internal error"}}, status_code=500)
         elif command == "load":
-            if name in snapshotsData.keys():
-                storage = snapshotsData[name]
-                database[vcc_api_key] = deepcopy(storage.mainData)
-                for car in database[vcc_api_key]:
-                    car_instance = VINHandlingInternal(car.VIN, vcc_api_key)
-                    notifier.trigger_update_multiple(car.VIN, car_instance, list(car.model_dump().keys()))
-                if storage.OauthData is not None:
-                    Oauth2Data[vcc_api_key] = deepcopy(storage.OauthData)
-                else:
-                    if vcc_api_key in Oauth2Data:
-                        del Oauth2Data[vcc_api_key]
-                return JSONResponse(content={"message": f"Snapshot '{name}' loaded successfully."}, status_code=200)
-            else:
-                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid snapshot name: {name}"}}, status_code=400)
+            response = loadSnapshots(vcc_api_key, name)
+            if response[0]==True:
+               return JSONResponse(content={"message": f"Snapshot '{response[1]}' loaded successfully."}, status_code=200)
+            elif response[0] == False:
+                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid snapshot name: {response[1]}"}}, status_code=400)
+        else:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid command: {command}"}}, status_code=400)
     except Exception as e:
         return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"THIS IS INTERNAL API/Invalid API key", "details": str(e)}}, status_code=401)

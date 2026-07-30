@@ -18,6 +18,7 @@ from database import database, Oauth2Data
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
+from snapshots import loadSnapshots, saveSnapshots,snapshotsData
 
 error_headers = {
     "HX-Retarget": "#error-response",
@@ -219,7 +220,7 @@ def scenarios(key: str,VIN: str, request: Request):
         data={"vin":VIN,"key":key,"scenarios":scenarios}
         return templates.TemplateResponse(name="loading.html", request=request, context=data)
     except ValueError as e:
-        return HTMLResponse(content="<p style=\"color:red\">internal error occurred. details: {e}</p>",headers=error_headers)
+        return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. details: {e}</p>",headers=error_headers)
 
 def scenarioLoad(key: str,VIN: str,name: str, request: Request):
     try:
@@ -233,8 +234,39 @@ def scenarioLoad(key: str,VIN: str,name: str, request: Request):
         else:
             return HTMLResponse(content="<p style=\"color:red\">Error occurred while loading scenario. Is the json file corrupted?</p>",headers=error_headers)
     except ValueError as e:
-        return HTMLResponse(content="<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
+        return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
+def snapshotsSave(key: str,name: str, request: Request):
+    try:
+        authenticateInternal(key)
+        response = saveSnapshots(vcc_api_key=key, name=name)
+        if response[0] == True:
+            return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"response": f"Snapshot '{response[1]}' saved successfully."})
+        else:
+            return HTMLResponse(content=f"<p style=\"color:red\">Error occurred while saving snapshot. Internal error.</p>",headers=error_headers)
+    except ValueError as e:
+        return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
+
+
+def snapshotsLoad(key: str,name: str, request: Request):
+    try:
+        authenticateInternal(key)
+        response = loadSnapshots(vcc_api_key=key, name=name)
+        if response[0] == True:
+            response = Response()
+            response.headers["HX-Redirect"] = f"/internal/dashboard?key={key}"
+            return response
+        else:
+            return HTMLResponse(content=f"<p style=\"color:red\">Error occurred while loading snapshot. The snapshot name {response[1]} may be invalid.</p>",headers=error_headers)
+    except ValueError as e:
+        return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
+
+def snapshots(key: str, request: Request):
+    try:
+        authenticateInternal(key)
+        return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys())})
+    except ValueError as e:
+        return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
 def Welcome():
     return FileResponse("templates/welcome.html")

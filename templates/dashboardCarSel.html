@@ -21,9 +21,14 @@
         <header class="text-center" >
             <h1 class="text-4xl  md:text-5xl">Car list</h1>
             <p class="text-xl  md:text-2xl">API key: {{ key }}</p>
-            <button id="go" hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                OAuth2 Settings
-            </button>
+            <div class="flex flex-row gap-4 w-full items-center mt-4">
+                <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    OAuth2 Settings
+                </button>
+                <button  hx-get="/internal/dashboard/snapshots?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    Snapshots
+                </button>
+            </div>
         </header>
 
         <main class="text-center space-y-6 mt-6 md:mt-12 ">
@@ -85,5 +90,12 @@
 
         </section>
         </main>
+        <form action="/internal/welcome" method="GET" class="inline-block mt-4">
+            <button
+                type="submit"
+                class="sec min-w-30px px-4 py-2.5 bg-blue-500/30 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                Logout
+            </button>
+        </form>
     </body>
 </html>

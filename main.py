@@ -874,13 +874,24 @@ def OAuth2Change(request: Request, attribute: str=Body(...), value: str=Body(...
     return dashboard.OAuth2Change(key, attribute, value, request)
 
 @app.get("/internal/dashboard/loading", include_in_schema=False)
-def scenarios(request: Request,key: str, VIN: str,name: str=Query(default="")):
+def scenariosDash(request: Request,key: str, VIN: str,name: str=Query(default="")):
     if name == "":
         return dashboard.scenarios(key, VIN, request)
     else:
         return dashboard.scenarioLoad(key, VIN, name, request)
+    
+@app.get("/internal/dashboard/snapshots", include_in_schema=False)
+def snapshotDash(request: Request,key: str):
+    return dashboard.snapshots(key, request)
 
-
+@app.get("/internal/dashboard/snapshots/command", include_in_schema=False)
+def snapshotDashUpdate(request: Request,key: str,command: str, name: str):
+    if command == "save":
+        return dashboard.snapshotsSave(key, name, request)
+    elif command == "load":
+        return dashboard.snapshotsLoad(key, name, request)
+    else:
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST", "description": "Invalid command"}}, status_code=400)
 
 #internal endpoints for testing and development. Not part of the official API.
 
