@@ -33,6 +33,8 @@ then:
 You can explore the public instance here:
 [Public instance](https://playground.kls.hackclub.app/internal/welcome)
 
+[![Phare badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fklswar0-github.status.phare.io%2Fshield-badges%2Fstatus.json&style=for-the-badge)](https://klswar0-github.status.phare.io)
+
 > [!TIP]
 > Are you not sure?
 > You can check the diffrences in the companion app: [ LINK ](https://compareplay.kls.hackclub.app/)
@@ -52,3 +54,6 @@ When contributing to this project, please keep in mind that it was created for t
 
 ## Why created ?
 While thinking about new project i thought about recreating volvo app (part of the reason in the hate for it new desing) but while i looked at API I thought its sandbox isn't very good (It could be it is enough for profesional devs but for me not)
+
+## Help needed or BUG found?
+Create an issue or contact me on slack
