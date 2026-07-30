@@ -873,6 +873,13 @@ def OAuth2Settings(request: Request,key: str):
 def OAuth2Change(request: Request, attribute: str=Body(...), value: str=Body(...), key: str=Query(...)):
     return dashboard.OAuth2Change(key, attribute, value, request)
 
+@app.get("/internal/dashboard/loading", include_in_schema=False)
+def scenarios(request: Request,key: str, VIN: str,name: str=Query(default="")):
+    if name == "":
+        return dashboard.scenarios(key, VIN, request)
+    else:
+        return dashboard.scenarioLoad(key, VIN, name, request)
+
 
 
 #internal endpoints for testing and development. Not part of the official API.

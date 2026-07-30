@@ -17,6 +17,7 @@ from classCar import Car, options, startUp, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
+from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
 
 error_headers = {
     "HX-Retarget": "#error-response",
@@ -207,7 +208,32 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
         return OAuth2Settings(key, request)
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+    
+    
+    
+def scenarios(key: str,VIN: str, request: Request):
+    try:
+        authenticateInternal(key)
+        car = VINHandlingInternal(VIN, key)
+        scenarios = list(SCENARIO_TEMPLATES.keys()) + list(SCENARIO_USER.keys())
+        data={"vin":VIN,"key":key,"scenarios":scenarios}
+        return templates.TemplateResponse(name="loading.html", request=request, context=data)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
 
+def scenarioLoad(key: str,VIN: str,name: str, request: Request):
+    try:
+        authenticateInternal(key)
+        car = VINHandlingInternal(VIN, key)
+        response = scenariosFunc(vcc_api_key=key, VIN=VIN, scenario=name)
+        if response.status_code == 200:
+            response = Response()
+            response.headers["HX-Redirect"] = f"/internal/dashboard/car?key={key}&VIN={VIN}"
+            return response
+        else:
+            return HTMLResponse(content="<p style=\"color:red\">Error occurred while loading scenario</p>")
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Error occurred while loading scenario</p>")
 
 
 def Welcome():
