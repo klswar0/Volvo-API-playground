@@ -10,20 +10,20 @@ This POST endpoint creates a new Car.
 Header:
 - ***vcc-api-key*** the api key created or the ready scenario key
 Body:
-- ***VIN*** string (it should't be a real vin for privacy reasons)
+- ***VIN*** string (Use a dummy/simulated VIN for privacy)
 - ***attributes*** a list of attributes (door status, engine status...) to be change. Can be empty
-- ***values*** a list if values of changed attibutes (it is not validated so your values could be not correct)
+- ***values*** a list if values of changed attributes (it is not validated so your values could be not correct)
 
-info: attribute and values lenght should be the same
+info: attribute and values length should be the same
 
 ### /internal/update
 This POST endpoint updates a specific car attributes.
 Header:
 - ***vcc-api-key*** the api key created or the ready scenario key
 Body:
-- ***VIN*** string (it should't be a real vin for privacy reasons)
+- ***VIN*** string 
 - ***attributes*** a list of attributes (door status, engine status...) to be change. 
-- ***values*** a list if values of changed attibutes (it is validated. It means that only valid values for that attributes are updated)
+- ***values*** a list if values of changed attributes (it is validated. It means that only valid values for that attributes are updated)
 
 info:need to fix updates and this enpoints so doesnt call notifier 2 times
 
@@ -90,11 +90,44 @@ body:
   "redirect_uri": <str/optional>
 }
 ```
+NOTE: PCKE should be PKCE (FIX needed)
 ```
 {
     "message": "OAuth2 activated successfully"
 }
 ```
+
+### /internal/snapshot
+This POST endpoint saves or loads saved data about one API key (persistent storage about car and OAuth2 status)
+header:
+- ***vcc_api_key*** api key
+body:
+{
+  "command": <str>,
+  "name": <str>
+}
+legend:
+- command: load or save
+- name: It is a name
+about:
+Data is stored in snapshots.json it load at start and save at shutdown (Do Not force quit)
+You can save a snapshots of one api key and use it in different one
+
+### /internal/snapshot
+This POST endpoint this scenario can be used for faster setting resetting statuses about car
+header:
+- ***vcc_api_key*** api key
+body:
+{
+  "VIN": <str>,
+  "scenario": <str>
+}
+legend:
+- scenario: name from scenario in scenario.json
+- VIN: the car VIN from the api key that you want to load the scenario
+about:
+Scenario is stored in scenarios.json. You can manual add or delete the scenario there.
+If scenarios.json is not valid JSON file then only default scenarios will be loaded
 
 ### Errors
 If an error is returned and it is not caused by missing data, the response will have the following format:
@@ -111,17 +144,19 @@ Query:
 - ***VIN*** VIN of virtual vehicle you want to monitor
 - ***key*** api key
 
-### '/internal/welcome'
-This site give you away to generate or login with api key.
-Then give away to select a car and modifier data.
-It redirects to the rest of the pages.
+
+### /internal/welcome
+The main dashboard for the playground simulator. It allows you to:
+- Generate a new API key or log in with an existing key.
+- Select a virtual vehicle and modify its attributes or live state.
+- Easily navigate to all other internal tools and endpoints..
 
 
 
 
 ## official endpoints:
 
-Errors catched in official docs and specification.
+Errors caught in official docs and specification.
 docs are outdated (more than one diffrences between specification)
 specification dont says responses are in {data: <what specification says>} 
 
@@ -142,12 +177,10 @@ Exception: RUNNING for sure can only go to engine and climate endpoints
 if POST
 - ***Content-Type*** always application/json
 if GET
-- ***Accept*** always application/json or */* (likely optional)
+- ***Accept*** always application/json or \*/\* (likely optional)
 - ***authorization*** access token generated thru Oauth. Not checked in this playground if disabled Oauth2
 - ***vcc-api-key*** your api key (dont use your official api key in this playground for safety)
 
-### INFO:
- ~~The official Volvo Connected Vehicle API rejects requests with Content-Type: application/json;charset=UTF-8 for some endpoints and only accepts Content-Type: application/json. This behavior will be  replicated by the playground for compatibility.~~ More diging needed
 
 ### List vehicles
 GET
@@ -255,7 +288,7 @@ It needs ***auth header*** and VIN (PATH)
 
 ## Climate start
 POST
-/vehicles/{VIN}/commands/climate-start
+/vehicles/{VIN}/commands/climatization-start
 Starts the climate.
 It needs ***auth header*** and VIN (PATH)
 ```
@@ -271,7 +304,7 @@ It needs ***auth header*** and VIN (PATH)
 
 ## Climate stop
 POST
-/vehicles/{VIN}/commands/climate-stop
+/vehicles/{VIN}/commands/climatization-stop
 Stops the climate.
 It needs ***auth header*** and VIN (PATH)
 ```
@@ -630,7 +663,7 @@ GET
 Shows a lot of warnings for the lights
 It needs ***auth header*** and VIN (PATH)
 **classic cars different from new cars. Need to check with volvo specification**
-Some data will diffrent from car to car.
+Some data will different from car to car.
 
 ## commands
 GET
