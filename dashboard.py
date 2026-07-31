@@ -310,3 +310,18 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
     except ValueError as e:
 
         return HTMLResponse(content=f"<div id=\"Error-response\"><p style=\"color:red\">Car already exists/internal error {e}</p></div>", headers=error_headers)
+    
+    
+def deleteCar(key: str, VIN: str, request: Request):
+    try:
+        if key not in database:
+            raise ValueError("Invalid API key")
+        try:
+            car = VINHandlingInternal(VIN, key)
+            database[key].remove(car)
+
+            return Dashboard(key, request)
+        except ValueError:
+            return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car does not exist</p></div>", headers=error_headers)
+    except ValueError as e:
+        return HTMLResponse(content=f"<div id=\"Error-response\"><p style=\"color:red\">internal error {e}</p></div>", headers=error_headers)

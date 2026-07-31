@@ -865,6 +865,10 @@ def WelcomeAPIKey(request: Request):
 def WelcomeNewCar(request: Request, key: str, VIN: str):
     return dashboard.WelcomeNewCar(request, key, VIN)
 
+@app.delete("/internal/dashboard/delCar", include_in_schema=False) 
+def deleteCar(request: Request, key: str, VIN: str):
+    return dashboard.deleteCar(key, VIN, request)
+
 @app.get("/internal/dashboard/OAuth2settings", include_in_schema=False)
 def OAuth2Settings(request: Request,key: str):
     return dashboard.OAuth2Settings(key, request)
@@ -925,6 +929,7 @@ def genAPIKey():
 def addCar(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(...), attributes: dict = Body(default={})):
     """internal endpoint for adding a new car to the database"""
     return internal.addCar(vcc_api_key, VIN, attributes)
+
 
 
 #experimental func NOT TESTED:
