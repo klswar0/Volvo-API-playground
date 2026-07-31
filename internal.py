@@ -243,4 +243,15 @@ def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dic
 
    
 
+def delCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dict = Body(default={})): #add to DOCS
+    try:
+        cars =database[vcc_api_key]
+        for i, car in enumerate(cars):
+            if car.VIN == VIN:
+                del cars[i]
+                return JSONResponse(content={"message": f"THIS IS INTERNAL API/Car deleted successfully: {VIN}"}, status_code=200)
+        return BadRequestResponseInternal(VIN)
+
+    except KeyError:
+        return UnauthorizedResponseInternal()
 

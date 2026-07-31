@@ -929,6 +929,10 @@ def genAPIKey():
 def addCar(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(...), attributes: dict = Body(default={})):
     """internal endpoint for adding a new car to the database"""
     return internal.addCar(vcc_api_key, VIN, attributes)
+@app.delete("/internal/delCar")
+def delCar(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(...), attributes: dict = Body(default={})):
+    """internal endpoint for deleting a car from the database"""
+    return internal.delCar(vcc_api_key, VIN, attributes)
 
 
 
@@ -950,4 +954,4 @@ def snapshot(vcc_api_key: str = Header(...,alias="vcc-api-key"), command: str = 
 if __name__ == "__main__":
     uvicorn.run(app,host="0.0.0.0",port=8000)
 
-saveFileSnapshots()  # Save snapshots to file on shutdown
+# saveFileSnapshots() way to corrupt dat  # Save snapshots to file on shutdown
