@@ -92,6 +92,11 @@ def snapshots(vcc_api_key:str,command:str,name:str):
         if command == "save":
             response = saveSnapshots(vcc_api_key, name)
             if response[0] == True:
+                try:
+                    saveFileSnapshots()
+                except Exception as e:
+                    print(f"Error saving snapshots to file: {e}")
+                    
                 return JSONResponse(content={"message": f"Snapshot '{response[1]}' saved successfully."}, status_code=200)
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/internal error"}}, status_code=500)
         elif command == "load":
