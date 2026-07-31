@@ -1,5 +1,5 @@
  <div id="fuelAndBattery" class="flex flex-row flex-wrap gap-4 mt-6 justify-center animate-fade-in">
-        <section class=" min-w-[400px] max-w-[500px] order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class=" min-w-100 max-w-125 order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Fuel Type:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg" id="fuelType">{{fuelType}} </p>
@@ -18,9 +18,9 @@
 
         </section>
         {% if fuelType != "ELECTRIC" %}
-        <section class="min-w-[300px] max-w-[400px] order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <section class="min-w-75 max-w-100 order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
         {% else %}
-        <section class="min-w-[300px] max-w-[400px] order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
+        <section class="min-w-75 max-w-100 order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
         {% endif %}
             <p class="text-lg md:text-xl">Fuel Level:</p>
             <div class="flex items-center gap-1 mt-2 mb-4">
@@ -30,8 +30,8 @@
                 <form data-attribute="fuelICE" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelICE">
-                    <input type="number" name="value" min="0" class="min-w-[200px] max-w-[300px] px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="number" name="value" min="0" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
@@ -39,9 +39,9 @@
 
 
         {% if fuelType == "HYBRID" or fuelType == "ELECTRIC" %}
-        <section class="min-w-[300px] max-w-[400px] order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <section class="min-w-75 max-w-100 order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
         {% else %}
-        <section class="min-w-[300px] max-w-[400px] order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
+        <section class="min-w-75 max-w-100 order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
         {% endif %}
             <p class="text-lg md:text-xl">Battery Level:</p>
             <div class="flex items-center gap-1 mt-2 mb-4">
@@ -51,8 +51,8 @@
                 <form data-attribute="fuelElectric" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelElectric">
-                    <input type="number" name="value" min="0" class="min-w-[200px] max-w-[300px] px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="number" name="value" min="0" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
         </section>

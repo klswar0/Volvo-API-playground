@@ -1,7 +1,7 @@
 <div id="car-info" >
     <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
 
-    <section class=" min-w-[300px] max-w-[400px]  lg:order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+    <section class=" min-w-75 max-w-100  lg:order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Model Year:</p>
             <div class="mt-2 mb-4">
                 <p class="text-base md:text-lg " id="modelYear">{{modelYear}}</p>
@@ -9,15 +9,15 @@
             <form data-attribute="modelYear" hx-ext="json-enc" 
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="modelYear">
-                <input type="number" name="value" min="0" placeholder="Enter new model year" class="min-w-[200px] max-w-[300px] px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="number" name="value" min="0" placeholder="Enter new model year" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
             </form>
 
     </section>
 
 
-    <section class=" min-w-[400px] max-w-[500px] order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+    <section class=" min-w-100 max-w-125 order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Gearbox Type:</p>
             <div class="mt-2 mb-4">
                 <p class="text-base md:text-lg " id="gearboxType">{{gearboxType}}</p>
@@ -29,13 +29,13 @@
                     <option value="AUTOMATIC" class="bg-zinc-950 text-zinc-100">AUTOMATIC</option>
                     <option value="MANUAL" class="bg-zinc-950 text-zinc-100">MANUAL</option>
                 </select>
-                <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
 
     </section>
 
 
-    <section class=" min-w-[300px] max-w-[400px] lg:order-3 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+    <section class=" min-w-75 max-w-100 lg:order-3 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Odometer:</p>
             <div class="flex items-center gap-1 mt-2 mb-4">
                 <p class="text-base md:text-lg " id="odometer">{{odometer}}</p>
@@ -44,8 +44,8 @@
             <form data-attribute="odometer" hx-ext="json-enc"
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="odometer">
-                <input type="number" name="value" min="0" placeholder="Enter new odometer reading" class="min-w-[200px] max-w-[300px] px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="number" name="value" min="0" placeholder="Enter new odometer reading" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
 
 
@@ -56,7 +56,7 @@
 
     <h2 class="mt-6 text-center text-2xl md:text-4xl">Availability</h2>
     <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-        <section class=" min-w-[400px] max-w-[500px] order-5 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class=" min-w-100 max-w-125 order-5 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Availability Status:</p>    
             <div class="mt-2 mb-4">
                 <p class="text-base md:text-lg" id="availabilityStatus_value">{{ availabilityStatus_value }}</p>
@@ -75,7 +75,7 @@
         </section>
 
 
-        <section class="min-w-[400px] max-w-[500px] order-6 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class="min-w-100 max-w-125 order-6 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Availability Status Unavailable Reason:</p>
         {# if car is available this should be displayed TODO #}
             <div class="mt-2 mb-4">
@@ -103,7 +103,7 @@
 
     <h2 class="mt-6 text-center text-2xl md:text-4xl">Engine and Climate</h2>
     <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-        <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Engine Status:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="engineStatus">{{engineStatus}}</p>
@@ -120,7 +120,7 @@
 
         </section>
 
-        <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Climate Status:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="climate">{{climate}}</p>
@@ -142,7 +142,7 @@
     {# it can change the hidden html #}
    
         <div id="fuelAndBattery" class="flex flex-row flex-wrap gap-4 mt-6 justify-center">
-        <section class=" min-w-[400px] max-w-[500px] order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class=" min-w-100 max-w-125 order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Fuel Type:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg" id="fuelType">{{fuelType}} </p>
@@ -161,9 +161,9 @@
 
         </section>
         {% if fuelType != "ELECTRIC" %}
-        <section class="min-w-[300px] max-w-[400px] order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <section class="min-w-75 max-w-100 order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
         {% else %}
-        <section class="min-w-[300px] max-w-[400px] order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
+        <section class="min-w-75 max-w-100 order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
         {% endif %}
             <p class="text-lg md:text-xl">Fuel Level:</p>
             <div class="flex items-center gap-1 mt-2 mb-4">
@@ -173,8 +173,8 @@
                 <form data-attribute="fuelICE" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelICE">
-                    <input type="number" name="value" min="0" class="min-w-[200px] max-w-[300px] px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="number" name="value" min="0" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
@@ -182,9 +182,9 @@
 
 
         {% if fuelType == "HYBRID" or fuelType == "ELECTRIC" %}
-        <section class="min-w-[300px] max-w-[400px] order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <section class="min-w-75 max-w-100 order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
         {% else %}
-        <section class="min-w-[300px] max-w-[400px] order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
+        <section class="min-w-75 max-w-100 order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
         {% endif %}
             <p class="text-lg md:text-xl">Battery Level:</p>
             <div class="flex items-center gap-1 mt-2 mb-4">
@@ -194,8 +194,8 @@
                 <form data-attribute="fuelElectric" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelElectric">
-                    <input type="number" name="value" min="0" class="min-w-[200px] max-w-[300px] px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="number" name="value" min="0" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
         </section>
@@ -203,8 +203,8 @@
         </div>
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Tire Pressure</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-[800px] mx-auto">
-            <section class="min-w-[300px] p-6 max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
+            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Left:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="frontLeft">{{frontLeft}}</p>
@@ -219,12 +219,12 @@
                         <option value="LOW_PRESSURE">LOW_PRESSURE</option>
                         <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
-            <section class="min-w-[300px] p-6 max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Right:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg" id="frontRight">{{frontRight}}</p>
@@ -239,13 +239,13 @@
                         <option value="LOW_PRESSURE">LOW_PRESSURE</option>
                         <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
 
-            <section class="min-w-[300px] p-6 max-w-[400px]  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="min-w-75 p-6 max-w-100  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Left:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="rearLeft">{{rearLeft}}</p>
@@ -260,11 +260,11 @@
                         <option value="LOW_PRESSURE">LOW_PRESSURE</option>
                         <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
             </section>
-            <section class="min-w-[300px] p-6 max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Right:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="rearRight">{{rearRight}}</p>
@@ -279,7 +279,7 @@
                         <option value="LOW_PRESSURE">LOW_PRESSURE</option>
                         <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
             </section>
@@ -290,7 +290,7 @@
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Doors</h2>
         <div class="grid grid-cols-1">
             <div class="flex flex-col gap-4 mt-6 items-center justify-center">
-                <section class=" min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <section class=" min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                     <p class="text-lg md:text-xl">Central Lock:</p>
                         <div class="mt-2 mb-4">
                             <p class="text-base md:text-lg " id="centralLock">{{centralLock}}</p>
@@ -310,7 +310,7 @@
             </div>
         
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
-                <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Left Door:</p>
                     <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg" id="frontLeftDoor">{{frontLeftDoor}}</p>
@@ -328,7 +328,7 @@
                     </form>
 
                 </section>
-                <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Right Door:</p>
 
                     <div class="mt-2 mb-4">
@@ -350,7 +350,7 @@
 
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
-                <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Left Door:</p>
 
                     <div class="mt-2 mb-4">
@@ -369,7 +369,7 @@
                     </form>
 
                 </section>
-                <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Right Door:</p>
    
                     <div class="mt-2 mb-4">
@@ -391,7 +391,7 @@
 
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
-                <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                     <p class="text-lg md:text-xl">Tail Gate:</p>
 
                         <div class="mt-2 mb-4">
@@ -411,7 +411,7 @@
 
                     
                 </section>
-                <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col ">
+                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col ">
                     <p class="text-lg md:text-xl">Hood:</p>
 
                         <div class="mt-2 mb-4">
@@ -432,7 +432,7 @@
                 </section>
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
-                <section class="min-w-[400px] max-w-[500px] p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col ">
+                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col ">
                     <p class="text-lg md:text-xl">Tank Lid:</p>
 
                         <div class="mt-2 mb-4">
@@ -456,8 +456,8 @@
         </div>
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Fluids</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-[800px] mx-auto">
-            <section class="min-w-[300px] p-6 max-w-[400px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
+            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Oil level:</p>
 
                     <div class="mt-2 mb-4">
@@ -473,12 +473,12 @@
                         <option value="TOO_LOW">TOO_LOW</option>
                         <option value="TOO_HIGH">TOO_HIGH</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
-            <section class="min-w-[300px] p-6 max-w-[400px]  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="min-w-75 p-6 max-w-100  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Engine Coolant Level:</p>
 
                     <div class="mt-2 mb-4">
@@ -492,13 +492,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="TOO_LOW">TOO_LOW</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
 
-            <section class="p-6 min-w-[300px] max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Brake fluid:</p>
         
                     <div class="mt-2 mb-4">
@@ -512,11 +512,11 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="TOO_LOW">TOO_LOW</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
             </section>
-            <section class="p-6 min-w-[300px] max-w-[400px] bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Washer Fluid:</p>
 
                     <div class="mt-2 mb-4">
@@ -530,7 +530,7 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="TOO_LOW">TOO_LOW</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-[300px] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
             </section>
@@ -542,7 +542,7 @@
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Service</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Service warning:</p>
 
                     <div class="mt-2 mb-4">
@@ -570,7 +570,7 @@
 
             </section>
 
-            <section class="min-w-[400px] max-w-[500px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Service trigger:</p>
 
                     <div class="mt-2 mb-4">
@@ -594,7 +594,7 @@
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Lights timestamps</h2>
          <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="min-w-[400px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="min-w-100 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">lights timestamp</p>
                 <div id="lightTimestamp">
                     <div class="mt-2 mb-4">
@@ -606,7 +606,7 @@
                     </div>
                 </div>
             </section>
-            <section class="min-w-[400px] p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="min-w-100 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">horn timestamp</p>
                 <div id="hornTimestamp">
                     <div class="mt-2 mb-4">
