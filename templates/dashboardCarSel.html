@@ -21,7 +21,7 @@
         <header class="text-center" >
             <h1 class="text-4xl  md:text-5xl">Car list</h1>
             <p class="text-xl  md:text-2xl">API key: {{ key }}</p>
-            <div class="flex flex-row gap-4 w-full items-center mt-4">
+            <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
                 <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     OAuth2 Settings
                 </button>
