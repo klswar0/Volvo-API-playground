@@ -72,7 +72,7 @@ def VINHandling(VIN:str, auth_header: AuthHeader):
 # DOES NOT IMPLEMENT THE FULL OAUTH2.0 FLOW. IT IS ONLY A SIMULATION FOR TESTING PURPOSES.
 
 
-def PCKE(code_challenge:str, code_challenge_method:str, oauth2: Oauth2):
+def PKCE(code_challenge:str, code_challenge_method:str, oauth2: Oauth2):
     if code_challenge_method == "S256":
         oauth2.code_challenge = code_challenge
         oauth2.code_challenge_method = code_challenge_method
@@ -83,7 +83,7 @@ def PCKE(code_challenge:str, code_challenge_method:str, oauth2: Oauth2):
         return True
     return False
 
-def PCKECheck(code_verifier: str, oauth2: Oauth2):
+def PKCECheck(code_verifier: str, oauth2: Oauth2):
     method = oauth2.code_challenge_method
     code_challenge = oauth2.code_challenge
 
@@ -128,9 +128,9 @@ def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state
         return HTMLResponse(content="<p style='color: red;'>Wrong client_id or login</p>", status_code=200)
     oauth2 = Oauth2Data[client_id]
 
-    if oauth2.PCKE == True :
-        if PCKE(code_challenge, code_challenge_method, oauth2) == False:
-            return HTMLResponse(content="<p style='color: red;'>ERROR with PCKE code_challenge_method</p>", status_code=200)
+    if oauth2.PKCE == True :
+        if PKCE(code_challenge, code_challenge_method, oauth2) == False:
+            return HTMLResponse(content="<p style='color: red;'>ERROR with PKCE code_challenge_method</p>", status_code=200)
     oauth2.code = "code_"+secrets.token_urlsafe(32) #generate 
     url=f"{redirect_uri}?code={oauth2.code}"
     if state != "":
@@ -168,8 +168,8 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
         return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}}, status_code=400)
     
     if grant_type == "authorization_code":
-        if oauth2.PCKE == True:
-            if PCKECheck(code_verifier,oauth2) == False:
+        if oauth2.PKCE == True:
+            if PKCECheck(code_verifier,oauth2) == False:
                 return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}}, status_code=400)
     
         if oauth2.code != code:
@@ -805,8 +805,8 @@ def AuthGetInternal(vcc_api_key:str = Header(...)):
     return internal.OAuthGetInternal(vcc_api_key)
 
 @app.post("/internal/oauth2/activate")
-def AuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...),PCKE:bool = Body(...),redirect_uri:str = Body(default="")):
-    return internal.OAuthActivateInternal(vcc_api_key, client_secret, PCKE, redirect_uri)
+def AuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...),PKCE:bool = Body(...),redirect_uri:str = Body(default="")):
+    return internal.OAuthActivateInternal(vcc_api_key, client_secret, PKCE, redirect_uri)
 
 @app.post("/internal/oauth2/deactivate")
 def AuthDeactivateInternal(vcc_api_key:str = Header(...)):

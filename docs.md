@@ -86,11 +86,11 @@ body:
 ```
 {
   "client_secret": <str>,
-  "PCKE": <bool>,
+  "PKCE": <bool>,
   "redirect_uri": <str/optional>
 }
 ```
-NOTE: PCKE should be PKCE (FIX needed)
+
 ```
 {
     "message": "OAuth2 activated successfully"
