@@ -2,7 +2,7 @@
 import base64
 
 from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form
-from fastapi.responses import JSONResponse ,HTMLResponse 
+from fastapi.responses import FileResponse, JSONResponse ,HTMLResponse, RedirectResponse 
 from fastapi.templating import Jinja2Templates
 import uvicorn
 import secrets
@@ -27,6 +27,14 @@ app = FastAPI()
 loadFileSnapshots()  # Load snapshots from file at startup
 
 AuthHeader = Union[AuthHeaderPOST, AuthHeaderGET]
+
+@app.get("/")
+def index():
+    if startUp["Public"]:
+        return FileResponse("templates/index.html")
+    else:
+        return RedirectResponse(url="/internal/welcome")
+        
 
 
 def authenticate(auth_header: AuthHeader):

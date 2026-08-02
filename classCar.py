@@ -37,6 +37,7 @@ class Oauth2(BaseModel):
 
 
 startUp={
+    "Public": True,
     "Validation": True,
     "Dashboard": True,# not implemented yet
     "Websocket": True,# not implemented yet

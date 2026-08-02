@@ -57,3 +57,6 @@ While thinking about new project i thought about recreating volvo app (part of t
 
 ## Help needed or BUG found?
 Create an issue or contact me on slack
+
+### Connected repository
+- [compare app](https://github.com/klswar0/Volvo-api-playground-compare)
