@@ -25,7 +25,7 @@ Body:
 - ***attributes*** a list of attributes (door status, engine status...) to be change. 
 - ***values*** a list if values of changed attributes (it is validated. It means that only valid values for that attributes are updated)
 
-info:need to fix updates and this enpoints so doesnt call notifier 2 times
+info: there is additional attrbute nextInvoiceStatus it force the next invoice status ("" means auto mode)
 
 ### /internal/ws
 Websocket on start sends all data about the car then sends data only of changed attributes.
