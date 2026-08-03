@@ -6,7 +6,7 @@ templates = Jinja2Templates(directory="templates")
 
 import json
 import secrets
-
+from copy import deepcopy
 
 
 from notifier import notifier
@@ -191,29 +191,27 @@ def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attrib
 
 # to redo
 def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: list = Body(...), value: list = Body(...)):
-    pass
-    # try:
-    #     car = VINHandlingInternal(VIN, vcc_api_key)
-    #     for i in range(len(attribute)):
-    #         if hasattr(car, attribute[i]):
-    #             setattr(car, attribute[i], value[i])
-    #         else:
-    #             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute[i]}"}}, status_code=400)
-    #     database[vcc_api_key] = [car if c.VIN == VIN else c for c in database[vcc_api_key]]
-    #     if startUp["statusNotification"] == "ALL" or startUp["statusNotification"] == "SET":
-    #         notifier.trigger_update_multiple(VIN, car, attribute)
-    #     return JSONResponse(content={"message": f"THIS IS INTERNAL API/attributes updated successfully"}, status_code=200)
+    try:
+        car = VINHandlingInternal(VIN, vcc_api_key)
+        car_backup = deepcopy(car)
+        for i in range(len(attribute)):
+            if car_backup.update(attribute[i], value[i],True) != True:
+                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute or value. field:{attribute[i]}, value:{value[i]}"}}, status_code=400)
+        car=car_backup
+        if startUp["statusNotification"] == "SET" or startUp["statusNotification"] == "ALL":
+            notifier.trigger_update_multiple(VIN, car, attribute)
+        return JSONResponse(content={"message": f"THIS IS INTERNAL API/attributes updated successfully"}, status_code=200)
 
-    # except ValueError as e:
-    #     if str(e) == "Invalid API key":
-    #         return UnauthorizedResponseInternal()
-    #     elif str(e) == "Invalid VIN":
-    #         return BadRequestResponseInternal(VIN)
-    #     else:
-    #         return JSONResponse(
-    #         content={"error": {"message": "VALUE_ERROR", "description": str(e)}}, 
-    #         status_code=400
-    #         )
+    except ValueError as e:
+        if str(e) == "Invalid API key":
+            return UnauthorizedResponseInternal()
+        elif str(e) == "Invalid VIN":
+            return BadRequestResponseInternal(VIN)
+        else:
+            return JSONResponse(
+            content={"error": {"message": "VALUE_ERROR", "description": str(e)}}, 
+            status_code=400
+            )
 
 
 
