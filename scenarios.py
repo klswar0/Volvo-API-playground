@@ -122,8 +122,8 @@ SCENARIO_TEMPLATES = {
 SCENARIO_USER = {}
 #NOTE: NOT TESTED
 try:
-    if os.path.exists("scenarios_user.json"):
-        with open("scenarios_user.json", "r") as f:
+    if os.path.exists("scenarios.json"):
+        with open("scenarios.json", "r") as f:
             SCENARIO_USER = json.load(f)
 except Exception as e:
     print(f"Error loading user scenarios: {e}")

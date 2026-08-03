@@ -24,8 +24,8 @@ This projects aims to provide dynamic alternative to official volvo API sandbox 
 
 ## How to run:
 Download the repository.
-Packages: fastapi uvicorn pydantic jinja2 websockets:
-`uv add fastapi uvicorn pydantic jinja2 websockets`
+Packages: fastapi uvicorn pydantic jinja2 python-multipart websockets:
+`uv add fastapi uvicorn pydantic jinja2 python-multipart websockets`
 then:
 `uv run main.py`
 
@@ -47,7 +47,7 @@ You can explore the public instance here:
 
 ## DOCS:
 - docs.md file (handwritten with additional info)
-- /docs , /redocs and openapi.json (automatic fastapi docs)
+- /docs , /redoc and openapi.json (automatic fastapi docs)
 
 # Contributions
 When contributing to this project, please keep in mind that it was created for the Hack Club YSWS Stardance event. Contributions that align with the project’s goals and maintain its quality are greatly appreciated even if you don't take part in that event.

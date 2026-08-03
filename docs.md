@@ -27,7 +27,7 @@ Body:
 
 info: there is additional attrbute nextInvoiceStatus it force the next invoice status ("" means auto mode)
 
-### /internal/ws
+### /internal/status/ws
 Websocket on start sends all data about the car then sends data only of changed attributes.
 Query:
 - ***VIN*** VIN of virtual vehicle you want to monitor
@@ -113,7 +113,7 @@ about:
 Data is stored in snapshots.json it load at start and save at shutdown (Do Not force quit)
 You can save a snapshots of one api key and use it in different one
 
-### /internal/snapshot
+### /internal/scenario
 This POST endpoint this scenario can be used for faster setting resetting statuses about car
 header:
 - ***vcc_api_key*** api key
@@ -319,7 +319,7 @@ It needs ***auth header*** and VIN (PATH)
 
 ## Windows Status
 GET
-/vehicles/{VIN}/windows-status
+/vehicles/{VIN}/windows
 Status of the windows.
 It needs ***auth header*** and VIN (PATH)
 ```
@@ -334,7 +334,7 @@ It needs ***auth header*** and VIN (PATH)
 ```
 ## Doors Status
 GET
-/vehicles/{VIN}/doors-status
+/vehicles/{VIN}/doors
 Status of the doors and locks.
 It needs ***auth header*** and VIN (PATH)
 ```
@@ -429,7 +429,7 @@ It needs ***auth header*** and VIN (PATH)
 
 ## flashing the lights
 POST
-/vehicles/{VIN}/commands/flash-lights
+/vehicles/{VIN}/commands/flash
 Flashes the lights.
 It needs ***auth header*** and VIN (PATH)
 ```
@@ -719,7 +719,7 @@ legend:
 
 ## command accessability
 GET
-/vehicles/{VIN}/commands-accessibility
+/vehicles/{VIN}/command-accessibility
 Returns if the car is able to execute commands.
 It needs ***auth header*** and VIN (PATH)
 ```
