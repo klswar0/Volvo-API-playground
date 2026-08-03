@@ -133,20 +133,16 @@ def scenariosFunc(vcc_api_key: str = Header(...), VIN: str = Header(...),scenari
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
         if scenario in SCENARIO_TEMPLATES:
-            for key, value in SCENARIO_TEMPLATES[scenario].items():
-
-                car.update(key, value,True)
-                if startUp["statusNotification"] == "ALL" or startUp["statusNotification"] == "SET":
-                    notifier.trigger_update(VIN, car, key)
+            SCNENARIO = SCENARIO_TEMPLATES[scenario]
         elif scenario in SCENARIO_USER:
-            for key, value in SCENARIO_USER[scenario].items():
-
-                car.update(key, value,True)
-                if startUp["statusNotification"] == "ALL" or startUp["statusNotification"] == "SET":
-                    notifier.trigger_update(VIN, car, key)
-
+            SCNENARIO = SCENARIO_USER[scenario]
         else:
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid scenario: {scenario}"}}, status_code=400)
+        if car.checkValidityMultiple(SCNENARIO):
+            for key, value in SCNENARIO.items():
+                car.update(key, value, True)
+            if startUp["statusNotification"] == "ALL" or startUp["statusNotification"] == "SET":
+                notifier.trigger_update_multiple(VIN, car, list(SCNENARIO.keys()))
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/Scenario applied successfully: {scenario}"}, status_code=200)
     except ValueError as e:
         if str(e) == "Invalid API key":
