@@ -132,15 +132,18 @@ def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
         
 
 async def statusWS(websocket: WebSocket):
+    await websocket.accept()
+    
     if startUp["Websocket"] == False:
+        await websocket.send_text("{\"error\": {\"message\": \"BAD_REQUEST\",\"description\": \"Websocket is disabled in the configuration.\"}}")
+        await websocket.close()
         return
     
-    await websocket.accept()
     params = websocket.query_params
     vin = params.get("VIN")
     api_key = params.get("key")
     queue = notifier.subscribe(vin)
-    print(f"Connected car: {vin} with key: {api_key}")
+
     try:
         car = VINHandlingInternal(vin, api_key)
         if not car:

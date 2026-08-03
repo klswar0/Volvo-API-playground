@@ -39,9 +39,9 @@ class Oauth2(BaseModel):
 startUp={
     "Public": True,
     "Validation": True,
-    "Dashboard": True,# not implemented yet
-    "Websocket": True,# not implemented yet
-    "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes
+    "Dashboard": True,
+    "Websocket": False,
+    "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
 }
 
 
