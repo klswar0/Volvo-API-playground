@@ -247,8 +247,11 @@ class Car(BaseModel):
             if valid == "":
                 return True
             if valid == "int":
-                value=int(value) #check if value is int todo
-                return True
+                try:
+                    value=int(value) #check if value is int todo
+                    return True
+                except ValueError:
+                    return False
             # if valid == [True, False]: #temporary solution
             #     if bool(value) not in valid:
             #         return False
