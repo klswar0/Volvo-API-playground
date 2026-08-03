@@ -18,7 +18,7 @@ from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET, startUp, timest
 from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 
-#TODO: redo internal responses
+
 templates = Jinja2Templates(directory="templates")
 
 
@@ -602,7 +602,7 @@ def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         return autoErrorResponse(e, VIN)
-    else:   #TODO: unit and timestamp . docs says  thath only liters and % are  valid?
+    else:   # docs says  thath only liters and % are  valid
         FuelType = car.fuelType
         FuelLevel = str(car.fuelICE)
         FuelLevelElectric = str(car.fuelElectric)
@@ -793,7 +793,7 @@ def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 
 #internal endpoints 
 
-#TODO: add authentication func for internal endpoints API key and VIN without in future bearer token
+
 @app.get("/internal")
 def Internal():
    """internal endpoint that shows version and instance information"""
@@ -912,11 +912,11 @@ def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="vcc-ap
     """internal endpoint for getting car status without using commands and without a token"""
     return internal.getStatus(VIN, vcc_api_key)
         
-@app.websocket("/internal/status/ws") #todo: test this version
+@app.websocket("/internal/status/ws") 
 async def statusWS(websocket: WebSocket):
     return await internal.statusWS(websocket)
 
-@app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) #TODO: implement this to html
+@app.post("/internal/update") # internal endpoint for updating car status without using commands (for testing purposes and dashboard) 
 def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="vcc-api-key"),attribute: str = Body(...), value: str = Body(...)):
     """internal endpoint for updating car without using commands and without a token"""
     return internal.internal_update(VIN, vcc_api_key, attribute, value)

@@ -236,7 +236,7 @@ GET
 /vehicles/{VIN}/engine-status
 Vehicle's latest engine status value.
 It needs ***auth header*** and VIN (PATH)
-TODO: check with volvo specification why there is unit????
+
 ```
 {
   "data": {

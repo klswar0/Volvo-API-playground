@@ -276,7 +276,7 @@ class Car(BaseModel):
                     return False,attribute
         return True
     
-    #TODO: invoices are difrent for locks 
+
     def InvoiceStatus(self, command, status=None): 
         if self.nextInvoiceStatus == "":
             if self.availabilityStatus_value == "UNAVAILABLE":
@@ -311,7 +311,7 @@ class Car(BaseModel):
             return [self.nextInvoiceStatus,False]
         return [self.nextInvoiceStatus,True]
 
-    def update(self,attribute,value,internal=False): #update to send inforamtion if the attribute or value is invalid
+    def update(self,attribute,value,internal=False): #TODO: update to send inforamtion if the attribute or value is invalid
         if self.checkValidity(attribute,value):
                 if startUp["Validation"] == True:
                     if attribute=="fuelElectric":
