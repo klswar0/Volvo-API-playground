@@ -454,6 +454,89 @@
             </div>
 
         </div>
+        <h2 class="mt-6 text-center text-2xl md:text-4xl">Windows</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
+            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <p class="text-lg md:text-xl">Front Left Window:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="frontLeftWindow">{{frontLeftWindow}}</p>
+                    </div>
+                <form data-attribute="frontLeftWindow" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="frontLeftWindow">
+                    <select name="value" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all appearance-none text-center [text-align-last:center] cursor-pointer">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+
+                </form>
+
+            </section>
+            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <p class="text-lg md:text-xl">Front Right Window:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="frontRightWindow">{{frontRightWindow}}</p>
+                    </div>
+                <form data-attribute="frontRightWindow" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="frontRightWindow">
+                    <select name="value" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all appearance-none text-center [text-align-last:center] cursor-pointer">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+
+                </form>
+
+            </section>
+            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <p class="text-lg md:text-xl">Rear Left Window:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="rearLeftWindow">{{rearLeftWindow}}</p>
+                    </div>
+                <form data-attribute="rearLeftWindow" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="rearLeftWindow">
+                    <select name="value" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all appearance-none text-center [text-align-last:center] cursor-pointer">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+
+                </form>
+
+            </section>
+            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <p class="text-lg md:text-xl">Rear Right Window:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="rearRightWindow">{{rearRightWindow}}</p>
+                    </div>
+                <form data-attribute="rearRightWindow" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="rearRightWindow">
+                    <select name="value" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all appearance-none text-center [text-align-last:center] cursor-pointer">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+
+                </form>
+
+            </section>
+        </div>
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Fluids</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
@@ -1023,4 +1106,4 @@
 
 </div>
 
-{# todo: better looks, updating system rewrite  #}
+{# I forgot about windows ....#}
