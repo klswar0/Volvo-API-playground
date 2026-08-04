@@ -321,9 +321,6 @@
   .min-w-100 {
     min-width: calc(var(--spacing) * 100);
   }
-  .min-w-md {
-    min-width: var(--container-md);
-  }
   .flex-1 {
     flex: 1;
   }
@@ -639,6 +636,9 @@
     }
     .md\:w-\[15dvw\] {
       width: 15dvw;
+    }
+    .md\:min-w-md {
+      min-width: var(--container-md);
     }
     .md\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
