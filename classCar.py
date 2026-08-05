@@ -1,22 +1,29 @@
 
 
+import uuid
+
 from pydantic import BaseModel, Field 
 from notifier import notifier
 from datetime import datetime, timezone
 # import configparser #TODO use it
 
+class Tracking(BaseModel):
+    traceparent:str=Field(default="") # NOT IMPLEMENTED FULLY starndard traceparent header  W3C traceparent (search online)
+    vcc_api_operationId:str=Field(default=str(uuid.uuid4()),alias="vcc-api-operationId") # UUID
 
-class AuthHeaderPOST(BaseModel):
-    content_type: str =  Field(alias="Content-Type")#Field(default="application/json", alias="Content-Type")
+
+class AuthHeader(Tracking):
+    # content_type: str =  Field(alias="Content-Type")#Field(default="application/json", alias="Content-Type")
+    # accept: str =  Field(default="application/json") #Field(...)
 
     authorization: str =Field(default="") #= Field(...) 
     vcc_api_key: str =Field(...,alias="vcc-api-key")
     
-class AuthHeaderGET(BaseModel):
-    accept: str =  Field(default="application/json") #Field(...)
+class AuthHeaderPOST(AuthHeader):
+    content_type: str =  Field(..., alias="Content-Type")
 
-    authorization: str =Field(default="") #= Field(...) 
-    vcc_api_key: str =Field(...,alias="vcc-api-key")
+class AuthHeaderGET(AuthHeader):
+    accept: str =  Field(default="application/json", alias="Accept")
 
 class Oauth2(BaseModel):
     PKCE:bool = Field(default=False)
@@ -31,16 +38,22 @@ class Oauth2(BaseModel):
     redirect_uri: str = Field(default="")
     
     #expires_in: datetime #to implement
+
+
+
+def ResponseHeaderGenerator(auth_header: AuthHeader):
+    header={"vcc_api_operationId":str(auth_header.vcc_api_operationId)}
+    if auth_header.traceparent!="":
+        header["traceparent"] = auth_header.traceparent
     
-
-
+    return header
 
 
 startUp={
     "Public": True,
     "Validation": True,
     "Dashboard": True,
-    "Websocket": True,
+    "Websocket": False,
     "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
 }
 

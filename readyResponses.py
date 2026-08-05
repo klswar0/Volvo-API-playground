@@ -1,37 +1,38 @@
 
+from turtle import st
+
 from fastapi.responses import JSONResponse
 
 
 
-def autoErrorResponse(e:str, VIN:str=None):
+def autoErrorResponse(e:str, VIN:str=None, headers:dict=None):
     if str(e) == "Invalid API key" or str(e) == "Invalid access token":
-        return UnauthorizedResponse(str(e))
+        return UnauthorizedResponse(str(e), headers)
     elif str(e) == "Invalid VIN":
-        return BadRequestResponse(VIN)
+        return BadRequestResponse(VIN, headers)
     elif str(e) == "Invalid Content-Type":
-        return ErrorResponse("BAD_REQUEST", "Invalid Content-Type. Only 'application/json' is accepted.", 400)
+        return ErrorResponse("BAD_REQUEST", "Invalid Content-Type. Only 'application/json' is accepted.", 400, headers=headers)
     elif str(e) == "Invalid Accept header":
-            return ErrorResponse("BAD_REQUEST", "Invalid Accept header. Only 'application/json' is accepted.", 406)
+            return ErrorResponse("BAD_REQUEST", "Invalid Accept header. Only 'application/json' is accepted.", 406, headers=headers)
     else:
-        return ErrorResponse("INTERNAL_SERVER_ERROR", f"An unexpected error occurred. INFO:{e}", 500)
-
-        
-def ErrorResponse(message:str, description:str, status_code:int):
-    return JSONResponse(content={ "error": {"message": message,"description": description}}, status_code=status_code)
-
-def UnauthorizedResponse(e:str):
-    return ErrorResponse("UNAUTHORIZED","Full authentication is required to access this resource. INFO:"+e,401)
+        return ErrorResponse("INTERNAL_SERVER_ERROR", f"An unexpected error occurred. INFO:{e}", 500, headers=headers)
 
 
-def BadRequestResponse(VIN:str):
-    return ErrorResponse("BAD_REQUEST", f"invalid VIN value. field:{VIN}", 400)
+def ErrorResponse(message:str, description:str, status_code:int, headers:dict=None):
+    return JSONResponse(content={ "error": {"message": message,"description": description}}, status_code=status_code, headers=headers)
 
-def NotSupportedResponse(command:str):
-    return ErrorResponse("NOT_FOUND", f"{command} is not supported by this vehicle", 403)
+def UnauthorizedResponse(e:str, headers:dict=None):
+    return ErrorResponse("UNAUTHORIZED","Full authentication is required to access this resource. INFO:"+e,status_code=401, headers=headers)
 
-def NormalResponse(VINL:str, invoiceStatus:str, message:str=None, status_code:int=200):
-    return JSONResponse(content={ "data": {"vin": VINL ,"invokeStatus": invoiceStatus,"message": message}}, status_code=status_code)
-    
+
+def BadRequestResponse(VIN:str, headers:dict=None):
+    return ErrorResponse("BAD_REQUEST", f"invalid VIN value. field:{VIN}", 400, headers=headers)
+
+def NotSupportedResponse(command:str, headers:dict=None):
+    return ErrorResponse("NOT_FOUND", f"{command} is not supported by this vehicle", 403, headers=headers)
+
+def NormalResponse(VINL:str, invoiceStatus:str, message:str=None, status_code:int=200, headers:dict=None):
+    return JSONResponse(content={ "data": {"vin": VINL ,"invokeStatus": invoiceStatus,"message": message}}, status_code=status_code, headers=headers)
 
 
 

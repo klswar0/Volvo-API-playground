@@ -14,7 +14,7 @@ from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
 import dashboard
 from notifier import notifier
-from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET, startUp, timestampGenerator, Oauth2
+from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator,Tracking, startUp, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 
@@ -34,6 +34,10 @@ def index():
         return FileResponse("templates/index.html")
     else:
         return RedirectResponse(url="/internal/welcome")
+    
+    
+
+
         
 
 
@@ -209,15 +213,16 @@ def listVehicles(auth_header: AuthHeaderGET = Header(...)):
             vehicle={"vin": car.VIN,}
             vehicles.append(vehicle)
         data={"data": vehicles}
-        return JSONResponse(content=data, status_code=200)
-    
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
 @app.get("/vehicles/{VIN}")
 def getVehicle(VIN:str, auth_header: AuthHeaderGET = Header(...)): #TODO: implement the data in car class
     """get vehicle information for the specified VIN. Mostly static data but enough to test your apps"""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         data={
         "data": {
@@ -236,14 +241,14 @@ def getVehicle(VIN:str, auth_header: AuthHeaderGET = Header(...)): #TODO: implem
             "upholstery": "CHARCOAL/LEAC/CHARC STATIC",
             "steering": "LEFT STATIC"
             }}}
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 #climetization commands
 def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         if command not in car.commands:
             return NotSupportedResponse(command)
@@ -253,17 +258,17 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
                 invoiceStatus = car.InvoiceStatus("climate",True) # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
                 if invoiceStatus[1]:
                     car.update("climate",True)
-                    return NormalResponse(VIN, invoiceStatus[0])
+                    return NormalResponse(VIN, invoiceStatus[0],headers=ResponseHeaderGenerator(auth_header))
             elif command == "CLIMATIZATION_STOP":
                 invoiceStatus = car.InvoiceStatus("climate",False) # possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
                 if invoiceStatus[1]:
                     car.update("climate",False)
-                    return NormalResponse(VIN, invoiceStatus[0])
+                    return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
             
             if invoiceStatus[1] == False:
-                return NormalResponse(VIN, invoiceStatus[0],500) # FIXME:what if rejected what status code should be sent 
+                return NormalResponse(VIN, invoiceStatus[0], status_code=500, headers=ResponseHeaderGenerator(auth_header)) # FIXME:what if rejected what status code should be sent 
     return JSONResponse(
-    content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+    content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500, headers=ResponseHeaderGenerator(auth_header))
 # What if climate is already off?
 
 @app.post("/vehicles/{VIN}/commands/climatization-start")
@@ -282,7 +287,7 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
          # invoice possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
         if command not in car.commands:
@@ -294,17 +299,17 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
                 if invoiceStatus[1]:
                     car.update("engineStatus", "RUNNING")
                     car.update("engineTime", runtimeMinutes)
-                    return NormalResponse(VIN, invoiceStatus[0])
+                    return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
             elif command == "ENGINE_STOP":
                 invoiceStatus = car.InvoiceStatus("engine",False)
                 if invoiceStatus[1]:
                     car.update("engineStatus", "STOPPED")
                     car.update("engineTime", 0)
-                return NormalResponse(VIN, invoiceStatus[0])
-            
+                return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
+
             if invoiceStatus[1] == False:
-                return NormalResponse(VIN, invoiceStatus[0],500) # what if rejected what status code should be sent and all of the other BAD invoices
-    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+                return NormalResponse(VIN, invoiceStatus[0], status_code=500, headers=ResponseHeaderGenerator(auth_header)) # what if rejected what status code should be sent and all of the other BAD invoices
+    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500, headers=ResponseHeaderGenerator(auth_header))
     # what if engine is already stopped? Need to check docs or a real car (not in mine doesnt have that option)
 
 
@@ -315,10 +320,10 @@ def engineStatus(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         data = {"data": {"engineStatus": {"value": car.engineStatus, "timestamp": car.timestamp()}}}
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
 @app.post("/vehicles/{VIN}/commands/engine-start")
@@ -326,7 +331,7 @@ def engineStart(VIN:str, auth_header: AuthHeaderPOST = Header(...), runtimeMinut
     """send a command to start the engine for the specified VIN. The runtimeMinutes >0 and <15."""
     runtimeMinutes = runtimeMinutes.get("runtimeMinutes", 0)
     if runtimeMinutes < 1 or runtimeMinutes >= 15:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "runtimeMinutes can be maximaly 15 min"}}, status_code=400)
+        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "runtimeMinutes can be maximaly 15 min"}}, status_code=400, headers=ResponseHeaderGenerator(auth_header))
     return engine(VIN, auth_header,command="ENGINE_START", runtimeMinutes=runtimeMinutes)
 
 @app.post("/vehicles/{VIN}/commands/engine-stop")
@@ -344,11 +349,11 @@ def windows(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         data={"data": {"frontLeftWindow": { "value": car.frontLeftWindow, "timestamp": car.timestamp()},"frontRightWindow": {"value": car.frontRightWindow,"timestamp": car.timestamp()},"rearLeftWindow": { "value": car.rearLeftWindow,"timestamp": car.timestamp()}, "rearRightWindow": {"value": car.rearRightWindow,"timestamp": car.timestamp()},"sunroof": {"value": car.sunroof,"timestamp": car.timestamp()}}}
 
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 @app.get("/vehicles/{VIN}/doors")
 def doors(VIN:str, auth_header: AuthHeaderGET = Header(...)):
@@ -356,11 +361,11 @@ def doors(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         timestamp = car.timestamp()
         data={"data": {"centralLock": {"value": car.centralLock,"timestamp": timestamp},"frontLeftDoor": {"value": car.frontLeftDoor,"timestamp": timestamp},"frontRightDoor": {"value": car.frontRightDoor,"timestamp": timestamp},"hood": {"value": car.hood,"timestamp": timestamp},"rearLeftDoor": {"value": car.rearLeftDoor,"timestamp": timestamp},"rearRightDoor": {"value": car.rearRightDoor,"timestamp": timestamp},"tailGate": {"value": car.tailGate,"timestamp": timestamp},"tankLid": {"value": car.tankLid,"timestamp": timestamp}}}
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 @app.post("/vehicles/{VIN}/commands/lock")
 def doorLock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
@@ -368,7 +373,7 @@ def doorLock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     try:
         car =VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         command = "LOCK"
         if command not in car.commands:
@@ -377,10 +382,10 @@ def doorLock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
         if invoiceStatus[1] == True:
             car.update("centralLock", "LOCKED")
             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-            return JSONResponse(content=data, status_code=200)   
+            return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))   
         else:
             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-            return JSONResponse(content=data, status_code=500) # what if rejected what status code should be sent and all of the other BAD invoices
+            return JSONResponse(content=data, status_code=500, headers=ResponseHeaderGenerator(auth_header)) # what if rejected what status code should be sent and all of the other BAD invoices
 
 
 @app.post("/vehicles/{VIN}/commands/lock-reduced-guard") #only for AAOS not Sensus
@@ -389,7 +394,7 @@ def doorLockReduce(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     try:
         car =VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         command = "LOCK_REDUCED_GUARD"
         if command not in car.commands:
@@ -398,10 +403,10 @@ def doorLockReduce(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
         if invoiceStatus[1] == True:
             car.update("centralLock", "LOCKED")
             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-            return JSONResponse(content=data, status_code=200)   
+            return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))   
         else:
             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-            return JSONResponse(content=data, status_code=500) # what
+            return JSONResponse(content=data, status_code=500, headers=ResponseHeaderGenerator(auth_header)) # what
 
 @app.post("/vehicles/{VIN}/commands/unlock") # doesnt work like in real life you must click button of the trunk
 def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
@@ -409,7 +414,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     try:
         car =VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         command = "UNLOCK"
         if command not in car.commands:
@@ -418,9 +423,9 @@ def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
         if invoiceStatus[1] == True:
             car.update("centralLock","UNLOCKED")
             data={"vin": VIN,"invokeStatus": invoiceStatus[0],"message": "","readyToUnlock": True ,"readyToUnlockUntil": 5,"details": "Not fully implemented manual button press needed in real life"} #whend would readyToUnlock be false?
-            return JSONResponse(content=data, status_code=200)
+            return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
         else:
-            return NormalResponse(VIN, invoiceStatus[0],409)
+            return NormalResponse(VIN, invoiceStatus[0],status_code=409, headers=ResponseHeaderGenerator(auth_header))
 
 #lights and horn
 
@@ -429,7 +434,7 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         if command not in car.commands:
             return NotSupportedResponse(command)
@@ -446,9 +451,9 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
                     car.update("lightTimestamp",car.timestamp())
                 else:
                     return BadRequestResponse(VIN)
-                return NormalResponse(VIN, invoiceStatus[0])
+                return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
             else:
-                return NormalResponse(VIN, invoiceStatus[0],409) 
+                return NormalResponse(VIN, invoiceStatus[0],status_code=409, headers=ResponseHeaderGenerator(auth_header))
 
 @app.post("/vehicles/{VIN}/commands/flash")
 def flash(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
@@ -475,7 +480,7 @@ def statistics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         timeStamp = car.timestamp()
         #units are always the same NO imperial units. l/100km, kWh/100km, km/h, km
@@ -538,7 +543,7 @@ def statistics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
                 }
             }
             }
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
 #tyres
@@ -548,10 +553,10 @@ def tyres(VIN:str, auth_header: AuthHeaderGET= Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         data={"data":{"frontLeft":{"value":car.frontLeft,"timestamp":car.timestamp()},"frontRight":{"value":car.frontRight,"timestamp":car.timestamp()},"rearLeft":{"value":car.rearLeft,"timestamp":car.timestamp()},"rearRight":{"value":car.rearRight,"timestamp":car.timestamp()}}}
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
     
         
 
@@ -564,7 +569,7 @@ def commands(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         data = []
         for command in car.commands:
@@ -572,7 +577,7 @@ def commands(VIN:str, auth_header: AuthHeaderGET = Header(...)):
                 "command": command,
                 "href": href + command.lower().replace("_", "-")
             })
-        return JSONResponse(content={"data": data}, status_code=200)
+        return JSONResponse(content={"data": data}, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
 
@@ -583,14 +588,14 @@ def commandAccessibility(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         if car.availabilityStatus_value == "AVAILABLE" or car.availabilityStatus_value == "UNSPECIFIED": 
             data = {"availabilityStatus": {"value": car.availabilityStatus_value,"timestamp":car.timestamp()}}
         else:
             data = {"availabilityStatus": {"value": car.availabilityStatus_value, "unavailableReason": car.availabilityStatus_unavailableReason,"timestamp":car.timestamp()}}     
                 
-        return JSONResponse(content={"data": data}, status_code=200)  
+        return JSONResponse(content={"data": data}, status_code=200, headers=ResponseHeaderGenerator(auth_header))  
 
 
                      
@@ -601,7 +606,7 @@ def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:   # docs says  thath only liters and % are  valid
         FuelType = car.fuelType
         FuelLevel = str(car.fuelICE)
@@ -614,7 +619,7 @@ def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
             data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":car.timestamp()}, "batteryChargeLevel":{"value" : FuelLevelElectric, "unit":"%","timestamp":car.timestamp()}}} 
         else:
             return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
     
@@ -625,11 +630,11 @@ def getOdometer(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:   #Units and timestamp here again only km is valid Why volvo Why?
         Odometer =str(car.odometer)
         data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : car.timestamp()}}}
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
     
@@ -640,10 +645,10 @@ def engineDiagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLever,"timestamp":car.timestamp()},"oilLevelWarning":{"value":car.oillevel,"timestamp":car.timestamp()}}}
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 @app.get("/vehicles/{VIN}/diagnostics")  # there is additional washer fluid data sent by the api but docs dont talk about it there ? and units?
 def diagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
@@ -651,7 +656,7 @@ def diagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         toService = car.timeToService
         
@@ -667,7 +672,7 @@ def diagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         else:
             data={"data":{"serviceWarning":{"value":car.serviceWarning,"timestamp":car.timestamp()},"engineHoursToService":{"value":car.engineHoursToService,"unit":"h","timestamp":car.timestamp()},"distanceToService":{"value":car.distanceToService,"unit":"km","timestamp":car.timestamp()},"washerFluidLevelWarning":{"value":car.washerFluidLevelWarning,"timestamp":car.timestamp()},"timeToService":{"value":toService,"unit":unit,"timestamp":car.timestamp()}}}
         
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
 @app.get("/vehicles/{VIN}/brakes")
@@ -676,19 +681,19 @@ def Brakes(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         data={"data":{"brakeFluidLevelWarning":{"value":car.brakeFluidLevel,"timestamp":car.timestamp()}}}
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
 @app.get("/vehicles/{VIN}/warnings") 
-def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...)):
+def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...), tracking: Tracking = Header(...)):
     """get the current warning status for the specified VIN. STATIC for now"""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
-        return autoErrorResponse(e, VIN)
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         timestamp = car.timestamp()
         # Possible values: UNSPECIFIED, NO_WARNING, FAILURE.
@@ -788,7 +793,7 @@ def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...)):
                 }
             }
             }
-        return JSONResponse(content=data, status_code=200)
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
 #internal endpoints 
