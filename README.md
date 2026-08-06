@@ -44,6 +44,7 @@ You can explore the public instance here:
 - One API key per user. This means one refresh token, one access token, and so on. Because of this, the project cannot accurately reproduce real-world scenarios involving multiple users.(Could be comming in future but it would require using real database)
 - No expiration of access token (Usefull?)
 - Only one api and Oauth endpoints. More coming in future
+- No scope checks
 
 ## DOCS:
 - docs.md file (handwritten with additional info)

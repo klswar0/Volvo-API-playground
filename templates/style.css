@@ -285,6 +285,9 @@
   .w-5 {
     width: calc(var(--spacing) * 5);
   }
+  .w-\[40dvw\] {
+    width: 40dvw;
+  }
   .w-\[50dvw\] {
     width: 50dvw;
   }
@@ -623,6 +626,24 @@
     scale: 0.98;
   }
   @media (width >= 40rem) {
+    .sm\:max-w-75 {
+      max-width: calc(var(--spacing) * 75);
+    }
+    .sm\:max-w-100 {
+      max-width: calc(var(--spacing) * 100);
+    }
+    .sm\:max-w-125 {
+      max-width: calc(var(--spacing) * 125);
+    }
+    .sm\:min-w-50 {
+      min-width: calc(var(--spacing) * 50);
+    }
+    .sm\:min-w-75 {
+      min-width: calc(var(--spacing) * 75);
+    }
+    .sm\:min-w-100 {
+      min-width: calc(var(--spacing) * 100);
+    }
     .sm\:flex-row {
       flex-direction: row;
     }

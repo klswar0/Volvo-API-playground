@@ -1,7 +1,7 @@
-<div id="car-info" >
+<div id="car-info">
     <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
 
-    <section class=" min-w-75 max-w-100  lg:order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+    <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Model Year:</p>
             <div class="mt-2 mb-4">
                 <p class="text-base md:text-lg " id="modelYear">{{modelYear}}</p>
@@ -10,14 +10,14 @@
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="modelYear">
                 <input type="number" name="value" min="0" placeholder="Enter new model year" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
             </form>
 
     </section>
 
 
-    <section class=" min-w-100 max-w-125 order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+    <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75  order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Gearbox Type:</p>
             <div class="mt-2 mb-4">
                 <p class="text-base md:text-lg " id="gearboxType">{{gearboxType}}</p>
@@ -29,13 +29,13 @@
                     <option value="AUTOMATIC" class="bg-zinc-950 text-zinc-100">AUTOMATIC</option>
                     <option value="MANUAL" class="bg-zinc-950 text-zinc-100">MANUAL</option>
                 </select>
-                <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
 
     </section>
 
 
-    <section class=" min-w-75 max-w-100 lg:order-3 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+    <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75  lg:order-3 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Odometer:</p>
             <div class="flex items-center gap-1 mt-2 mb-4">
                 <p class="text-base md:text-lg " id="odometer">{{odometer}}</p>
@@ -45,7 +45,7 @@
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="odometer">
                 <input type="number" name="value" min="0" placeholder="Enter new odometer reading" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
 
 
@@ -56,7 +56,7 @@
 
     <h2 class="mt-6 text-center text-2xl md:text-4xl">Availability</h2>
     <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-        <section class=" min-w-100 max-w-125 order-5 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class="w-full max-w-75  sm:max-w-125 sm:min-w-100  order-5 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Availability Status:</p>    
             <div class="mt-2 mb-4">
                 <p class="text-base md:text-lg" id="availabilityStatus_value">{{ availabilityStatus_value }}</p>
@@ -69,13 +69,13 @@
                     <option value="UNAVAILABLE">UNAVAILABLE</option>
                     <option value="UNSPECIFIED">UNSPECIFIED</option>
                 </select>
-                <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
 
         </section>
 
 
-        <section class="min-w-100 max-w-125 order-6 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class="w-full max-w-75  sm:max-w-125 sm:min-w-100  order-6 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
         <p class="text-lg md:text-xl">Availability Status Unavailable Reason:</p>
         {# if car is available this should be displayed TODO #}
             <div class="mt-2 mb-4">
@@ -94,7 +94,7 @@
                     <option value="POWER_SAVING_MODE">POWER_SAVING_MODE</option>
                     <option value="CAR_IN_USE">CAR_IN_USE</option>
                 </select>
-                <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
 
         </section>
@@ -103,7 +103,7 @@
 
     <h2 class="mt-6 text-center text-2xl md:text-4xl">Engine and Climate</h2>
     <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-        <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class=" w-full max-w-75 sm:max-w-125 sm:min-w-100  p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Engine Status:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="engineStatus">{{engineStatus}}</p>
@@ -115,12 +115,12 @@
                         <option value="STOPPED">STOPPED</option>
                         <option value="RUNNING">RUNNING</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
         </section>
 
-        <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <section class="w-full max-w-75 sm:max-w-125 sm:min-w-100 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Climate Status:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="climate">{{climate}}</p>
@@ -132,7 +132,7 @@
                 <option value="True">ON</option>
                 <option value="False">OFF</option>
             </select>
-            <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+            <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         </form>
 
         </section>
@@ -142,7 +142,7 @@
     {# it can change the hidden html #}
    
         <div id="fuelAndBattery" class="flex flex-row flex-wrap gap-4 mt-6 justify-center">
-        <section class=" min-w-100 max-w-125 order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+        <section class=" w-full max-w-75 sm:max-w-75 sm:min-w-50 order-first lg:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
             <p class="text-lg md:text-xl">Fuel Type:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg" id="fuelType">{{fuelType}} </p>
@@ -156,14 +156,14 @@
                         <option value="HYBRID">HYBRID</option>
                         <option value="ELECTRIC">ELECTRIC</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
         </section>
         {% if fuelType != "ELECTRIC" %}
-        <section class="min-w-75 max-w-100 order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
         {% else %}
-        <section class="min-w-75 max-w-100 order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
+        <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 order-1 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
         {% endif %}
             <p class="text-lg md:text-xl">Fuel Level:</p>
             <div class="flex items-center gap-1 mt-2 mb-4">
@@ -174,7 +174,7 @@
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelICE">
                     <input type="number" name="value" min="0" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
@@ -182,9 +182,9 @@
 
 
         {% if fuelType == "HYBRID" or fuelType == "ELECTRIC" %}
-        <section class="min-w-75 max-w-100 order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+        <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
         {% else %}
-        <section class="min-w-75 max-w-100 order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
+        <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 order-3 md:order-2 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col" hidden>
         {% endif %}
             <p class="text-lg md:text-xl">Battery Level:</p>
             <div class="flex items-center gap-1 mt-2 mb-4">
@@ -195,7 +195,7 @@
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelElectric">
                     <input type="number" name="value" min="0" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
         </section>
@@ -204,7 +204,7 @@
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Tire Pressure</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
-            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Left:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="frontLeft">{{frontLeft}}</p>
@@ -219,12 +219,12 @@
                         <option value="LOW_PRESSURE">LOW_PRESSURE</option>
                         <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
-            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Right:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg" id="frontRight">{{frontRight}}</p>
@@ -239,13 +239,13 @@
                         <option value="LOW_PRESSURE">LOW_PRESSURE</option>
                         <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
 
-            <section class="min-w-75 p-6 max-w-100  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Left:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="rearLeft">{{rearLeft}}</p>
@@ -260,11 +260,11 @@
                         <option value="LOW_PRESSURE">LOW_PRESSURE</option>
                         <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
             </section>
-            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Right:</p>
                 <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg " id="rearRight">{{rearRight}}</p>
@@ -279,7 +279,7 @@
                         <option value="LOW_PRESSURE">LOW_PRESSURE</option>
                         <option value="HIGH_PRESSURE">HIGH_PRESSURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
             </section>
@@ -290,7 +290,7 @@
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Doors</h2>
         <div class="grid grid-cols-1">
             <div class="flex flex-col gap-4 mt-6 items-center justify-center">
-                <section class=" min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <section class="w-full max-w-75 sm:max-w-125 sm:min-w-100  p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                     <p class="text-lg md:text-xl">Central Lock:</p>
                         <div class="mt-2 mb-4">
                             <p class="text-base md:text-lg " id="centralLock">{{centralLock}}</p>
@@ -303,14 +303,14 @@
                                 <option value="UNLOCKED">UNLOCKED</option>
                                 <option value="LOCKED">LOCKED</option>
                             </select>
-                            <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                            <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                         </form>
 
                 </section>
             </div>
         
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
-                <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75  p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Left Door:</p>
                     <div class="mt-2 mb-4">
                     <p class="text-base md:text-lg" id="frontLeftDoor">{{frontLeftDoor}}</p>
@@ -324,11 +324,11 @@
                                 <option value="CLOSED">CLOSED</option>
                                 <option value="AJAR">AJAR</option>
                             </select>
-                        <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                        <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
 
                 </section>
-                <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+                <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75  p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Right Door:</p>
 
                     <div class="mt-2 mb-4">
@@ -343,14 +343,14 @@
                                 <option value="CLOSED">CLOSED</option>
                                 <option value="AJAR">AJAR</option>
                             </select>
-                        <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                        <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
 
                 </section>
 
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
-                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+                <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Left Door:</p>
 
                     <div class="mt-2 mb-4">
@@ -365,11 +365,11 @@
                                 <option value="CLOSED">CLOSED</option>
                                 <option value="AJAR">AJAR</option>
                             </select>
-                        <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                        <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
 
                 </section>
-                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+                <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Right Door:</p>
    
                     <div class="mt-2 mb-4">
@@ -384,14 +384,14 @@
                                 <option value="CLOSED">CLOSED</option>
                                 <option value="AJAR">AJAR</option>
                             </select>
-                        <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                        <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
 
                 </section>
 
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
-                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+                <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                     <p class="text-lg md:text-xl">Tail Gate:</p>
 
                         <div class="mt-2 mb-4">
@@ -406,12 +406,12 @@
                                     <option value="CLOSED">CLOSED</option>
                                     <option value="AJAR">AJAR</option>
                             </select>
-                            <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                            <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                         </form>
 
                     
                 </section>
-                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col ">
+                <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                     <p class="text-lg md:text-xl">Hood:</p>
 
                         <div class="mt-2 mb-4">
@@ -426,13 +426,13 @@
                                     <option value="CLOSED">CLOSED</option>
                                     <option value="AJAR">AJAR</option>
                             </select>
-                            <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                            <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                         </form>
 
                 </section>
             </div>
             <div class="flex flex-row flex-wrap gap-4 mt-6 items-center justify-center">
-                <section class="min-w-100 max-w-125 p-6  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col ">
+                <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                     <p class="text-lg md:text-xl">Tank Lid:</p>
 
                         <div class="mt-2 mb-4">
@@ -447,7 +447,7 @@
                                     <option value="CLOSED">CLOSED</option>
                                     <option value="AJAR">AJAR</option>
                             </select>
-                            <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                            <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                         </form>
                     
                 </section>
@@ -456,7 +456,7 @@
         </div>
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Windows</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
-            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Left Window:</p>
 
                     <div class="mt-2 mb-4">
@@ -471,12 +471,12 @@
                         <option value="CLOSED">CLOSED</option>
                         <option value="AJAR">AJAR</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
-            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Front Right Window:</p>
 
                     <div class="mt-2 mb-4">
@@ -491,12 +491,12 @@
                         <option value="CLOSED">CLOSED</option>
                         <option value="AJAR">AJAR</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
-            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Left Window:</p>
 
                     <div class="mt-2 mb-4">
@@ -511,12 +511,12 @@
                         <option value="CLOSED">CLOSED</option>
                         <option value="AJAR">AJAR</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
-            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Rear Right Window:</p>
 
                     <div class="mt-2 mb-4">
@@ -531,7 +531,7 @@
                         <option value="CLOSED">CLOSED</option>
                         <option value="AJAR">AJAR</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
@@ -540,7 +540,7 @@
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Fluids</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
-            <section class="min-w-75 p-6 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Oil level:</p>
 
                     <div class="mt-2 mb-4">
@@ -556,12 +556,12 @@
                         <option value="TOO_LOW">TOO_LOW</option>
                         <option value="TOO_HIGH">TOO_HIGH</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
-            <section class="min-w-75 p-6 max-w-100  bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Engine Coolant Level:</p>
 
                     <div class="mt-2 mb-4">
@@ -575,13 +575,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="TOO_LOW">TOO_LOW</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
 
                 </form>
 
             </section>
 
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Brake fluid:</p>
         
                     <div class="mt-2 mb-4">
@@ -595,11 +595,11 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="TOO_LOW">TOO_LOW</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Washer Fluid:</p>
 
                     <div class="mt-2 mb-4">
@@ -613,7 +613,7 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="TOO_LOW">TOO_LOW</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
 
             </section>
@@ -625,7 +625,7 @@
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Service</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Service warning:</p>
 
                     <div class="mt-2 mb-4">
@@ -648,12 +648,12 @@
                             <option value="ENGINE_HOURS_OVERDUE_FOR_SERVICE">ENGINE_HOURS_OVERDUE_FOR_SERVICE</option>
                             <option value="DISTANCE_DRIVEN_OVERDUE_FOR_SERVICE">DISTANCE_DRIVEN_OVERDUE_FOR_SERVICE</option>
                         </select>
-                        <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                        <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     </form>
 
             </section>
 
-            <section class="min-w-100 max-w-125 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Service trigger:</p>
 
                     <div class="mt-2 mb-4">
@@ -669,7 +669,7 @@
                     <option value="UNKNOWN">UNKNOWN</option>
                     <option value="UNSPECIFIED">UNSPECIFIED</option>
                 </select>
-                <input type="submit" value="change" class="w-[50dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                <input type="submit" value="change" class="w-[40dvw] md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
             </form>
 
             </section>
@@ -677,7 +677,7 @@
 
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Lights timestamps</h2>
          <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="min-w-100 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">lights timestamp</p>
                 <div id="lightTimestamp">
                     <div class="mt-2 mb-4">
@@ -689,7 +689,7 @@
                     </div>
                 </div>
             </section>
-            <section class="min-w-100 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">horn timestamp</p>
                 <div id="hornTimestamp">
                     <div class="mt-2 mb-4">
@@ -708,7 +708,7 @@
         <h2 class="mt-6 text-center text-2xl md:text-4xl">Lights Diagnostic</h2>
         <h2 class="mt-6 text-center text-xl md:text-3xl">Brake Lights</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-          <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+          <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Brake Light Left:</p>
 
                     <div class="mt-2 mb-4">
@@ -722,10 +722,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Brake Light Right:</p>
 
                     <div class="mt-2 mb-4">
@@ -739,10 +739,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Brake Light Center:</p>
 
                     <div class="mt-2 mb-4">
@@ -756,13 +756,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
         </div>
         <h2 class="mt-6 text-center text-xl md:text-3xl">Fog Lights</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Fog Light Left:</p>
 
                     <div class="mt-2 mb-4">
@@ -776,10 +776,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Fog Light Right:</p>
 
                     <div class="mt-2 mb-4">
@@ -793,13 +793,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
         </div>
         <h2 class="mt-6 text-center text-xl md:text-3xl">Positioning Lights</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Position Light left front:</p>
 
                     <div class="mt-2 mb-4">
@@ -813,10 +813,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Position Light right front:</p>
 
                     <div class="mt-2 mb-4">
@@ -830,10 +830,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Position Light left rear:</p>
 
                     <div class="mt-2 mb-4">
@@ -847,10 +847,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Position Light right rear:</p>
 
                     <div class="mt-2 mb-4">
@@ -864,13 +864,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
         </div>
         <h2 class="mt-6 text-center text-xl md:text-3xl">Highbeam Lights</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Highbeam left:</p>
 
                     <div class="mt-2 mb-4">
@@ -884,10 +884,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Highbeam right:</p>
 
                     <div class="mt-2 mb-4">
@@ -901,13 +901,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
         </div>
         <h2 class="mt-6 text-center text-xl md:text-3xl">Lowbeam Lights</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Lowbeam left:</p>
 
                     <div class="mt-2 mb-4">
@@ -921,10 +921,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Lowbeam right:</p>
 
                     <div class="mt-2 mb-4">
@@ -938,13 +938,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
         </div>
         <h2 class="mt-6 text-center text-xl md:text-3xl">Daytime Running Lights</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Daytime running light left:</p>
 
                     <div class="mt-2 mb-4">
@@ -958,10 +958,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Daytime running light right:</p>
 
                     <div class="mt-2 mb-4">
@@ -975,13 +975,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
         </div>
         <h2 class="mt-6 text-center text-xl md:text-3xl">Turn Indication Lights</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Turn Indication left front:</p>
 
                     <div class="mt-2 mb-4">
@@ -995,10 +995,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Turn Indication right front:</p>
 
                     <div class="mt-2 mb-4">
@@ -1012,10 +1012,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Turn Indication left rear:</p>
 
                     <div class="mt-2 mb-4">
@@ -1029,10 +1029,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Turn Indication right rear:</p>
 
                     <div class="mt-2 mb-4">
@@ -1046,13 +1046,13 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
         </div>
         <h2 class="mt-6 text-center text-xl md:text-3xl">Other Lights</h2>
         <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Registration Plate Light:</p>
 
                     <div class="mt-2 mb-4">
@@ -1066,10 +1066,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Side Mark Lights:</p>
 
                     <div class="mt-2 mb-4">
@@ -1083,10 +1083,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Hazard Lights:</p>
 
                     <div class="mt-2 mb-4">
@@ -1100,10 +1100,10 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
-            <section class="p-6 min-w-75 max-w-100 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm  sec text-center items-center flex flex-col">
                 <p class="text-lg md:text-xl">Reverse Lights:</p>
 
                     <div class="mt-2 mb-4">
@@ -1117,7 +1117,7 @@
                         <option value="NO_WARNING">NO_WARNING</option>
                         <option value="FAILURE">FAILURE</option>
                     </select>
-                    <input type="submit" value="change" class="w-[50dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    <input type="submit" value="change" class="w-[40dvw] max-w-75 md:w-[15dvw] mt-2  px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                 </form>
             </section>
         </div>

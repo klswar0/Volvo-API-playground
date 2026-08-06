@@ -53,7 +53,7 @@ startUp={
     "Public": True,
     "Validation": True,
     "Dashboard": True,
-    "Websocket": False,
+    "Websocket": True,
     "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
 }
 
