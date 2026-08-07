@@ -37,7 +37,8 @@ You can explore the public instance here:
 
 > [!TIP]
 > Are you not sure?
-> You can check the diffrences in the companion app: [ LINK ](https://compareplay.kls.hackclub.app/)
+> You can check the diffrences in the companion app: 
+>[ Try ](https://compareplay.kls.hackclub.app/)
 
 
 ## Limitations:

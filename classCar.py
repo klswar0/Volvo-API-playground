@@ -7,6 +7,17 @@ from notifier import notifier
 from datetime import datetime, timezone
 # import configparser #TODO use it
 
+
+startUp={
+    "Public": True,
+    "Validation": True,
+    "Dashboard": True,
+    "Websocket": True,
+    "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
+}
+
+
+
 class Tracking(BaseModel):
     traceparent:str=Field(default="") # NOT IMPLEMENTED FULLY starndard traceparent header  W3C traceparent (search online)
     vcc_api_operationId:str=Field(default=str(uuid.uuid4()),alias="vcc-api-operationId") # UUID
@@ -48,14 +59,6 @@ def ResponseHeaderGenerator(auth_header: AuthHeader):
     
     return header
 
-
-startUp={
-    "Public": True,
-    "Validation": True,
-    "Dashboard": True,
-    "Websocket": True,
-    "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
-}
 
 
 

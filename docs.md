@@ -163,15 +163,14 @@ specification dont says responses are in {data: <what specification says>}
 ### Error responses
 Error responses could not be the same as in official API. Could be more informative or less informative. This project is WORK IN PROGRESS in the future it could change.
 ### Reused terms
-### Timestamp
+#### Timestamp
 Timestamp in ISO-8601 format ~~when the value has been last retrieved from the vehicle~~ in this plaground the current time or if car is unavailble then the time when car is set to that.
 
-### invoke Status
+#### invoke Status
 Possible values:
 RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
 
 Exception: RUNNING for sure can only go to engine and climate endpoints
-
 
 #### auth header
 if POST
@@ -180,6 +179,11 @@ if GET
 - ***Accept*** always application/json or \*/\* (likely optional)
 - ***authorization*** access token generated thru Oauth. Not checked in this playground if disabled Oauth2
 - ***vcc-api-key*** your api key (dont use your official api key in this playground for safety)
+
+### Tracking:
+Volvo uses 2 tracking headers:
+- ***vcc-api-operationId*** - UUID
+- ***traceparent*** - W3C traceparent (Playground only sends it back) 
 
 
 ### List vehicles

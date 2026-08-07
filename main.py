@@ -266,7 +266,7 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
                     return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
             
             if invoiceStatus[1] == False:
-                return NormalResponse(VIN, invoiceStatus[0], status_code=500, headers=ResponseHeaderGenerator(auth_header)) # FIXME:what if rejected what status code should be sent 
+                return NormalResponse(VIN, invoiceStatus[0], status_code=403, headers=ResponseHeaderGenerator(auth_header)) #  rejected what status code should be sent 
     return JSONResponse(
     content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500, headers=ResponseHeaderGenerator(auth_header))
 # What if climate is already off?
@@ -422,7 +422,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
         invoiceStatus = car.InvoiceStatus("UNLOCK") # possible values: COMPLETED,DELIVERED, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, UNABLE_TO_LOCK_DOOR_OPEN, REJECTED, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE, UNKNOWN
         if invoiceStatus[1] == True:
             car.update("centralLock","UNLOCKED")
-            data={"vin": VIN,"invokeStatus": invoiceStatus[0],"message": "","readyToUnlock": True ,"readyToUnlockUntil": 5,"details": "Not fully implemented manual button press needed in real life"} #whend would readyToUnlock be false?
+            data={"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": "","readyToUnlock": True ,"readyToUnlockUntil": 5,"details": "Not fully implemented manual button press needed in real life"}} #whend would readyToUnlock be false?
             return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
         else:
             return NormalResponse(VIN, invoiceStatus[0],status_code=409, headers=ResponseHeaderGenerator(auth_header))
@@ -688,7 +688,7 @@ def Brakes(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 
 
 @app.get("/vehicles/{VIN}/warnings") 
-def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...), tracking: Tracking = Header(...)):
+def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current warning status for the specified VIN. STATIC for now"""
     try:
         car = VINHandling(VIN, auth_header)
@@ -949,7 +949,7 @@ def delCar(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(.
 
 
 
-#experimental func NOT TESTED:
+
 @app.post("/internal/scenario")
 def scenario(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body(...), scenario: str = Body(...)):
     """internal endpoint for simulating a scenario for the specified VIN"""
@@ -957,7 +957,7 @@ def scenario(vcc_api_key: str = Header(...,alias="vcc-api-key"), VIN: str = Body
 
 
 
-#experimental func NOT TESTED:
+
 
 @app.post("/internal/snapshot")
 def snapshot(vcc_api_key: str = Header(...,alias="vcc-api-key"), command: str = Body(...), name: str = Body(...)):
@@ -967,4 +967,3 @@ def snapshot(vcc_api_key: str = Header(...,alias="vcc-api-key"), command: str = 
 if __name__ == "__main__":
     uvicorn.run(app,host="0.0.0.0",port=8000)
 
-# saveFileSnapshots() way to corrupt dat  # Save snapshots to file on shutdown
