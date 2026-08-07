@@ -193,13 +193,20 @@ def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...),attrib
 def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attribute: list = Body(...), value: list = Body(...)):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
-        car_backup = deepcopy(car)
-        for i in range(len(attribute)):
-            if car_backup.update(attribute[i], value[i],True) != True:
-                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute or value. field:{attribute[i]}, value:{value[i]}"}}, status_code=400)
-        car=car_backup
-        if startUp["statusNotification"] == "SET" or startUp["statusNotification"] == "ALL":
-            notifier.trigger_update_multiple(VIN, car, attribute)
+        if len(attribute) != len(value):
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST", "description": "THIS IS INTERNAL API/attribute and value lists must have the same length"}}, status_code=400)
+
+        update_data = dict(zip(attribute, value))
+        validity = car.checkValidityMultiple(update_data)
+        if validity is not True:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST", "description": f"THIS IS INTERNAL API/invalid attribute or value. field:{validity[1]}"}}, status_code=400)
+
+        for attr, val in update_data.items():
+            car.update(attr, val, True)
+
+        if startUp["statusNotification"] == "ALL" or startUp["statusNotification"] == "SET":
+            notifier.trigger_update_multiple(VIN, car, list(update_data.keys()))
+
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/attributes updated successfully"}, status_code=200)
 
     except ValueError as e:
