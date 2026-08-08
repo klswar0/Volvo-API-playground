@@ -236,7 +236,7 @@ def scenarios(key: str,VIN: str, request: Request):
     try:
         authenticateInternal(key)
         car = VINHandlingInternal(VIN, key)
-        scenarios = list(SCENARIO_TEMPLATES.keys()) + list(SCENARIO_USER.keys())
+        scenarios = list(set(list(SCENARIO_TEMPLATES.keys()) + list(SCENARIO_USER.keys())))
         data={"vin":VIN,"key":key,"scenarios":scenarios}
         return templates.TemplateResponse(name="loading.html", request=request, context=data)
     except ValueError as e:
