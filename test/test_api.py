@@ -239,3 +239,54 @@ def test_odometer():
     assert odometer.json()["data"]["odometer"]["value"] == 100
 
 
+def test_engine_diag():
+    headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
+    engine_diag = client.get("/vehicles/12345678901234567/engine", headers=headers)
+    assert engine_diag.status_code == 200
+    assert engine_diag.json()["data"]["engineCoolantLevelWarning"]["value"] == "NO_WARNING"
+    assert engine_diag.json()["data"]["oilLevelWarning"]["value"] == "NO_WARNING"
+    
+    change_data("engineCoolantLevel","TOO_LOW")
+    change_data("oilLevel","TOO_LOW")
+        
+    engine_diag = client.get("/vehicles/12345678901234567/engine", headers=headers)
+    assert engine_diag.status_code == 200
+    assert engine_diag.json()["data"]["engineCoolantLevelWarning"]["value"] == "TOO_LOW"
+    assert engine_diag.json()["data"]["oilLevelWarning"]["value"] == "TOO_LOW"
+    
+def test_diagnostics():
+    pass
+
+def test_brakes():
+    headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
+    brakes = client.get("/vehicles/12345678901234567/brakes", headers=headers)
+    assert brakes.status_code == 200
+    assert brakes.json()["data"]["brakeFluidLevelWarning"]["value"] == "NO_WARNING"
+    
+    change_data("brakeFluidLevel","TOO_LOW")
+        
+    brakes = client.get("/vehicles/12345678901234567/brakes", headers=headers)
+    assert brakes.status_code == 200
+    assert brakes.json()["data"]["brakeFluidLevelWarning"]["value"] == "TOO_LOW"
+    
+def test_warnings():
+    pass
+
+def test_commands():
+    pass
+
+def test_command_accessibility():
+    headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
+    accessibility = client.get("/vehicles/12345678901234567/command-accessibility", headers=headers)
+    assert accessibility.status_code == 200
+    assert accessibility.json()["data"]["availabilityStatus"]["value"] == "AVAILABLE"
+    assert "unavailableReason" not in accessibility.json()["data"]["availabilityStatus"]
+    
+    change_data("availabilityStatus_value","UNAVAILABLE")
+    change_data("availabilityStatus_unavailableReason","POWER_SAVING_MODE")
+    
+    accessibility = client.get("/vehicles/12345678901234567/command-accessibility", headers=headers)
+    assert accessibility.status_code == 200
+    assert accessibility.json()["data"]["availabilityStatus"]["value"] == "UNAVAILABLE"
+    assert accessibility.json()["data"]["availabilityStatus"]["unavailableReason"] == "POWER_SAVING_MODE"
+    
