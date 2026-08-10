@@ -469,7 +469,7 @@ It needs ***auth header*** and VIN (PATH)
 
 ## horn
 POST
-/vehicles/{VIN}/commands/horn
+/vehicles/{VIN}/commands/honk
 Sounds the horn.
 It needs ***auth header*** and VIN (PATH)
 ```
@@ -484,7 +484,7 @@ It needs ***auth header*** and VIN (PATH)
 
 ## horn and flash lights
 POST
-/vehicles/{VIN}/commands/horn-and-flash
+/vehicles/{VIN}/commands/honk-and-flash
 Sounds the horn and flashes the lights.
 It needs ***auth header*** and VIN (PATH)
 ```
