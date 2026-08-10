@@ -68,7 +68,7 @@ SCENARIO_TEMPLATES = {
     },
     
     # Diagnostics/Warnings
-    "engine_low_coolant": {"engineCoolantLever": "TOO_LOW"},
+    "engine_low_coolant": {"engineCoolantLevel": "TOO_LOW"},
     "engine_service_soon": {
         "serviceWarning": "REGULAR_MAINTENANCE_ALMOST_TIME_FOR_SERVICE",
         "serviceTrigger": "DISTANCE",

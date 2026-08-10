@@ -649,7 +649,7 @@ def engineDiagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
-        data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLever,"timestamp":car.timestamp()},"oilLevelWarning":{"value":car.oillevel,"timestamp":car.timestamp()}}}
+        data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLevel,"timestamp":car.timestamp()},"oilLevelWarning":{"value":car.oilLevel,"timestamp":car.timestamp()}}}
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 @app.get("/vehicles/{VIN}/diagnostics")  # there is additional washer fluid data sent by the api but docs dont talk about it there ? and units?
