@@ -1,5 +1,11 @@
 # Volvo playground docs
 You can use official docs for every endpoint that isnt /internal/* but you can use this docs to learn how volvo apis work (CONNECTED VEHICLE API other APIs are in works)
+
+## Built in api keys:
+- vcc_api_key
+- all_values
+- vcc_api_key_Oauth2
+
 ## Playground APIs
 
 ### /internal/APIKey
@@ -329,13 +335,28 @@ It needs ***auth header*** and VIN (PATH)
 ```
 {
   "data": {
-    "windowsStatus": {
+    "frontLeftWindow": {
       "value": <str>,
-      "timestamp": "2026-07-06T20:32:17.170Z"
+      "timestamp": "2020-11-19T21:23:24.123Z"
+    },
+    "frontRightWindow": {
+      "value": <str>,
+      "timestamp": "2020-11-19T21:23:24.123Z"
+    },
+    "rearLeftWindow": {
+      "value": <str>,
+      "timestamp": "2020-11-19T21:23:24.123Z"
+    },
+    "rearRightWindow": {
+      "value": <str>,
+      "timestamp": "2020-11-19T21:23:24.123Z"
     }
   }
 }
 ```
+legend:
+- value: CLOSED, AJAR, OPEN, UNSPECIFIED
+
 ## Doors Status
 GET
 /vehicles/{VIN}/doors
