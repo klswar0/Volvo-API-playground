@@ -609,8 +609,9 @@ def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:   # docs says  thath only liters and % are  valid
         FuelType = car.fuelType
-        FuelLevel = str(car.fuelICE)
-        FuelLevelElectric = str(car.fuelElectric)
+        #openapi saya int but docs says str so i will use int for now
+        FuelLevel = car.fuelICE 
+        FuelLevelElectric = car.fuelElectric
         if FuelType == "PETROL" or FuelType == "DIESEL":
             data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":car.timestamp()}}} 
         elif FuelType == "ELECTRIC":
@@ -626,13 +627,14 @@ def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 #Odometer section
 @app.get("/vehicles/{VIN}/odometer")
 def getOdometer(VIN:str, auth_header: AuthHeaderGET = Header(...)):
+    
     """get the current odometer reading for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:   #Units and timestamp here again only km is valid Why volvo Why?
-        Odometer =str(car.odometer)
+        Odometer = car.odometer #in docs its str but in openapi is int
         data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : car.timestamp()}}}
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
