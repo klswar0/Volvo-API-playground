@@ -6,6 +6,10 @@ This projects aims to provide dynamic alternative to official volvo API sandbox 
 > [!WARNING]
 > This project is still a work in progress, but it is already in a good state. If you don’t rely on comprehensive documentation, you should find it useful for developing applications for Volvo Connected Vehicles.
 
+> [!IMPORTANT]
+> Help needed!
+> Do you have volvo with remote engine or climate ? Open an issue so we can talk.
+
 ## Key features:
 - Car that reacts to commands
 - Interactive Dashboard
