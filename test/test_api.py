@@ -255,7 +255,11 @@ def test_engine_diag():
     assert engine_diag.json()["data"]["oilLevelWarning"]["value"] == "TOO_LOW"
     
 def test_diagnostics():
-    pass
+    headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
+    diagnostics = client.get("/vehicles/12345678901234567/diagnostics", headers=headers)
+    assert diagnostics.status_code == 200
+    assert diagnostics.json()["data"]["serviceWarning"]["value"] == "NO_WARNING"
+    #TODO: test it more
 
 def test_brakes():
     headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
@@ -270,10 +274,23 @@ def test_brakes():
     assert brakes.json()["data"]["brakeFluidLevelWarning"]["value"] == "TOO_LOW"
     
 def test_warnings():
-    pass
+    headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
+    warnings = client.get("/vehicles/12345678901234567/warnings", headers=headers)
+    assert warnings.status_code == 200
+    assert warnings.json()["data"]["brakeLightLeftWarning"]["value"] == "NO_WARNING"
+    
+    change_data("brakeLightLeftWarning","FAILURE")
+    warnings = client.get("/vehicles/12345678901234567/warnings", headers=headers)
+    assert warnings.status_code == 200
+    assert warnings.json()["data"]["brakeLightLeftWarning"]["value"] == "FAILURE"
+
 
 def test_commands():
-    pass
+    headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
+    
+    commands = client.get("/vehicles/12345678901234567/commands", headers=headers)
+    commands_json = commands.json()
+    assert commands.status_code == 200
 
 def test_command_accessibility():
     headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
