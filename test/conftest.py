@@ -21,7 +21,7 @@ from notifier import notifier
 database.database["TEST_NO_OAUTH"] = [Car(VIN="12345678901234567"),Car(VIN="09876543210987654")]
 
 database.database["TEST_OAUTH"] = [Car(VIN="12345678901234567")]
-database.Oauth2Data["TEST_OAUTH"] = database.Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token")
+database.Oauth2Data["TEST_OAUTH"] = database.Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token",code_challenge_method="plain",code_challenge="code_challenge")
 
 database_backup = copy.deepcopy(database.database)
 oauth_backup = copy.deepcopy(database.Oauth2Data)
