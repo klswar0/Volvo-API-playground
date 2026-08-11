@@ -94,7 +94,7 @@ def PKCECheck(code_verifier: str, oauth2: Oauth2):
     if method == "S256":
         expected = base64.urlsafe_b64encode(
             hashlib.sha256(code_verifier.encode()).digest()
-        ).rstrip(b"=").decode()
+        ).rstrip(b"=").decode() #NOTE: when aproved need to check this 
         ok = expected == code_challenge
     elif method == "plain":
         ok = code_verifier == code_challenge
@@ -175,8 +175,8 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
         if oauth2.PKCE == True:
             if PKCECheck(code_verifier,oauth2) == False:
                 return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}}, status_code=400)
-    
-        if oauth2.code != code:
+
+        if oauth2.code != code or oauth2.code == "": # forgot to check if there is any code available FIXED
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "No code available. Please request a new code"}}, status_code=400)
         else:
             if oauth2.redirect_uri != "":
@@ -190,7 +190,7 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     
     oauth2.access_token = "access_token_"+secrets.token_urlsafe(32) #generate
     oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32) #generate
-    # added the acces_token for simplicity of development but Bearer is still ineeded
+    # NOTE: what i meant?  added the acces_token for simplicity of development but Bearer is still ineeded
     oauth2.code = "" #invalidate code
     #oauth2.expires_in = 
     data={"access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
