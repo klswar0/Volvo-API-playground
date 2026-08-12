@@ -94,7 +94,7 @@ def PKCECheck(code_verifier: str, oauth2: Oauth2):
     if method == "S256":
         expected = base64.urlsafe_b64encode(
             hashlib.sha256(code_verifier.encode()).digest()
-        ).rstrip(b"=").decode()
+        ).rstrip(b"=").decode() #NOTE: when aproved need to check this 
         ok = expected == code_challenge
     elif method == "plain":
         ok = code_verifier == code_challenge
@@ -175,8 +175,8 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
         if oauth2.PKCE == True:
             if PKCECheck(code_verifier,oauth2) == False:
                 return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}}, status_code=400)
-    
-        if oauth2.code != code:
+
+        if oauth2.code != code or oauth2.code == "": # forgot to check if there is any code available FIXED
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "No code available. Please request a new code"}}, status_code=400)
         else:
             if oauth2.redirect_uri != "":
@@ -190,7 +190,7 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     
     oauth2.access_token = "access_token_"+secrets.token_urlsafe(32) #generate
     oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32) #generate
-    # added the acces_token for simplicity of development but Bearer is still ineeded
+    # NOTE: what i meant?  added the acces_token for simplicity of development but Bearer is still ineeded
     oauth2.code = "" #invalidate code
     #oauth2.expires_in = 
     data={"access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
@@ -609,8 +609,9 @@ def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:   # docs says  thath only liters and % are  valid
         FuelType = car.fuelType
-        FuelLevel = str(car.fuelICE)
-        FuelLevelElectric = str(car.fuelElectric)
+        #openapi saya int but docs says str so i will use int for now
+        FuelLevel = car.fuelICE 
+        FuelLevelElectric = car.fuelElectric
         if FuelType == "PETROL" or FuelType == "DIESEL":
             data = {"data":{"fuelAmount":{"value" : FuelLevel, "unit":"l","timestamp":car.timestamp()}}} 
         elif FuelType == "ELECTRIC":
@@ -626,13 +627,14 @@ def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 #Odometer section
 @app.get("/vehicles/{VIN}/odometer")
 def getOdometer(VIN:str, auth_header: AuthHeaderGET = Header(...)):
+    
     """get the current odometer reading for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:   #Units and timestamp here again only km is valid Why volvo Why?
-        Odometer =str(car.odometer)
+        Odometer = car.odometer #in docs its str but in openapi is int
         data = {"data":{"odometer" : { "value": Odometer, "unit" : "km","timestamp" : car.timestamp()}}}
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
@@ -647,7 +649,7 @@ def engineDiagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
-        data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLever,"timestamp":car.timestamp()},"oilLevelWarning":{"value":car.oillevel,"timestamp":car.timestamp()}}}
+        data={"data":{"engineCoolantLevelWarning":{"value":car.engineCoolantLevel,"timestamp":car.timestamp()},"oilLevelWarning":{"value":car.oilLevel,"timestamp":car.timestamp()}}}
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 @app.get("/vehicles/{VIN}/diagnostics")  # there is additional washer fluid data sent by the api but docs dont talk about it there ? and units?
@@ -661,7 +663,7 @@ def diagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         toService = car.timeToService
         
         unit=""
-        if toService < 62: #when volvo uses day and whe months 
+        if toService < 62: #when volvo uses day and when months 
             unit="days"
         else:
             unit="months"
@@ -927,7 +929,7 @@ def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="
     return internal.internal_update(VIN, vcc_api_key, attribute, value)
 
 
-@app.post("/internal/updates") # to redo
+@app.post("/internal/updates") 
 def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="vcc-api-key"),attribute: list = Body(...), value: list = Body(...)):
     """internal endpoint for updating multiple car attributes without using commands and without a token/ NEED TO BE REWRITTEN"""
     return internal.internal_updates(VIN, vcc_api_key, attribute, value)
