@@ -672,9 +672,6 @@
   .text-zinc-100 {
     color: var(--color-zinc-100);
   }
-  .text-zinc-200 {
-    color: var(--color-zinc-200);
-  }
   .text-zinc-300 {
     color: var(--color-zinc-300);
   }
@@ -700,11 +697,6 @@
   }
   .transition-all {
     transition-property: all;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
-  }
-  .transition-colors {
-    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
@@ -790,9 +782,6 @@
     }
     .md\:w-\[15dvw\] {
       width: 15dvw;
-    }
-    .md\:min-w-md {
-      min-width: var(--container-md);
     }
     .md\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
