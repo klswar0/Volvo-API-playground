@@ -663,7 +663,7 @@ def diagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         toService = car.timeToService
         
         unit=""
-        if toService < 62: #when volvo uses day and whe months 
+        if toService < 62: #when volvo uses day and when months 
             unit="days"
         else:
             unit="months"
@@ -929,7 +929,7 @@ def internal_update(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="
     return internal.internal_update(VIN, vcc_api_key, attribute, value)
 
 
-@app.post("/internal/updates") # to redo
+@app.post("/internal/updates") 
 def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...,alias="vcc-api-key"),attribute: list = Body(...), value: list = Body(...)):
     """internal endpoint for updating multiple car attributes without using commands and without a token/ NEED TO BE REWRITTEN"""
     return internal.internal_updates(VIN, vcc_api_key, attribute, value)

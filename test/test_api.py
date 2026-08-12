@@ -256,10 +256,46 @@ def test_engine_diag():
     
 def test_diagnostics():
     headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
+    
+    # No warning
     diagnostics = client.get("/vehicles/12345678901234567/diagnostics", headers=headers)
     assert diagnostics.status_code == 200
     assert diagnostics.json()["data"]["serviceWarning"]["value"] == "NO_WARNING"
-    #TODO: test it more
+    assert diagnostics.json()["data"]["washerFluidLevelWarning"]["value"] == "NO_WARNING"
+    assert diagnostics.json()["data"]["distanceToService"]["value"] == 0
+    assert diagnostics.json()["data"]["engineHoursToService"]["value"] == 0
+    assert diagnostics.json()["data"]["timeToService"]["value"] == 0
+    
+    change_data("serviceWarning", "DISTANCE_DRIVEN_ALMOST_TIME_FOR_SERVICE")
+    change_data("washerFluidLevelWarning", "TOO_LOW")
+    change_data("distanceToService", 10)
+    change_data("engineHoursToService", 10)
+    change_data("timeToService", 10)
+    change_data("serviceTrigger", "DISTANCE")
+    
+    # Test with warnings
+    diagnostics = client.get("/vehicles/12345678901234567/diagnostics", headers=headers)
+    assert diagnostics.status_code == 200
+    assert diagnostics.json()["data"]["serviceWarning"]["value"] == "DISTANCE_DRIVEN_ALMOST_TIME_FOR_SERVICE"
+    assert diagnostics.json()["data"]["washerFluidLevelWarning"]["value"] == "TOO_LOW"
+    assert diagnostics.json()["data"]["distanceToService"]["value"] == 10
+    assert diagnostics.json()["data"]["engineHoursToService"]["value"] == 10
+    assert diagnostics.json()["data"]["timeToService"]["value"] == 10
+    assert diagnostics.json()["data"]["serviceTrigger"]["value"] == "DISTANCE"
+    assert diagnostics.json()["data"]["timeToService"]["unit"] == "days"
+    
+    change_data("timeToService", 80)
+    # different unit
+    diagnostics = client.get("/vehicles/12345678901234567/diagnostics", headers=headers)
+    assert diagnostics.status_code == 200
+    assert diagnostics.json()["data"]["serviceWarning"]["value"] == "DISTANCE_DRIVEN_ALMOST_TIME_FOR_SERVICE"
+    assert diagnostics.json()["data"]["washerFluidLevelWarning"]["value"] == "TOO_LOW"
+    assert diagnostics.json()["data"]["distanceToService"]["value"] == 10
+    assert diagnostics.json()["data"]["engineHoursToService"]["value"] == 10
+    assert diagnostics.json()["data"]["timeToService"]["value"] == 2
+    assert diagnostics.json()["data"]["serviceTrigger"]["value"] == "DISTANCE"
+    assert diagnostics.json()["data"]["timeToService"]["unit"] == "months"
+    
 
 def test_brakes():
     headers = {"vcc-api-key": "TEST_NO_OAUTH","content-type": "application/json"}
