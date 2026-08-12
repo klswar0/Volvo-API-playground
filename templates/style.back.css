@@ -6,12 +6,20 @@
 }
 
 @utility baseHeader {
-  @apply max-w-4xl w-full text-center mb-12 space-y-4;
+  @apply max-w-4xl w-full text-center mb-6 space-y-4;
 }
 
 @utility baseSection {
   @apply w-full max-w-md md:min-w-md p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm space-y-4 text-center flex flex-col;
 
+}
+
+@utility carSelectionButton {
+  @apply w-full px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer;
+}
+
+@utility downButton {
+  @apply min-w-[30px] px-4 py-2.5 bg-blue-500/30 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer;
 }
 
 body {
