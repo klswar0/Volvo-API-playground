@@ -9,7 +9,7 @@
             <form data-attribute="modelYear" hx-ext="json-enc" 
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="modelYear">
-                <input type="number" name="value" min="0" placeholder="Enter new model year" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <input type="number" name="value" min="0" placeholder="Enter new model year" class="min-w-50 max-w-75 inputText">
                 <input type="submit" value="change" class="submitButtonDash">
 
             </form>
@@ -44,7 +44,7 @@
             <form data-attribute="odometer" hx-ext="json-enc"
                 hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                 <input type="hidden" name="attribute" value="odometer">
-                <input type="number" name="value" min="0" placeholder="Enter new odometer reading" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                <input type="number" name="value" min="0" placeholder="Enter new odometer reading" class="min-w-50 max-w-75 inputText">
                 <input type="submit" value="change" class="submitButtonDash">
             </form>
 
@@ -173,7 +173,7 @@
                 <form data-attribute="fuelICE" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelICE">
-                    <input type="number" name="value" min="0" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    <input type="number" name="value" min="0" class="min-w-50 max-w-75 inputText">
                     <input type="submit" value="change" class="submitButtonDash">
 
                 </form>
@@ -194,7 +194,7 @@
                 <form data-attribute="fuelElectric" hx-ext="json-enc"
                     hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
                     <input type="hidden" name="attribute" value="fuelElectric">
-                    <input type="number" name="value" min="0" class="min-w-50 max-w-75 px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all">
+                    <input type="number" name="value" min="0" class="min-w-50 max-w-75 inputText">
                     <input type="submit" value="change" class="submitButtonDash">
                 </form>
 
