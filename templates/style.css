@@ -314,6 +314,9 @@
   .mb-5 {
     margin-bottom: calc(var(--spacing) * 5);
   }
+  .mb-6 {
+    margin-bottom: calc(var(--spacing) * 6);
+  }
   .baseBody {
     display: flex;
     min-height: 100vh;
