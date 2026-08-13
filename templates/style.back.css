@@ -20,7 +20,7 @@
 }
 
 @utility downButton {
-  @apply min-w-[30px] px-4 py-2.5 bg-blue-500/30 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer;
+  @apply min-w-7.5 px-4 py-2.5 bg-blue-500/30 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer;
 }
 
 @utility inputText {
@@ -29,6 +29,14 @@
 
 @utility inputSelection {
     @apply w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent transition-all appearance-none text-center [text-align-last:center] cursor-pointer;
+}
+
+@utility submitButtonDash {
+    @apply w-[40dvw] max-w-75 md:w-[15dvw] mt-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer;
+}
+
+@utility dashboardSectionRe {
+    @apply p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl shadow-xl backdrop-blur-sm text-center items-center flex flex-col;
 }
 
 body {
