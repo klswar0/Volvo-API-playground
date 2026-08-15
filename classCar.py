@@ -5,16 +5,28 @@ import uuid
 from pydantic import BaseModel, Field 
 from notifier import notifier
 from datetime import datetime, timezone
-# import configparser #TODO use it
+import configparser
 
 
-startUp={
-    "Public": True,
-    "Validation": True,
-    "Dashboard": True,
-    "Websocket": True,
-    "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
+config = configparser.ConfigParser()
+config['DEFAULT'] = {
+    'Validation': 'True',
+    'Websocket': 'True',
+    'statusNotification': 'ALL' # FIX planned when new error login /possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
 }
+config['SITE'] = {
+    'Public': 'True',
+    'Dashboard': 'True'
+}
+config.read('config.ini')
+
+# startUp={
+#     "Public": True,
+#     "Validation": True,
+#     "Dashboard": True,
+#     "Websocket": True,
+#     "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
+# }
 
 
 
@@ -255,7 +267,7 @@ class Car(BaseModel):
     
     
     def checkValidity(self,attribute,value):
-        if startUp["Validation"] == False:
+        if config["DEFAULT"]["Validation"] == "False":
             return True
         
         if attribute in options:
@@ -277,7 +289,7 @@ class Car(BaseModel):
         return True
     #NOTE:needs checking implement with notifier trigger update multiple
     def checkValidityMultiple(self, attributes_values: dict):
-        if startUp["Validation"] == False:
+        if config["DEFAULT"]["Validation"] == "False":
             return True
         
         for attribute, value in attributes_values.items():
@@ -332,7 +344,7 @@ class Car(BaseModel):
 
     def update(self,attribute,value,internal=False): #TODO: update to send inforamtion if the attribute or value is invalid
         if self.checkValidity(attribute,value):
-                if startUp["Validation"] == True:
+                if config["DEFAULT"]["Validation"] == "True":
                     if attribute=="fuelElectric":
                         value=int(value)
                         if value>100:

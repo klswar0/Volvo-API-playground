@@ -14,7 +14,7 @@ from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
 import dashboard
 from notifier import notifier
-from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator,Tracking, startUp, timestampGenerator, Oauth2
+from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator,Tracking, config, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 
@@ -30,7 +30,7 @@ AuthHeader = Union[AuthHeaderPOST, AuthHeaderGET]
 
 @app.get("/")
 def index():
-    if startUp["Public"]:
+    if config["SITE"]["Public"] == "True":
         return FileResponse("templates/index.html")
     else:
         return RedirectResponse(url="/internal/welcome")

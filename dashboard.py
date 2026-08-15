@@ -13,7 +13,7 @@ import secrets
 
 
 from notifier import notifier
-from classCar import Car, options, startUp, timestampGenerator, Oauth2
+from classCar import Car, options, config, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
@@ -37,7 +37,7 @@ def style():
 
 
 def DashboardCar(key: str,VIN: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         car = VINHandlingInternal(VIN, key)
@@ -48,7 +48,7 @@ def DashboardCar(key: str,VIN: str, request: Request):
     
 
 def DashboardRedirect(key: str,VIN: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         response = Response()
@@ -60,7 +60,7 @@ def DashboardRedirect(key: str,VIN: str, request: Request):
 
 async def DashboardWS(websocket: WebSocket):
     await websocket.accept()
-    if startUp["Websocket"] == False:
+    if config["DEFAULT"]["Websocket"] == "False":
             await websocket.send_text("<div id=\"car-info\"><p style=\"color:red\">Websocket is disabled in the configuration</p></div>")
             await websocket.close()
             return
@@ -112,7 +112,7 @@ async def DashboardWS(websocket: WebSocket):
     
 
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         if value == "True":
@@ -142,7 +142,7 @@ def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(.
 
 
 def Dashboard(key: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
@@ -166,7 +166,7 @@ def Dashboard(key: str, request: Request):
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>") 
 
 def OAuth2Settings(key: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
@@ -185,7 +185,7 @@ def OAuth2Settings(key: str, request: Request):
 
 
 def OAuth2Change(key: str, attribute: str, value: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
@@ -231,7 +231,7 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
     
     
 def scenarios(key: str,VIN: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
@@ -243,7 +243,7 @@ def scenarios(key: str,VIN: str, request: Request):
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. details: {e}</p>",headers=error_headers)
 
 def scenarioLoad(key: str,VIN: str,name: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
@@ -259,7 +259,7 @@ def scenarioLoad(key: str,VIN: str,name: str, request: Request):
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
 def snapshotsSave(key: str,name: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
@@ -273,7 +273,7 @@ def snapshotsSave(key: str,name: str, request: Request):
 
 
 def snapshotsLoad(key: str,name: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
@@ -288,7 +288,7 @@ def snapshotsLoad(key: str,name: str, request: Request):
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
 def snapshots(key: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
@@ -297,13 +297,13 @@ def snapshots(key: str, request: Request):
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
 def Welcome():
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     return FileResponse("templates/welcome.html")
 
 
 def WelcomeCheck(vcc_api_key: str):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(vcc_api_key)
@@ -323,7 +323,7 @@ def WelcomeAPIKey(request: Request):
 
 
 def WelcomeNewCar(request: Request, key: str, VIN: str):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         if key not in database:
@@ -347,7 +347,7 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
     
     
 def deleteCar(key: str, VIN: str, request: Request):
-    if startUp["Dashboard"] == False:
+    if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         if key not in database:

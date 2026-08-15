@@ -13,7 +13,7 @@ if str(ROOT) not in sys.path:
 
 import database 
 import snapshots 
-from classCar import Car, startUp 
+from classCar import Car, config 
 from notifier import notifier 
 
 
@@ -26,7 +26,7 @@ database.Oauth2Data["TEST_OAUTH"] = database.Oauth2(client_secret="client_secret
 database_backup = copy.deepcopy(database.database)
 oauth_backup = copy.deepcopy(database.Oauth2Data)
 # snapshots_backup = copy.deepcopy(snapshots.snapshotsData)
-# startup_backup = copy.deepcopy(startUp)
+# config_backup = copy.deepcopy(config)
 
 @pytest.fixture(autouse=True)
 def Reset():
@@ -36,6 +36,6 @@ def Reset():
     database.Oauth2Data.update(copy.deepcopy(oauth_backup))
     # snapshots.snapshotsData.clear()
     # snapshots.snapshotsData.update(copy.deepcopy(snapshots_backup))
-    # startUp.clear()
-    # startUp.update(copy.deepcopy(startup_backup))
+    # config.clear()
+    # config.update(copy.deepcopy(config_backup))
     

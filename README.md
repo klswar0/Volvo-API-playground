@@ -52,7 +52,8 @@ You can explore the public instance here:
 - No scope checks
 
 ## DOCS:
-- docs.md file (handwritten with additional info)
+- docs.md file (handwritten with additional info) In future deprecated
+- ~~WIKI on github~~ WIP 
 - /docs , /redoc and openapi.json (automatic fastapi docs)
 
 # Contributions

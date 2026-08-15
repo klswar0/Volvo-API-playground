@@ -5,7 +5,7 @@ from fastapi import Body, Header
 from fastapi.responses import JSONResponse
 
 
-from classCar import startUp
+from classCar import config
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal
 from notifier import notifier
@@ -141,7 +141,7 @@ def scenariosFunc(vcc_api_key: str = Header(...), VIN: str = Header(...),scenari
         if car.checkValidityMultiple(SCNENARIO):
             for key, value in SCNENARIO.items():
                 car.update(key, value, True)
-            if startUp["statusNotification"] == "ALL" or startUp["statusNotification"] == "SET":
+            if config["DEFAULT"]["statusNotification"] == "ALL" or config["DEFAULT"]["statusNotification"] == "SET":
                 notifier.trigger_update_multiple(VIN, car, list(SCNENARIO.keys()))
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/Scenario applied successfully: {scenario}"}, status_code=200)
     except ValueError as e:
