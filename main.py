@@ -24,6 +24,13 @@ templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
 
+if config["DEFAULT"]["fastAPIdocs"] == "False":
+    app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+else:
+    app = FastAPI(docs_url="/internal/docs", redoc_url="/internal/redoc", openapi_url="/internal/openapi.json")
+
+
+
 loadFileSnapshots()  # Load snapshots from file at startup
 
 AuthHeader = Union[AuthHeaderPOST, AuthHeaderGET]

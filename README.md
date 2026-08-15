@@ -54,7 +54,7 @@ You can explore the public instance here:
 ## DOCS:
 - docs.md file (handwritten with additional info) In future deprecated
 - ~~WIKI on github~~ WIP 
-- /docs , /redoc and openapi.json (automatic fastapi docs)
+- /internal/docs , /internal/redoc and /internal/openapi.json (automatic fastapi docs)
 
 # Contributions
 When contributing to this project, please keep in mind that it was created for the Hack Club YSWS Stardance event. Contributions that align with the project’s goals and maintain its quality are greatly appreciated even if you don't take part in that event.
