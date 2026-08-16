@@ -1,13 +1,17 @@
 
 import base64
 
-from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form
+from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form, Request,HTTPException
 from fastapi.responses import FileResponse, JSONResponse ,HTMLResponse, RedirectResponse 
 from fastapi.templating import Jinja2Templates
+from fastapi.exceptions import RequestValidationError
+from fastapi.exception_handlers import request_validation_exception_handler
+from asyncio import create_task
 import uvicorn
 import secrets
 import hashlib
 from typing import Union
+
 
 from scenarios import scenariosFunc
 from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
@@ -21,13 +25,38 @@ from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestRespon
 
 templates = Jinja2Templates(directory="templates")
 
-
 app = FastAPI()
+
 
 if config["DEFAULT"]["fastAPIdocs"] == "False":
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 else:
     app = FastAPI(docs_url="/internal/docs", redoc_url="/internal/redoc", openapi_url="/internal/openapi.json")
+
+# error login section v1
+# here becouse i could make it work in additional file
+
+async def log_error(request: Request, exc: Exception):
+    # here will be the logic for logging an error
+    print(f"Logging error for request")
+    print(f"Error occurred during request: {exc}")
+
+def log(request: Request, exc: Exception): #if it will be in a special file then/import this where you want to log an error
+    create_task(log_error(request, exc))
+
+
+@app.exception_handler(RequestValidationError)
+async def error_handler(request: Request, exc: RequestValidationError):
+    print(f"Request validation error: {exc}")
+    log(request, exc)
+    return await request_validation_exception_handler(request, exc)
+
+
+
+
+
+
+
 
 
 

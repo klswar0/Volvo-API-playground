@@ -1,5 +1,5 @@
 
-from turtle import st
+from turtle import st # why here? auto imported?
 
 from fastapi.responses import JSONResponse
 
