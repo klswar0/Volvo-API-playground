@@ -1,4 +1,5 @@
 
+import asyncio
 import base64
 
 from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form, Request,HTTPException
@@ -6,7 +7,7 @@ from fastapi.responses import FileResponse, JSONResponse ,HTMLResponse, Redirect
 from fastapi.templating import Jinja2Templates
 from fastapi.exceptions import RequestValidationError
 from fastapi.exception_handlers import request_validation_exception_handler
-from asyncio import create_task
+from starlette.background import BackgroundTask
 import uvicorn
 import secrets
 import hashlib
@@ -33,23 +34,75 @@ if config["DEFAULT"]["fastAPIdocs"] == "False":
 else:
     app = FastAPI(docs_url="/internal/docs", redoc_url="/internal/redoc", openapi_url="/internal/openapi.json")
 
-# error login section v1
+# error logger section v1
 # here becouse i could make it work in additional file
 
-async def log_error(request: Request, exc: Exception):
-    # here will be the logic for logging an error
-    print(f"Logging error for request")
-    print(f"Error occurred during request: {exc}")
+class req_eror:
+    method: str
+    headers: dict 
+    client: str 
+    query_params: dict 
+    body: str 
+    json: bool = False
+    urlEncoded: bool= False
+    
+    
+    
 
-def log(request: Request, exc: Exception): #if it will be in a special file then/import this where you want to log an error
-    create_task(log_error(request, exc))
+def write_log(req: req_eror, exc: Exception):
+    # file logging
+    with open("error_log.txt", "a") as f:
+        f.write(f"Error occurred during request: \n")
+        f.write(f"Method: {req.method}\n")
+        f.write(f"Headers: {req.headers}\n")
+        f.write(f"Client: {req.client}\n")
+        f.write(f"Query Params: {req.query_params}\n")
+        f.write(f"Body: {req.body}\n")
+        f.write(f"JSON: {req.json}\n")
+        f.write(f"URL Encoded: {req.urlEncoded}\n")
+        f.write(f"Exception: {exc}\n")
+        f.write(f"\n")
+
+async def log_error(req: req_eror, exc: Exception):
+    # here will be the logic for logging an error
+    
+    # terminal logging
+    print(f"Logging error for request")
+    print(f"Exception: {exc}")
+    print(f"Method: {req.method}")
+    print(f"Headers: {req.headers}")
+    print(f"Query Params: {req.query_params}")
+    print(f"Body: {req.body}")
+    
+    await asyncio.to_thread(write_log, req, exc)  # Write to file in a separate thread
+
+        
 
 
 @app.exception_handler(RequestValidationError)
 async def error_handler(request: Request, exc: RequestValidationError):
-    print(f"Request validation error: {exc}")
-    log(request, exc)
-    return await request_validation_exception_handler(request, exc)
+    
+    req = req_eror()
+    req.method = request.method
+    req.headers = dict(request.headers)
+    req.client = str(request.client)
+    req.query_params = dict(request.query_params)
+    req.body = (await request.body()).decode("utf-8")
+    if request.headers.get("content-type", "").startswith("application/json"):
+        try:
+            test=req.body.json()
+            req.json = True
+        except:
+            pass
+    if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+        req.urlEncoded = True
+
+    response = await request_validation_exception_handler(request, exc)
+    
+    response.background = BackgroundTask(log_error, req, exc)
+    
+    return response
+    
 
 
 

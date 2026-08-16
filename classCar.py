@@ -12,7 +12,7 @@ config = configparser.ConfigParser()
 config['DEFAULT'] = {
     'Validation': 'True',
     'Websocket': 'True',
-    'statusNotification': 'ALL' # FIX planned when new error login /possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
+    'statusNotification': 'ALL' # FIX planned when new error logger+notification system /possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
 }
 config['SITE'] = {
     'Public': 'True',
