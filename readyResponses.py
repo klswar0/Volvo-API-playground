@@ -1,7 +1,9 @@
 
-from turtle import st # why here? auto imported?
 
+
+from fastapi import HTTPException
 from fastapi.responses import JSONResponse
+from starlette.background import BackgroundTask
 
 
 
@@ -19,7 +21,8 @@ def autoErrorResponse(e:str, VIN:str=None, headers:dict=None):
 
 
 def ErrorResponse(message:str, description:str, status_code:int, headers:dict=None):
-    return JSONResponse(content={ "error": {"message": message,"description": description}}, status_code=status_code, headers=headers)
+    raise HTTPException(status_code=status_code, detail={"error": {"message": message, "description": description}}, headers=headers)
+
 
 def UnauthorizedResponse(e:str, headers:dict=None):
     return ErrorResponse("UNAUTHORIZED","Full authentication is required to access this resource. INFO:"+e,status_code=401, headers=headers)

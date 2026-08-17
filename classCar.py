@@ -18,6 +18,9 @@ config['SITE'] = {
     'Public': 'True',
     'Dashboard': 'True'
 }
+config['ERROR_LOGGING'] = {
+    'STATUS': 'True'
+}
 config.read('config.ini')
 
 # startUp={

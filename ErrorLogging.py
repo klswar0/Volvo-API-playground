@@ -1,0 +1,112 @@
+from fastapi import FastAPI, Request,HTTPException
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.background import BackgroundTask
+import asyncio
+
+from classCar import config
+# error logging V1
+
+
+# error logger section v1
+
+
+class req_eror:
+    method: str
+    headers: dict 
+    client: str 
+    query_params: dict 
+    body: str 
+    json: bool = False
+    urlEncoded: bool= False
+    
+    
+    
+
+def write_log(req: req_eror, exc: Exception):
+    # file logging
+    with open("error_log.txt", "a") as f:
+        f.write(f"Error occurred during request: \n")
+        f.write(f"Method: {req.method}\n")
+        f.write(f"Headers: {req.headers}\n")
+        f.write(f"Client: {req.client}\n")
+        f.write(f"Query Params: {req.query_params}\n")
+        f.write(f"Body: {req.body}\n")
+        f.write(f"JSON: {req.json}\n")
+        f.write(f"URL Encoded: {req.urlEncoded}\n")
+        f.write(f"Exception: {exc}\n")
+        f.write(f"\n")
+
+async def log_error(req: req_eror, exc: Exception):
+    # here will be the logic for logging an error
+    
+    # terminal logging
+    print(f"Logging error for request")
+    print(f"Exception: {exc}")
+    print(f"Method: {req.method}")
+    print(f"Headers: {req.headers}")
+    print(f"Query Params: {req.query_params}")
+    print(f"Body: {req.body}")
+    
+    await asyncio.to_thread(write_log, req, exc)  # Write to file in a separate thread
+
+        
+
+def setup_error_logging(app: FastAPI):
+    @app.exception_handler(RequestValidationError)
+    async def error_handler(request: Request, exc: RequestValidationError):
+        if config[" ERROR_LOGGING"]["STATUS"] == "False":
+            return await request_validation_exception_handler(request, exc) 
+        if request.url.path.startswith("/internal"):
+            return await request_validation_exception_handler(request, exc)
+        req = req_eror()
+        req.method = request.method
+        req.headers = dict(request.headers)
+        req.client = str(request.client)
+        req.query_params = dict(request.query_params)
+        req.body = (await request.body()).decode("utf-8")
+        if request.headers.get("content-type", "").startswith("application/json"):
+            try:
+                test=req.body.json()
+                req.json = True
+            except:
+                pass
+        if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+            req.urlEncoded = True
+
+        response = await request_validation_exception_handler(request, exc)
+        
+        response.background = BackgroundTask(log_error, req, exc)
+        
+        return response
+    
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(request: Request, exc: HTTPException):
+        if config[" ERROR_LOGGING"]["STATUS"] == "False":
+            return await request_validation_exception_handler(request, exc) 
+        if request.url.path.startswith("/internal"):
+            return await request_validation_exception_handler(request, exc)
+        
+        print(f"HTTPException occurred: {exc.detail}")
+        req = req_eror()
+        req.method = request.method
+        req.headers = dict(request.headers)
+        req.client = str(request.client)
+        req.query_params = dict(request.query_params)
+        req.body = (await request.body()).decode("utf-8")
+        if request.headers.get("content-type", "").startswith("application/json"):
+            try:
+                test=req.body.json()
+                req.json = True
+            except:
+                pass
+        if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+            req.urlEncoded = True
+
+        response = JSONResponse(content={"detail": exc.detail}, status_code=exc.status_code, headers=exc.headers)
+        
+        response.background = BackgroundTask(log_error, req, exc)
+        
+        return response
+    

@@ -5,9 +5,7 @@ import base64
 from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form, Request,HTTPException
 from fastapi.responses import FileResponse, JSONResponse ,HTMLResponse, RedirectResponse 
 from fastapi.templating import Jinja2Templates
-from fastapi.exceptions import RequestValidationError
-from fastapi.exception_handlers import request_validation_exception_handler
-from starlette.background import BackgroundTask
+
 import uvicorn
 import secrets
 import hashlib
@@ -22,7 +20,7 @@ from notifier import notifier
 from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator,Tracking, config, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
-
+import ErrorLogging
 
 templates = Jinja2Templates(directory="templates")
 
@@ -34,75 +32,7 @@ if config["DEFAULT"]["fastAPIdocs"] == "False":
 else:
     app = FastAPI(docs_url="/internal/docs", redoc_url="/internal/redoc", openapi_url="/internal/openapi.json")
 
-# error logger section v1
-# here becouse i could make it work in additional file
-
-class req_eror:
-    method: str
-    headers: dict 
-    client: str 
-    query_params: dict 
-    body: str 
-    json: bool = False
-    urlEncoded: bool= False
-    
-    
-    
-
-def write_log(req: req_eror, exc: Exception):
-    # file logging
-    with open("error_log.txt", "a") as f:
-        f.write(f"Error occurred during request: \n")
-        f.write(f"Method: {req.method}\n")
-        f.write(f"Headers: {req.headers}\n")
-        f.write(f"Client: {req.client}\n")
-        f.write(f"Query Params: {req.query_params}\n")
-        f.write(f"Body: {req.body}\n")
-        f.write(f"JSON: {req.json}\n")
-        f.write(f"URL Encoded: {req.urlEncoded}\n")
-        f.write(f"Exception: {exc}\n")
-        f.write(f"\n")
-
-async def log_error(req: req_eror, exc: Exception):
-    # here will be the logic for logging an error
-    
-    # terminal logging
-    print(f"Logging error for request")
-    print(f"Exception: {exc}")
-    print(f"Method: {req.method}")
-    print(f"Headers: {req.headers}")
-    print(f"Query Params: {req.query_params}")
-    print(f"Body: {req.body}")
-    
-    await asyncio.to_thread(write_log, req, exc)  # Write to file in a separate thread
-
-        
-
-
-@app.exception_handler(RequestValidationError)
-async def error_handler(request: Request, exc: RequestValidationError):
-    
-    req = req_eror()
-    req.method = request.method
-    req.headers = dict(request.headers)
-    req.client = str(request.client)
-    req.query_params = dict(request.query_params)
-    req.body = (await request.body()).decode("utf-8")
-    if request.headers.get("content-type", "").startswith("application/json"):
-        try:
-            test=req.body.json()
-            req.json = True
-        except:
-            pass
-    if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
-        req.urlEncoded = True
-
-    response = await request_validation_exception_handler(request, exc)
-    
-    response.background = BackgroundTask(log_error, req, exc)
-    
-    return response
-    
+ErrorLogging.setup_error_logging(app)  # Setup error logging
 
 
 
@@ -297,13 +227,17 @@ def listVehicles(auth_header: AuthHeaderGET = Header(...)):
     except ValueError as e:
         return UnauthorizedResponse(str(e))
     else:
-        vehicles=[]
-        for car in database[auth_header.vcc_api_key]:
-            vehicle={"vin": car.VIN,}
-            vehicles.append(vehicle)
-        data={"data": vehicles}
-        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
-    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+        try:
+            vehicles=[]
+            for car in database[auth_header.vcc_api_key]:
+                vehicle={"vin": car.VIN,}
+                vehicles.append(vehicle)
+            data={"data": vehicles}
+            return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
+        except Exception as e:
+            return autoErrorResponse(e, headers=ResponseHeaderGenerator(auth_header))
+
 
 @app.get("/vehicles/{VIN}")
 def getVehicle(VIN:str, auth_header: AuthHeaderGET = Header(...)): #TODO: implement the data in car class
