@@ -1,5 +1,4 @@
 
-from turtle import st
 
 from fastapi.responses import JSONResponse
 
