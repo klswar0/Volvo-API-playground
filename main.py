@@ -1,5 +1,5 @@
 
-import asyncio
+
 import base64
 
 from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form, Request,HTTPException
@@ -17,7 +17,7 @@ from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
 import dashboard
 from notifier import notifier
-from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator,Tracking, config, timestampGenerator, Oauth2
+from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator, config, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 import ErrorLogging
@@ -171,7 +171,7 @@ def test(code:str=Query(...),state:str=Query(default="")):
 @app.post("/as/token.oauth2") #scopes are not checked and dont work
 def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:str=Header(...),grant_type:str=Form(...),refresh_token:str=Form(default=""),code:str=Form(default=""),redirect_uri:str=Form(default=""),code_verifier:str=Form(default=""),):
     if content_type != "application/x-www-form-urlencoded":
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "content-type must be 'application/x-www-form-urlencoded'"}}, status_code=400)
+        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "content-type must be 'application/x-www-form-urlencoded'"}})
     
     try:
         auth_parts = authorization.split(" ")
@@ -182,30 +182,30 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
         decoded_str = decoded_bytes.decode("utf-8")
         client_id, client_secret = decoded_str.split(":", 1)
     except Exception:
-        return JSONResponse(content={"error": "invalid_client", "error_description": "Malformed Authorization header"}, status_code=401)
+        raise HTTPException(status_code=401, detail={"error": "invalid_client", "error_description": "Malformed Authorization header"})
     
     if client_id not in Oauth2Data:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}}, status_code=400)
+        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}})
     oauth2 = Oauth2Data[client_id]
     if oauth2.client_secret != client_secret:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}}, status_code=400)
+        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}})
     
     if grant_type == "authorization_code":
         if oauth2.PKCE == True:
             if PKCECheck(code_verifier,oauth2) == False:
-                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}}, status_code=400)
+                raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}})
 
         if oauth2.code != code or oauth2.code == "": # forgot to check if there is any code available FIXED
-            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "No code available. Please request a new code"}}, status_code=400)
+            raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "No code available. Please request a new code"}})
         else:
             if oauth2.redirect_uri != "":
                 if redirect_uri != oauth2.redirect_uri:
-                 return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid redirect_uri"}}, status_code=400)
+                 raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid redirect_uri"}})
     elif grant_type == "refresh_token":
         if oauth2.refresh_token != refresh_token:
-            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid refresh_token"}}, status_code=400)
+            raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid refresh_token"}})
     else:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "grant_type must be 'authorization_code' or 'refresh_token'"}}, status_code=400)
+        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "grant_type must be 'authorization_code' or 'refresh_token'"}})
     
     oauth2.access_token = "access_token_"+secrets.token_urlsafe(32) #generate
     oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32) #generate
@@ -225,7 +225,7 @@ def listVehicles(auth_header: AuthHeaderGET = Header(...)):
     try:
         authenticate(auth_header)
     except ValueError as e:
-        return UnauthorizedResponse(str(e))
+        return UnauthorizedResponse(str(e), headers=ResponseHeaderGenerator(auth_header))
     else:
 
         try:
@@ -274,7 +274,7 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         if command not in car.commands:
-            return NotSupportedResponse(command)
+            return NotSupportedResponse(command, headers=ResponseHeaderGenerator(auth_header))
         else:
             invoiceStatus="Let the dev know if you see this message. Something went wrong with the invoiceStatus"
             if command == "CLIMATIZATION_START":
@@ -354,7 +354,7 @@ def engineStart(VIN:str, auth_header: AuthHeaderPOST = Header(...), runtimeMinut
     """send a command to start the engine for the specified VIN. The runtimeMinutes >0 and <15."""
     runtimeMinutes = runtimeMinutes.get("runtimeMinutes", 0)
     if runtimeMinutes < 1 or runtimeMinutes >= 15:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "runtimeMinutes can be maximaly 15 min"}}, status_code=400, headers=ResponseHeaderGenerator(auth_header))
+        return ErrorResponse(message="BAD_REQUEST", description="runtimeMinutes can be maximaly 15 min", headers=ResponseHeaderGenerator(auth_header),status_code=400)
     return engine(VIN, auth_header,command="ENGINE_START", runtimeMinutes=runtimeMinutes)
 
 @app.post("/vehicles/{VIN}/commands/engine-stop")

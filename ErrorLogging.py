@@ -1,3 +1,5 @@
+import json
+
 from fastapi import FastAPI, Request,HTTPException
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
@@ -9,7 +11,7 @@ from classCar import config
 # error logging V1
 
 
-# error logger section v1
+# doesnt log oauth 2 flow TODO
 
 
 class req_eror:
@@ -48,15 +50,15 @@ async def log_error(req: req_eror, exc: Exception):
     print(f"Headers: {req.headers}")
     print(f"Query Params: {req.query_params}")
     print(f"Body: {req.body}")
-    
-    await asyncio.to_thread(write_log, req, exc)  # Write to file in a separate thread
+    if config["ERROR_LOGGING"]["Write"] == "True":
+        await asyncio.to_thread(write_log, req, exc)  # Write to file in a separate thread
 
         
-
+# doesnt kog error forced by the vehicle avaibility check, because it is not a real error, but a normal response from the vehicle.
 def setup_error_logging(app: FastAPI):
     @app.exception_handler(RequestValidationError)
     async def error_handler(request: Request, exc: RequestValidationError):
-        if config[" ERROR_LOGGING"]["STATUS"] == "False":
+        if config["ERROR_LOGGING"]["STATUS"] == "False":
             return await request_validation_exception_handler(request, exc) 
         if request.url.path.startswith("/internal"):
             return await request_validation_exception_handler(request, exc)
@@ -65,15 +67,31 @@ def setup_error_logging(app: FastAPI):
         req.headers = dict(request.headers)
         req.client = str(request.client)
         req.query_params = dict(request.query_params)
-        req.body = (await request.body()).decode("utf-8")
-        if request.headers.get("content-type", "").startswith("application/json"):
+        if hasattr(request, "_body"):
+            body = request._body
+            if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+                req.urlEncoded = True
+            body = body.decode("utf-8", errors="ignore")
+        else:
             try:
-                test=req.body.json()
-                req.json = True
-            except:
-                pass
-        if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
-            req.urlEncoded = True
+                body = await request.body()
+                if request.headers.get("content-type", "").startswith("application/json"):
+                    try:
+                        test=json.loads(body.decode("utf-8", errors="ignore"))
+                        req.json = True
+                        body=test
+                
+                    except Exception:
+                        body = body.decode("utf-8", errors="ignore")
+                else:
+                    body = body.decode("utf-8", errors="ignore")
+            except Exception:
+                body = "Error reading body"
+        req.body = body
+        
+        
+
+
 
         response = await request_validation_exception_handler(request, exc)
         
@@ -81,9 +99,11 @@ def setup_error_logging(app: FastAPI):
         
         return response
     
+    
+    
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
-        if config[" ERROR_LOGGING"]["STATUS"] == "False":
+        if config["ERROR_LOGGING"]["STATUS"] == "False":
             return await request_validation_exception_handler(request, exc) 
         if request.url.path.startswith("/internal"):
             return await request_validation_exception_handler(request, exc)
@@ -94,15 +114,26 @@ def setup_error_logging(app: FastAPI):
         req.headers = dict(request.headers)
         req.client = str(request.client)
         req.query_params = dict(request.query_params)
-        req.body = (await request.body()).decode("utf-8")
-        if request.headers.get("content-type", "").startswith("application/json"):
+        if hasattr(request, "_body"):
+            body = request._body
+            if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+                req.urlEncoded = True
+            body = body.decode("utf-8", errors="ignore")
+        else:
             try:
-                test=req.body.json()
-                req.json = True
-            except:
-                pass
-        if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
-            req.urlEncoded = True
+                body = await request.body()
+                if request.headers.get("content-type", "").startswith("application/json"):
+                    try:
+                        test=json.loads(body.decode("utf-8", errors="ignore"))
+                        req.json = True
+                        body=test
+                    except Exception:
+                        body = body.decode("utf-8", errors="ignore")
+                else:
+                    body = body.decode("utf-8", errors="ignore")
+            except Exception:
+                body = "Error reading body"
+        req.body = body
 
         response = JSONResponse(content={"detail": exc.detail}, status_code=exc.status_code, headers=exc.headers)
         

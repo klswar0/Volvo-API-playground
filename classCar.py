@@ -19,7 +19,8 @@ config['SITE'] = {
     'Dashboard': 'True'
 }
 config['ERROR_LOGGING'] = {
-    'STATUS': 'True'
+    'STATUS': 'True',
+    'Write': 'True'
 }
 config.read('config.ini')
 
