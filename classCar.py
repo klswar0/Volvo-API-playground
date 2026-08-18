@@ -44,7 +44,7 @@ class AuthHeader(Tracking):
     # accept: str =  Field(default="application/json") #Field(...)
 
     authorization: str =Field(default="") #= Field(...) 
-    vcc_api_key: str =Field(...,alias="vcc-api-key")
+    vcc_api_key: str =Field(default="",alias="vcc-api-key")
     
 class AuthHeaderPOST(AuthHeader):
     content_type: str =  Field(..., alias="Content-Type")

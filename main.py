@@ -62,6 +62,8 @@ def index():
 
 def authenticate(auth_header: AuthHeader):
     if auth_header.vcc_api_key not in database:
+        if auth_header.vcc_api_key == "":
+            raise ValueError("Missing API key")
         raise ValueError("Invalid API key")
     if auth_header.vcc_api_key in Oauth2Data:
         if auth_header.authorization != f"Bearer {Oauth2Data[auth_header.vcc_api_key].access_token}":
@@ -225,7 +227,7 @@ def listVehicles(auth_header: AuthHeaderGET = Header(...)):
     try:
         authenticate(auth_header)
     except ValueError as e:
-        return UnauthorizedResponse(str(e), headers=ResponseHeaderGenerator(auth_header))
+        return autoErrorResponse(e, headers=ResponseHeaderGenerator(auth_header))
     else:
 
         try:
