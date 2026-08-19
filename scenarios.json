@@ -105,6 +105,64 @@
         "sunroof": "CLOSED",
         "availabilityStatus_value": "UNAVAILABLE",
         "availabilityStatus_unavailableReason": "POWER_SAVING_MODE"
+    },
+    "service_no_warning": {
+        "serviceWarning": "NO_WARNING",
+        "serviceTrigger": "UNSPECIFIED",
+        "washerFluidLevelWarning": "NO_WARNING",
+        "brakeFluidLevel": "NO_WARNING"
+    },
+    "service_regular_maintenance_almost_time": {
+        "serviceWarning": "REGULAR_MAINTENANCE_ALMOST_TIME_FOR_SERVICE",
+        "serviceTrigger": "CALENDAR_TIME",
+        "engineHoursToService": 50,
+        "distanceToService": 1000,
+        "timeToService": 14
+    },
+    "service_regular_maintenance_due": {
+        "serviceWarning": "REGULAR_MAINTENANCE_TIME_FOR_SERVICE",
+        "serviceTrigger": "CALENDAR_TIME",
+        "timeToService": 5
+    },
+    "service_regular_maintenance_overdue": {
+        "serviceWarning": "REGULAR_MAINTENANCE_OVERDUE_FOR_SERVICE",
+        "serviceTrigger": "CALENDAR_TIME",
+        "timeToService": 0
+    },
+    "service_engine_hours_almost_time": {
+        "serviceWarning": "ENGINE_HOURS_ALMOST_TIME_FOR_SERVICE",
+        "serviceTrigger": "ENGINE_HOURS",
+        "engineHoursToService": 10,
+        "timeToService": 30
+    },
+    "service_engine_hours_due": {
+        "serviceWarning": "ENGINE_HOURS_TIME_FOR_SERVICE",
+        "serviceTrigger": "ENGINE_HOURS",
+        "engineHoursToService": 2
+    },
+    "service_engine_hours_overdue": {
+        "serviceWarning": "ENGINE_HOURS_OVERDUE_FOR_SERVICE",
+        "serviceTrigger": "ENGINE_HOURS",
+        "engineHoursToService": 0
+    },
+    "service_distance_driven_almost_time": {
+        "serviceWarning": "DISTANCE_DRIVEN_ALMOST_TIME_FOR_SERVICE",
+        "serviceTrigger": "DISTANCE",
+        "distanceToService": 500
+    },
+    "service_distance_driven_due": {
+        "serviceWarning": "DISTANCE_DRIVEN_TIME_FOR_SERVICE",
+        "serviceTrigger": "DISTANCE",
+        "distanceToService": 10
+    },
+    "service_distance_driven_overdue": {
+        "serviceWarning": "DISTANCE_DRIVEN_OVERDUE_FOR_SERVICE",
+        "serviceTrigger": "DISTANCE",
+        "distanceToService": 0
+    },
+    "service_unknown_warning": {
+        "serviceWarning": "UNKNOWN_WARNING",
+        "serviceTrigger": "UNKNOWN"
     }
 
 }
