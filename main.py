@@ -291,7 +291,7 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
                     return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
             
             if invoiceStatus[1] == False:
-                return NormalResponse(VIN, invoiceStatus[0], status_code=403, headers=ResponseHeaderGenerator(auth_header)) #  rejected what status code should be sent 
+                return NormalResponse(VIN, invoiceStatus[0], status_code=422, headers=ResponseHeaderGenerator(auth_header)) #  rejected what status code should be sent 
     return JSONResponse(
     content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500, headers=ResponseHeaderGenerator(auth_header))
 # What if climate is already off?
@@ -333,7 +333,7 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
                 return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
 
             if invoiceStatus[1] == False:
-                return NormalResponse(VIN, invoiceStatus[0], status_code=500, headers=ResponseHeaderGenerator(auth_header)) # what if rejected what status code should be sent and all of the other BAD invoices
+                return NormalResponse(VIN, invoiceStatus[0], status_code=422, headers=ResponseHeaderGenerator(auth_header)) # what if rejected what status code should be sent and all of the other BAD invoices
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500, headers=ResponseHeaderGenerator(auth_header))
     # what if engine is already stopped? Need to check docs or a real car (not in mine doesnt have that option)
 
@@ -431,7 +431,7 @@ def doorLockReduce(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
             return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))   
         else:
             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-            return JSONResponse(content=data, status_code=500, headers=ResponseHeaderGenerator(auth_header)) # what
+            return JSONResponse(content=data, status_code=422, headers=ResponseHeaderGenerator(auth_header)) # what
 
 @app.post("/vehicles/{VIN}/commands/unlock") # doesnt work like in real life you must click button of the trunk
 def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
@@ -478,7 +478,7 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
                     return BadRequestResponse(VIN)
                 return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
             else:
-                return NormalResponse(VIN, invoiceStatus[0],status_code=409, headers=ResponseHeaderGenerator(auth_header))
+                return NormalResponse(VIN, invoiceStatus[0],status_code=422, headers=ResponseHeaderGenerator(auth_header))
 
 @app.post("/vehicles/{VIN}/commands/flash")
 def flash(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
