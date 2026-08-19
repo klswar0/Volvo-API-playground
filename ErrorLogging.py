@@ -11,7 +11,7 @@ from classCar import config
 # error logging V1
 
 
-# doesnt log oauth 2 flow TODO
+
 
 
 class req_eror:
@@ -41,15 +41,17 @@ def write_log(req: req_eror, exc: Exception):
         f.write(f"\n")
 
 async def log_error(req: req_eror, exc: Exception):
+    RED= "\033[31m"
+    RESET= "\033[0m"
     # here will be the logic for logging an error
     
     # terminal logging
-    print(f"Logging error for request")
-    print(f"Exception: {exc}")
-    print(f"Method: {req.method}")
-    print(f"Headers: {req.headers}")
-    print(f"Query Params: {req.query_params}")
-    print(f"Body: {req.body}")
+    print(f"{RED}Logging error for request{RESET}")
+    print(f"{RED}Exception:{RESET} {exc}")
+    print(f"{RED}Method:{RESET} {req.method}")
+    print(f"{RED}Headers:{RESET} {req.headers}")
+    print(f"{RED}Query Params:{RESET} {req.query_params}")
+    print(f"{RED}Body:{RESET} {req.body}")
     if config["ERROR_LOGGING"]["Write"] == "True":
         await asyncio.to_thread(write_log, req, exc)  # Write to file in a separate thread
 
@@ -108,7 +110,6 @@ def setup_error_logging(app: FastAPI):
         if request.url.path.startswith("/internal"):
             return await request_validation_exception_handler(request, exc)
         
-        print(f"HTTPException occurred: {exc.detail}")
         req = req_eror()
         req.method = request.method
         req.headers = dict(request.headers)
