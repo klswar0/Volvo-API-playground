@@ -450,7 +450,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
             data={"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": "","readyToUnlock": True ,"readyToUnlockUntil": 5,"details": "Not fully implemented manual button press needed in real life"}} #whend would readyToUnlock be false?
             return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
         else:
-            return NormalResponse(VIN, invoiceStatus[0],status_code=409, headers=ResponseHeaderGenerator(auth_header))
+            return NormalResponse(VIN, invoiceStatus[0],status_code=422, headers=ResponseHeaderGenerator(auth_header))
 
 #lights and horn
 

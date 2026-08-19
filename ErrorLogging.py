@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 
 from fastapi import FastAPI, Request,HTTPException
@@ -30,6 +31,7 @@ def write_log(req: req_eror, exc: Exception):
     # file logging
     with open("error_log.txt", "a") as f:
         f.write(f"Error occurred during request: \n")
+        f.write(f"Timestamp: {datetime.now()}\n")
         f.write(f"Method: {req.method}\n")
         f.write(f"Headers: {req.headers}\n")
         f.write(f"Client: {req.client}\n")
@@ -39,6 +41,7 @@ def write_log(req: req_eror, exc: Exception):
         f.write(f"URL Encoded: {req.urlEncoded}\n")
         f.write(f"Exception: {exc}\n")
         f.write(f"\n")
+        f.write(f"--------------------------------------------------\n")
 
 async def log_error(req: req_eror, exc: Exception):
     RED= "\033[31m"
@@ -69,27 +72,30 @@ def setup_error_logging(app: FastAPI):
         req.headers = dict(request.headers)
         req.client = str(request.client)
         req.query_params = dict(request.query_params)
-        if hasattr(request, "_body"):
-            body = request._body
-            if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+        try:
+            content_type = request.headers.get("content-type", "").lower()
+
+            if "application/x-www-form-urlencoded" in content_type:
                 req.urlEncoded = True
-            body = body.decode("utf-8", errors="ignore")
-        else:
-            try:
-                body = await request.body()
-                if request.headers.get("content-type", "").startswith("application/json"):
-                    try:
-                        test=json.loads(body.decode("utf-8", errors="ignore"))
-                        req.json = True
-                        body=test
-                
-                    except Exception:
-                        body = body.decode("utf-8", errors="ignore")
-                else:
-                    body = body.decode("utf-8", errors="ignore")
-            except Exception:
-                body = "Error reading body"
-        req.body = body
+
+                form_data = await request.form()
+                req.body = dict(form_data)
+
+            elif "application/json" in content_type:
+                body_bytes = await request.body()
+                try:
+                    req.json = True
+                    req.body = json.loads(body_bytes.decode("utf-8", errors="ignore"))
+                except Exception:
+                    req.body = body_bytes.decode("utf-8", errors="ignore")
+
+            else:
+                body_bytes = await request.body()
+                req.body = body_bytes.decode("utf-8", errors="ignore")
+
+        except Exception:
+            req.body = "Error reading body"
+
         
         
 
@@ -115,26 +121,29 @@ def setup_error_logging(app: FastAPI):
         req.headers = dict(request.headers)
         req.client = str(request.client)
         req.query_params = dict(request.query_params)
-        if hasattr(request, "_body"):
-            body = request._body
-            if request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+        try:
+            content_type = request.headers.get("content-type", "").lower()
+            if "application/x-www-form-urlencoded" in content_type:
                 req.urlEncoded = True
-            body = body.decode("utf-8", errors="ignore")
-        else:
-            try:
-                body = await request.body()
-                if request.headers.get("content-type", "").startswith("application/json"):
-                    try:
-                        test=json.loads(body.decode("utf-8", errors="ignore"))
-                        req.json = True
-                        body=test
-                    except Exception:
-                        body = body.decode("utf-8", errors="ignore")
-                else:
-                    body = body.decode("utf-8", errors="ignore")
-            except Exception:
-                body = "Error reading body"
-        req.body = body
+                
+                form_data = await request.form()
+                req.body = dict(form_data)
+
+            elif "application/json" in content_type:
+                body_bytes = await request.body()
+                try:
+                    req.json = True
+                    req.body = json.loads(body_bytes.decode("utf-8", errors="ignore"))
+                except Exception:
+                    req.body = body_bytes.decode("utf-8", errors="ignore")
+
+            else:
+                body_bytes = await request.body()
+                req.body = body_bytes.decode("utf-8", errors="ignore")
+
+        except Exception:
+            req.body = "Error reading body"
+
 
         response = JSONResponse(content={"detail": exc.detail}, status_code=exc.status_code, headers=exc.headers)
         
