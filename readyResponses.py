@@ -26,7 +26,7 @@ def autoErrorResponse(e:str, VIN:str=None, headers:dict=None):
 
 def ErrorResponse(message:str, description:str, status_code:int, headers:dict=None,additional_info:str=None):
     if additional_info is not None:
-        raise HTTPException(status_code=status_code, detail={"error": {"message": message, "description": description, "additional_info": additional_info}}, headers=headers)
+        raise HTTPException(status_code=status_code, detail={"error": {"message": message, "description": description, "detail": additional_info}}, headers=headers)
     raise HTTPException(status_code=status_code, detail={"error": {"message": message, "description": description}}, headers=headers)
 
 def MissingAPIKeyResponse(headers:dict=None):
