@@ -41,7 +41,7 @@ def DashboardCar(key: str,VIN: str, request: Request):
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         car = VINHandlingInternal(VIN, key)
-        data={"VIN":VIN,"key":key}
+        data={"VIN":VIN,"key":key,"note": config["SITE"]["Note"]}
         return templates.TemplateResponse(name="dashboard.html", request=request, context=data)
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
@@ -159,9 +159,9 @@ def Dashboard(key: str, request: Request):
                 pkce_status = "Activated"
             else:
                 pkce_status = "Not activated"
-            return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status, "pkce_status": pkce_status, "oauth2_secret": Oauth2Data[key].client_secret, "oauth2_code": Oauth2Data[key].code, "oauth2_access_token": Oauth2Data[key].access_token, "oauth2_refresh_token": Oauth2Data[key].refresh_token, "oauth2_redirect_uri": Oauth2Data[key].redirect_uri})
+            return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status, "pkce_status": pkce_status, "oauth2_secret": Oauth2Data[key].client_secret, "oauth2_code": Oauth2Data[key].code, "oauth2_access_token": Oauth2Data[key].access_token, "oauth2_refresh_token": Oauth2Data[key].refresh_token, "oauth2_redirect_uri": Oauth2Data[key].redirect_uri,"note": config["SITE"]["Note"]})
 
-        return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status,})
+        return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status,"note": config["SITE"]["Note"]})
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>") 
 
@@ -172,12 +172,13 @@ def OAuth2Settings(key: str, request: Request):
         authenticateInternal(key)
         if key not in Oauth2Data:
             oauth2_status = "Not activated"
-            return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status})
+            return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status, "note": config["SITE"]["Note"]})
         else:
             oauth2_status = "Activated"
         data=Oauth2Data[key].model_dump()
         data["oauth2_status"] = oauth2_status
         data["key"]=key
+        data["note"] = config["SITE"]["Note"]
         return templates.TemplateResponse(name="oauth2settings.html", request=request, context=data)
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
@@ -237,7 +238,7 @@ def scenarios(key: str,VIN: str, request: Request):
         authenticateInternal(key)
         car = VINHandlingInternal(VIN, key)
         scenarios = list(set(list(SCENARIO_TEMPLATES.keys()) + list(SCENARIO_USER.keys())))
-        data={"vin":VIN,"key":key,"scenarios":scenarios}
+        data={"vin":VIN,"key":key,"scenarios":scenarios,"note": config["SITE"]["Note"]}
         return templates.TemplateResponse(name="loading.html", request=request, context=data)
     except ValueError as e:
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. details: {e}</p>",headers=error_headers)
@@ -265,7 +266,7 @@ def snapshotsSave(key: str,name: str, request: Request):
         authenticateInternal(key)
         response = saveSnapshots(vcc_api_key=key, name=name)
         if response[0] == True:
-            return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"response": f"Snapshot '{response[1]}' saved successfully."})
+            return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"response": f"Snapshot '{response[1]}' saved successfully.","note": config["SITE"]["Note"]})
         else:
             return HTMLResponse(content=f"<p style=\"color:red\">Error occurred while saving snapshot. Internal error.</p>",headers=error_headers)
     except ValueError as e:
@@ -292,14 +293,14 @@ def snapshots(key: str, request: Request):
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
-        return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys())})
+        return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"note": config["SITE"]["Note"]})
     except ValueError as e:
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
-def Welcome():
+def Welcome(request: Request):
     if config["SITE"]["Dashboard"] == "False":
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
-    return FileResponse("templates/welcome.html")
+    return templates.TemplateResponse(name="welcome.html", request=request, context={"note": config["SITE"]["Note"]})
 
 
 def WelcomeCheck(vcc_api_key: str):

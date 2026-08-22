@@ -1,33 +1,45 @@
 
+
 import base64
 
-from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form
+from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form, Request,HTTPException
 from fastapi.responses import FileResponse, JSONResponse ,HTMLResponse, RedirectResponse 
 from fastapi.templating import Jinja2Templates
+
 import uvicorn
 import secrets
 import hashlib
 from typing import Union
+
 
 from scenarios import scenariosFunc
 from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
 import dashboard
 from notifier import notifier
-from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator,Tracking, config, timestampGenerator, Oauth2
+from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator, config, timestampGenerator, Oauth2
 from database import database, Oauth2Data
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
-
+import ErrorLogging
 
 templates = Jinja2Templates(directory="templates")
 
-
 app = FastAPI()
+
 
 if config["DEFAULT"]["fastAPIdocs"] == "False":
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 else:
     app = FastAPI(docs_url="/internal/docs", redoc_url="/internal/redoc", openapi_url="/internal/openapi.json")
+
+ErrorLogging.setup_error_logging(app)  # Setup error logging
+
+
+
+
+
+
+
 
 
 
@@ -50,6 +62,8 @@ def index():
 
 def authenticate(auth_header: AuthHeader):
     if auth_header.vcc_api_key not in database:
+        if auth_header.vcc_api_key == "":
+            raise ValueError("Missing API key")
         raise ValueError("Invalid API key")
     if auth_header.vcc_api_key in Oauth2Data:
         if auth_header.authorization != f"Bearer {Oauth2Data[auth_header.vcc_api_key].access_token}":
@@ -159,7 +173,7 @@ def test(code:str=Query(...),state:str=Query(default="")):
 @app.post("/as/token.oauth2") #scopes are not checked and dont work
 def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:str=Header(...),grant_type:str=Form(...),refresh_token:str=Form(default=""),code:str=Form(default=""),redirect_uri:str=Form(default=""),code_verifier:str=Form(default=""),):
     if content_type != "application/x-www-form-urlencoded":
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "content-type must be 'application/x-www-form-urlencoded'"}}, status_code=400)
+        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "content-type must be 'application/x-www-form-urlencoded'"}})
     
     try:
         auth_parts = authorization.split(" ")
@@ -170,30 +184,30 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
         decoded_str = decoded_bytes.decode("utf-8")
         client_id, client_secret = decoded_str.split(":", 1)
     except Exception:
-        return JSONResponse(content={"error": "invalid_client", "error_description": "Malformed Authorization header"}, status_code=401)
+        raise HTTPException(status_code=401, detail={"error": "invalid_client", "error_description": "Malformed Authorization header"})
     
     if client_id not in Oauth2Data:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}}, status_code=400)
+        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}})
     oauth2 = Oauth2Data[client_id]
     if oauth2.client_secret != client_secret:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}}, status_code=400)
+        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}})
     
     if grant_type == "authorization_code":
         if oauth2.PKCE == True:
             if PKCECheck(code_verifier,oauth2) == False:
-                return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}}, status_code=400)
+                raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid code_verifier"}})
 
         if oauth2.code != code or oauth2.code == "": # forgot to check if there is any code available FIXED
-            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "No code available. Please request a new code"}}, status_code=400)
+            raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "No code available. Please request a new code"}})
         else:
             if oauth2.redirect_uri != "":
                 if redirect_uri != oauth2.redirect_uri:
-                 return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid redirect_uri"}}, status_code=400)
+                 raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid redirect_uri"}})
     elif grant_type == "refresh_token":
         if oauth2.refresh_token != refresh_token:
-            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "Invalid refresh_token"}}, status_code=400)
+            raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid refresh_token"}})
     else:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "grant_type must be 'authorization_code' or 'refresh_token'"}}, status_code=400)
+        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "grant_type must be 'authorization_code' or 'refresh_token'"}})
     
     oauth2.access_token = "access_token_"+secrets.token_urlsafe(32) #generate
     oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32) #generate
@@ -213,15 +227,19 @@ def listVehicles(auth_header: AuthHeaderGET = Header(...)):
     try:
         authenticate(auth_header)
     except ValueError as e:
-        return UnauthorizedResponse(str(e))
+        return autoErrorResponse(e, headers=ResponseHeaderGenerator(auth_header))
     else:
-        vehicles=[]
-        for car in database[auth_header.vcc_api_key]:
-            vehicle={"vin": car.VIN,}
-            vehicles.append(vehicle)
-        data={"data": vehicles}
-        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
-    return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500)
+
+        try:
+            vehicles=[]
+            for car in database[auth_header.vcc_api_key]:
+                vehicle={"vin": car.VIN,}
+                vehicles.append(vehicle)
+            data={"data": vehicles}
+            return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
+        except Exception as e:
+            return autoErrorResponse(e, headers=ResponseHeaderGenerator(auth_header))
+
 
 @app.get("/vehicles/{VIN}")
 def getVehicle(VIN:str, auth_header: AuthHeaderGET = Header(...)): #TODO: implement the data in car class
@@ -258,7 +276,7 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         if command not in car.commands:
-            return NotSupportedResponse(command)
+            return NotSupportedResponse(command, headers=ResponseHeaderGenerator(auth_header))
         else:
             invoiceStatus="Let the dev know if you see this message. Something went wrong with the invoiceStatus"
             if command == "CLIMATIZATION_START":
@@ -273,7 +291,7 @@ def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
                     return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
             
             if invoiceStatus[1] == False:
-                return NormalResponse(VIN, invoiceStatus[0], status_code=403, headers=ResponseHeaderGenerator(auth_header)) #  rejected what status code should be sent 
+                return NormalResponse(VIN, invoiceStatus[0], status_code=422, headers=ResponseHeaderGenerator(auth_header)) #  rejected what status code should be sent 
     return JSONResponse(
     content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500, headers=ResponseHeaderGenerator(auth_header))
 # What if climate is already off?
@@ -315,7 +333,7 @@ def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, run
                 return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
 
             if invoiceStatus[1] == False:
-                return NormalResponse(VIN, invoiceStatus[0], status_code=500, headers=ResponseHeaderGenerator(auth_header)) # what if rejected what status code should be sent and all of the other BAD invoices
+                return NormalResponse(VIN, invoiceStatus[0], status_code=422, headers=ResponseHeaderGenerator(auth_header)) # what if rejected what status code should be sent and all of the other BAD invoices
     return JSONResponse(content={"error": {"message": "INTERNAL_SERVER_ERROR", "description": "An internal server error occurred"}}, status_code=500, headers=ResponseHeaderGenerator(auth_header))
     # what if engine is already stopped? Need to check docs or a real car (not in mine doesnt have that option)
 
@@ -338,7 +356,7 @@ def engineStart(VIN:str, auth_header: AuthHeaderPOST = Header(...), runtimeMinut
     """send a command to start the engine for the specified VIN. The runtimeMinutes >0 and <15."""
     runtimeMinutes = runtimeMinutes.get("runtimeMinutes", 0)
     if runtimeMinutes < 1 or runtimeMinutes >= 15:
-        return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": "runtimeMinutes can be maximaly 15 min"}}, status_code=400, headers=ResponseHeaderGenerator(auth_header))
+        return ErrorResponse(message="BAD_REQUEST", description="runtimeMinutes can be maximaly 15 min", headers=ResponseHeaderGenerator(auth_header),status_code=400)
     return engine(VIN, auth_header,command="ENGINE_START", runtimeMinutes=runtimeMinutes)
 
 @app.post("/vehicles/{VIN}/commands/engine-stop")
@@ -413,7 +431,7 @@ def doorLockReduce(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
             return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))   
         else:
             data = {"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": ""}}
-            return JSONResponse(content=data, status_code=500, headers=ResponseHeaderGenerator(auth_header)) # what
+            return JSONResponse(content=data, status_code=422, headers=ResponseHeaderGenerator(auth_header)) # what
 
 @app.post("/vehicles/{VIN}/commands/unlock") # doesnt work like in real life you must click button of the trunk
 def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
@@ -432,7 +450,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
             data={"data": {"vin": VIN,"invokeStatus": invoiceStatus[0],"message": "","readyToUnlock": True ,"readyToUnlockUntil": 5,"details": "Not fully implemented manual button press needed in real life"}} #whend would readyToUnlock be false?
             return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
         else:
-            return NormalResponse(VIN, invoiceStatus[0],status_code=409, headers=ResponseHeaderGenerator(auth_header))
+            return NormalResponse(VIN, invoiceStatus[0],status_code=422, headers=ResponseHeaderGenerator(auth_header))
 
 #lights and horn
 
@@ -460,7 +478,7 @@ def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=No
                     return BadRequestResponse(VIN)
                 return NormalResponse(VIN, invoiceStatus[0], headers=ResponseHeaderGenerator(auth_header))
             else:
-                return NormalResponse(VIN, invoiceStatus[0],status_code=409, headers=ResponseHeaderGenerator(auth_header))
+                return NormalResponse(VIN, invoiceStatus[0],status_code=422, headers=ResponseHeaderGenerator(auth_header))
 
 @app.post("/vehicles/{VIN}/commands/flash")
 def flash(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
@@ -872,8 +890,8 @@ def Dashboard(key: str, request: Request):
 
 
 @app.get("/internal/welcome", include_in_schema=False)
-def Welcome():
-    return dashboard.Welcome() #file response
+def Welcome(request: Request):
+    return dashboard.Welcome(request) #file response
 
 @app.get("/internal/welcome/Check", include_in_schema=False)
 def WelcomeCheck(vcc_api_key: str):

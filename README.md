@@ -15,10 +15,10 @@ This projects aims to provide dynamic alternative to official volvo API sandbox 
 - Interactive Dashboard
 - Additional APIs endpoints for faster manipulating states and forcing errors
 - Simplified Oauth 2.0 with PKCE to test your app if it is ready for real API
-- Scenarios and snapshots system (WIP, no gui support) 
+- Scenarios and snapshots system
+- Error logger
 
 ## Roadmap
-- Error logs 
 - 2 modes of responses (real life/informative)
 - More error testing
 - Persistent storage
@@ -50,6 +50,7 @@ You can explore the public instance here:
 - No expiration of access token (Usefull?)
 - Only one api and Oauth endpoints. More coming in future
 - No scope checks
+- OAuth2 could not be like the official one
 
 ## DOCS:
 - docs.md file (handwritten with additional info) In future deprecated

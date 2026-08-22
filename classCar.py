@@ -12,11 +12,16 @@ config = configparser.ConfigParser()
 config['DEFAULT'] = {
     'Validation': 'True',
     'Websocket': 'True',
-    'statusNotification': 'ALL' # FIX planned when new error login /possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
+    'statusNotification': 'ALL' # FIX planned when new error logger+notification system /possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
 }
 config['SITE'] = {
     'Public': 'True',
-    'Dashboard': 'True'
+    'Dashboard': 'True',
+    'Note': ''
+}
+config['ERROR_LOGGING'] = {
+    'STATUS': 'True',
+    'Write': 'True'
 }
 config.read('config.ini')
 
@@ -40,7 +45,7 @@ class AuthHeader(Tracking):
     # accept: str =  Field(default="application/json") #Field(...)
 
     authorization: str =Field(default="") #= Field(...) 
-    vcc_api_key: str =Field(...,alias="vcc-api-key")
+    vcc_api_key: str =Field(default="",alias="vcc-api-key")
     
 class AuthHeaderPOST(AuthHeader):
     content_type: str =  Field(..., alias="Content-Type")
