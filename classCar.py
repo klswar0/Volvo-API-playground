@@ -16,7 +16,8 @@ config['DEFAULT'] = {
 }
 config['SITE'] = {
     'Public': 'True',
-    'Dashboard': 'True'
+    'Dashboard': 'True',
+    'Note': ''
 }
 config['ERROR_LOGGING'] = {
     'STATUS': 'True',

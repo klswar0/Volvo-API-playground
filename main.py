@@ -890,8 +890,8 @@ def Dashboard(key: str, request: Request):
 
 
 @app.get("/internal/welcome", include_in_schema=False)
-def Welcome():
-    return dashboard.Welcome() #file response
+def Welcome(request: Request):
+    return dashboard.Welcome(request) #file response
 
 @app.get("/internal/welcome/Check", include_in_schema=False)
 def WelcomeCheck(vcc_api_key: str):

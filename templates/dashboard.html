@@ -19,6 +19,7 @@
             <h1 class="text-4xl md:text-6xl">Car dashboard</h1>
             <p class="text-xl md:text-2xl">API Key: {{key}}</p>
             <p class="text-xl md:text-2xl">VIN: {{VIN}}</p>
+            <p class="text-xl md:text-2xl text-red-700">{{note}}</p>
         </header>
         <main>
         <div hx-ext="ws" ws-connect="/internal/dashboard/ws?VIN={{VIN}}&key={{key}}">
