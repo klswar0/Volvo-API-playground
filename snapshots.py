@@ -7,18 +7,18 @@ from os import name
 from fastapi.encoders import jsonable_encoder
 from fastapi import Body, Header 
 from fastapi.responses import JSONResponse
-from classCar import Car, Oauth2
+from classCar import Car, AdditionalData
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal
 from notifier import notifier
-from database import Oauth2Data, database
+from database import AdditionalDatabase, database
 
 class Snapshots:
-    def __init__(self, mainData: list[Car], OauthData: Oauth2 | None):
+    def __init__(self, mainData: list[Car], Additional: AdditionalData | None):
         self.mainData = mainData
-        self.OauthData = OauthData
+        self.Additional = Additional
     mainData: list[Car]
-    OauthData: Oauth2 | None
+    Additional: AdditionalData
 
 
 snapshotsData = {}
@@ -40,9 +40,9 @@ def loadFileSnapshots():
             data = json.load(file)
             for name, snapshot in data.items():
                 mainData = decode_main_data(snapshot.get("mainData", []))
-                oauth_data_dict = snapshot.get("OauthData")
-                if oauth_data_dict is not None:
-                    oauth_data = Oauth2(**oauth_data_dict)
+                additional_data_dict = snapshot.get("Additional")
+                if additional_data_dict is not None:
+                    oauth_data = AdditionalData(**additional_data_dict)
                 else:
                     oauth_data = None
                 snapshotsData[name] = Snapshots(mainData=mainData, OauthData=oauth_data)
@@ -56,7 +56,7 @@ def saveFileSnapshots():
     for name, snapshot in snapshotsData.items():
         data_to_save[name] = {
             "mainData": jsonable_encoder(snapshot.mainData),
-            "OauthData": snapshot.OauthData.model_dump() if snapshot.OauthData is not None else None
+            "OauthData": snapshot.Additional.model_dump() if snapshot.Additional is not None else None
         }
     with open("snapshots.json", "w") as file:
         json.dump(data_to_save, file, indent=4)
@@ -69,20 +69,20 @@ def loadSnapshots(vcc_api_key:str, name:str):
         for car in database[vcc_api_key]:
             car_instance = VINHandlingInternal(car.VIN, vcc_api_key)
             notifier.trigger_update_multiple(car.VIN, car_instance, list(car.model_dump().keys()))
-        if storage.OauthData is not None:
-            Oauth2Data[vcc_api_key] = deepcopy(storage.OauthData)
+        if storage.Additional is not None:
+            AdditionalDatabase[vcc_api_key] = deepcopy(storage.Additional)
         else:
-            if vcc_api_key in Oauth2Data:
-                del Oauth2Data[vcc_api_key]
+            if vcc_api_key in AdditionalDatabase:
+                del AdditionalDatabase[vcc_api_key]
         return True,name
     else:
         return False, name
   
 def saveSnapshots(vcc_api_key:str, name:str):
-    if vcc_api_key not in Oauth2Data.keys():
-        storage = Snapshots(mainData=deepcopy(database[vcc_api_key]), OauthData=None)
+    if vcc_api_key not in AdditionalDatabase.keys():
+        storage = Snapshots(mainData=deepcopy(database[vcc_api_key]), Additional=None)
     else:
-        storage = Snapshots(mainData=deepcopy(database[vcc_api_key]), OauthData=deepcopy(Oauth2Data[vcc_api_key]))
+        storage = Snapshots(mainData=deepcopy(database[vcc_api_key]), Additional=deepcopy(AdditionalDatabase[vcc_api_key]))
     snapshotsData[name] = storage
     return True,name
    

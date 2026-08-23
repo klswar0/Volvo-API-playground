@@ -14,7 +14,7 @@ import secrets
 
 from notifier import notifier
 from classCar import Car, options, config, timestampGenerator, Oauth2
-from database import database, Oauth2Data
+from database import database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
@@ -150,16 +150,16 @@ def Dashboard(key: str, request: Request):
         VINs = []
         for car in cars:
             VINs.append(car.VIN)
-        if key not in Oauth2Data:
+        if key not in AdditionalDatabase:
             oauth2_status = "Not activated"
             
         else:
             oauth2_status = "Activated"
-            if Oauth2Data[key].PKCE:
+            if AdditionalDatabase[key].PKCE:
                 pkce_status = "Activated"
             else:
                 pkce_status = "Not activated"
-            return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status, "pkce_status": pkce_status, "oauth2_secret": Oauth2Data[key].client_secret, "oauth2_code": Oauth2Data[key].code, "oauth2_access_token": Oauth2Data[key].access_token, "oauth2_refresh_token": Oauth2Data[key].refresh_token, "oauth2_redirect_uri": Oauth2Data[key].redirect_uri,"note": config["SITE"]["Note"]})
+            return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status, "pkce_status": pkce_status, "oauth2_secret": AdditionalDatabase[key].client_secret, "oauth2_code": AdditionalDatabase[key].code, "oauth2_access_token": AdditionalDatabase[key].access_token, "oauth2_refresh_token": AdditionalDatabase[key].refresh_token, "oauth2_redirect_uri": AdditionalDatabase[key].redirect_uri,"note": config["SITE"]["Note"]})
 
         return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key, "oauth2_status": oauth2_status,"note": config["SITE"]["Note"]})
     except ValueError as e:
@@ -170,12 +170,12 @@ def OAuth2Settings(key: str, request: Request):
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
-        if key not in Oauth2Data:
+        if key not in AdditionalDatabase or AdditionalDatabase[key].Activated == False:
             oauth2_status = "Not activated"
             return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status, "note": config["SITE"]["Note"]})
         else:
             oauth2_status = "Activated"
-        data=Oauth2Data[key].model_dump()
+        data=AdditionalDatabase[key].model_dump()
         data["oauth2_status"] = oauth2_status
         data["key"]=key
         data["note"] = config["SITE"]["Note"]
@@ -191,12 +191,12 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
     try:
         authenticateInternal(key)
 
-        if key not in Oauth2Data:
+        if key not in AdditionalDatabase or AdditionalDatabase[key].Activated == False:
 
             if attribute == "OAuth2":
                 if value.lower() == "true":
                     oauth2 = Oauth2(client_secret="client_secret_"+secrets.token_urlsafe(12), PKCE=False,redirect_uri="")
-                    Oauth2Data[key] = oauth2
+                    AdditionalDatabase[key] = oauth2
                     # response=Response()
                     # response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
                     # return response
@@ -205,21 +205,21 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
             return HTMLResponse(content="<p style=\"color:red\">OAuth2 not activated for this API key</p>")
         print(f"Changing OAuth2 attribute {attribute} to {value} for key {key}")
         if attribute == "client_secret":
-            Oauth2Data[key].client_secret = value
+            AdditionalDatabase[key].client_secret = value
         elif attribute == "redirect_uri":   
-            Oauth2Data[key].redirect_uri = value
+            AdditionalDatabase[key].redirect_uri = value
         elif attribute == "PKCE":
             if value.lower() == "true":
-                Oauth2Data[key].PKCE = True
+                AdditionalDatabase[key].PKCE = True
             elif value.lower() == "false":
-                Oauth2Data[key].PKCE = False
+                AdditionalDatabase[key].PKCE = False
         elif attribute == "access_token":
-            Oauth2Data[key].access_token = value
+            AdditionalDatabase[key].access_token = value
         elif attribute == "refresh_token":
-            Oauth2Data[key].refresh_token = value
+            AdditionalDatabase[key].refresh_token = value
         elif attribute == "OAuth2":
             if value.lower() == "false":
-                del Oauth2Data[key]
+                del AdditionalDatabase[key]
         else:
             return HTMLResponse(content="<p style=\"color:red\">Invalid attribute</p>")
         # response=Response()

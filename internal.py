@@ -11,7 +11,7 @@ from copy import deepcopy
 
 from notifier import notifier
 from classCar import Car, options, config, timestampGenerator, Oauth2
-from database import database, Oauth2Data
+from database import database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 
 #internal endpoints 
@@ -33,13 +33,13 @@ def OAuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body
     except ValueError as e:
         return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
     else:
-        if vcc_api_key not in Oauth2Data:
+        if vcc_api_key not in AdditionalDatabase or AdditionalDatabase[vcc_api_key].Activated == False:
             oauth2 = Oauth2(client_secret=client_secret, PKCE=PKCE,redirect_uri=redirect_uri)
-            Oauth2Data[vcc_api_key] = oauth2
+            AdditionalDatabase[vcc_api_key] = oauth2
             return JSONResponse(content={"message": "OAuth2 activated successfully"}, status_code=200)
-        elif Oauth2Data[vcc_api_key].PKCE != PKCE or Oauth2Data[vcc_api_key].client_secret != client_secret or Oauth2Data[vcc_api_key].redirect_uri != redirect_uri:
+        elif AdditionalDatabase[vcc_api_key].PKCE != PKCE or AdditionalDatabase[vcc_api_key].client_secret != client_secret or AdditionalDatabase[vcc_api_key].redirect_uri != redirect_uri:
             oauth2 = Oauth2(client_secret=client_secret, PKCE=PKCE,redirect_uri=redirect_uri)
-            Oauth2Data[vcc_api_key] = oauth2
+            AdditionalDatabase[vcc_api_key] = oauth2
             return JSONResponse(content={"message": "OAuth2 updated successfully"}, status_code=200)
         else:
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 already activated for this API key"}}, status_code=400)
@@ -50,10 +50,10 @@ def OAuthDeactivateInternal(vcc_api_key:str = Header(...)):
     except ValueError as e:
         return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
     else:
-        if vcc_api_key not in Oauth2Data:
+        if vcc_api_key not in AdditionalDatabase or AdditionalDatabase[vcc_api_key].Activated == False:
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 already deactivated for this API key"}}, status_code=400)
         else:
-            del Oauth2Data[vcc_api_key]
+            del AdditionalDatabase[vcc_api_key]
             return JSONResponse(content={"message": "OAuth2 deactivated successfully"}, status_code=200)
         
 def OAuthRegenerateInternal(vcc_api_key:str = Header(...)):
@@ -62,10 +62,10 @@ def OAuthRegenerateInternal(vcc_api_key:str = Header(...)):
     except ValueError as e:
         return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
     else:
-        if vcc_api_key not in Oauth2Data:
+        if vcc_api_key not in AdditionalDatabase or AdditionalDatabase[vcc_api_key].Activated == False:
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 not activated for this API key"}}, status_code=400)
         else:
-            oauth2=Oauth2Data[vcc_api_key]
+            oauth2=AdditionalDatabase[vcc_api_key]
             oauth2.client_secret = "client_secret_"+secrets.token_urlsafe(32)
             oauth2.code = ""
             oauth2.access_token =  "access_token_"+secrets.token_urlsafe(32)
@@ -80,10 +80,10 @@ def OAuthGetInternal(vcc_api_key:str = Header(...)):
     except ValueError as e:
         return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
     else:
-        if vcc_api_key not in Oauth2Data:
+        if vcc_api_key not in AdditionalDatabase or AdditionalDatabase[vcc_api_key].Activated == False:
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 not activated for this API key"}}, status_code=400)
         else:
-            oauth2=Oauth2Data[vcc_api_key]
+            oauth2=AdditionalDatabase[vcc_api_key]
             data={"client_secret": oauth2.client_secret, "code": oauth2.code, "access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599, "redirect_uri": oauth2.redirect_uri}
             return JSONResponse(content=data, status_code=200)
 

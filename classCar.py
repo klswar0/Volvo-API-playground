@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from notifier import notifier
 from datetime import datetime, timezone
 import configparser
-
+from scopes import Scopes
 
 config = configparser.ConfigParser()
 config['DEFAULT'] = {
@@ -35,6 +35,9 @@ config.read('config.ini')
 
 
 
+    
+
+
 class Tracking(BaseModel):
     traceparent:str=Field(default="") # NOT IMPLEMENTED FULLY starndard traceparent header  W3C traceparent (search online)
     vcc_api_operationId:str=Field(default=str(uuid.uuid4()),alias="vcc-api-operationId") # UUID
@@ -54,6 +57,7 @@ class AuthHeaderGET(AuthHeader):
     accept: str =  Field(default="application/json", alias="Accept")
 
 class Oauth2(BaseModel):
+    Activated: bool = Field(default=False)
     PKCE:bool = Field(default=False)
     code_challenge: str = Field(default="")
     code_challenge_method: str = Field(default="")
@@ -67,7 +71,9 @@ class Oauth2(BaseModel):
     
     #expires_in: datetime #to implement
 
-
+class AdditionalData(Oauth2, Scopes):
+    # validation: bool = Field(default=True)
+    pass
 
 def ResponseHeaderGenerator(auth_header: AuthHeader):
     header={"vcc_api_operationId":str(auth_header.vcc_api_operationId)}

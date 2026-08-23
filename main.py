@@ -18,7 +18,7 @@ import internal
 import dashboard
 from notifier import notifier
 from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator, config, timestampGenerator, Oauth2
-from database import database, Oauth2Data
+from database import database, AdditionalDatabase
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 import ErrorLogging
 
@@ -45,7 +45,7 @@ ErrorLogging.setup_error_logging(app)  # Setup error logging
 
 loadFileSnapshots()  # Load snapshots from file at startup
 
-AuthHeader = Union[AuthHeaderPOST, AuthHeaderGET]
+
 
 @app.get("/")
 def index():
@@ -60,13 +60,13 @@ def index():
         
 
 
-def authenticate(auth_header: AuthHeader):
+def authenticate(auth_header: AuthHeaderPOST | AuthHeaderGET):
     if auth_header.vcc_api_key not in database:
         if auth_header.vcc_api_key == "":
             raise ValueError("Missing API key")
         raise ValueError("Invalid API key")
-    if auth_header.vcc_api_key in Oauth2Data:
-        if auth_header.authorization != f"Bearer {Oauth2Data[auth_header.vcc_api_key].access_token}":
+    if auth_header.vcc_api_key in AdditionalDatabase:
+        if auth_header.authorization != f"Bearer {AdditionalDatabase[auth_header.vcc_api_key].access_token}":
             raise ValueError("Invalid access token")
     if isinstance(auth_header, AuthHeaderPOST):
         if auth_header.content_type.split(";")[0].lower() != "application/json": #NOTE: lower case to avoid case sensitivity issues checks needed
@@ -81,7 +81,7 @@ def authenticate(auth_header: AuthHeader):
     return True
 
 
-def VINHandling(VIN:str, auth_header: AuthHeader):
+def VINHandling(VIN:str, auth_header:  AuthHeaderPOST | AuthHeaderGET):
     try:
         authenticate(auth_header)
     except Exception as e:
@@ -136,11 +136,11 @@ def PKCECheck(code_verifier: str, oauth2: Oauth2):
 def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(...),redirect_uri:str=Query(...),scope:str=Query(default=""),state:str=Query(default=""),code_challenge:str=Query(default=""),code_challenge_method:str=Query(default="")):
     if response_type != "code":
         return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>response_type must be 'code'</p>", status_code=400)
-    if client_id not in Oauth2Data:
+    if client_id not in AdditionalDatabase:
         return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid client_id</p>", status_code=400)
-    oauth2 = Oauth2Data[client_id]
+    oauth2 = AdditionalDatabase[client_id]
     if oauth2.redirect_uri != "":
-        if redirect_uri != Oauth2Data[client_id].redirect_uri:
+        if redirect_uri != AdditionalDatabase[client_id].redirect_uri:
             return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid redirect_uri</p>", status_code=400)
     # site needed for "login"
     return templates.TemplateResponse(name="oauth2login.html", request=request, context={"client_id": client_id, "redirect_uri": redirect_uri, "scope": scope, "state": state, "code_challenge": code_challenge, "code_challenge_method": code_challenge_method})
@@ -151,7 +151,7 @@ def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(..
 def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state: str = Form(default=""), login: str = Form(...), code_challenge: str = Form(default=""), code_challenge_method: str = Form(default="")):
     if client_id != login:
         return HTMLResponse(content="<p style='color: red;'>Wrong client_id or login</p>", status_code=200)
-    oauth2 = Oauth2Data[client_id]
+    oauth2 = AdditionalDatabase[client_id]
 
     if oauth2.PKCE == True :
         if PKCE(code_challenge, code_challenge_method, oauth2) == False:
@@ -186,9 +186,9 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     except Exception:
         raise HTTPException(status_code=401, detail={"error": "invalid_client", "error_description": "Malformed Authorization header"})
     
-    if client_id not in Oauth2Data:
+    if client_id not in AdditionalDatabase:
         raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}})
-    oauth2 = Oauth2Data[client_id]
+    oauth2 = AdditionalDatabase[client_id]
     if oauth2.client_secret != client_secret:
         raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}})
     
@@ -269,7 +269,7 @@ def getVehicle(VIN:str, auth_header: AuthHeaderGET = Header(...)): #TODO: implem
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 #climetization commands
-def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
+def climate(VIN:str, auth_header:  AuthHeaderPOST = Header(...), command:str=None):
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -308,7 +308,7 @@ def climateStop(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     return climate(VIN, auth_header, command="CLIMATIZATION_STOP")
 
 #engine commands
-def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, runtimeMinutes:int = 0):   
+def engine(VIN:str, auth_header:  AuthHeaderPOST = Header(...), command:str=None, runtimeMinutes:int = 0):   
     try:
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
@@ -454,7 +454,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
 
 #lights and horn
 
-def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
+def lightsAndHorn(VIN:str, auth_header: AuthHeaderPOST  = Header(...), command:str=None):
     """send a command to start the lights and horn for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
