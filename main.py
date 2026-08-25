@@ -138,9 +138,9 @@ def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(..
         return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>response_type must be 'code'</p>", status_code=400)
     if client_id not in AdditionalDatabase:
         return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid client_id</p>", status_code=400)
-    oauth2 = AdditionalDatabase[client_id]
+    oauth2 = AdditionalDatabase[client_id].Oauth2Data
     if oauth2.redirect_uri != "":
-        if redirect_uri != AdditionalDatabase[client_id].redirect_uri:
+        if redirect_uri != AdditionalDatabase[client_id].Oauth2Data.redirect_uri:
             return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid redirect_uri</p>", status_code=400)
     # site needed for "login"
     return templates.TemplateResponse(name="oauth2login.html", request=request, context={"client_id": client_id, "redirect_uri": redirect_uri, "scope": scope, "state": state, "code_challenge": code_challenge, "code_challenge_method": code_challenge_method})
@@ -151,7 +151,7 @@ def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(..
 def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state: str = Form(default=""), login: str = Form(...), code_challenge: str = Form(default=""), code_challenge_method: str = Form(default="")):
     if client_id != login:
         return HTMLResponse(content="<p style='color: red;'>Wrong client_id or login</p>", status_code=200)
-    oauth2 = AdditionalDatabase[client_id]
+    oauth2 = AdditionalDatabase[client_id].Oauth2Data
 
     if oauth2.PKCE == True :
         if PKCE(code_challenge, code_challenge_method, oauth2) == False:
@@ -186,9 +186,9 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     except Exception:
         raise HTTPException(status_code=401, detail={"error": "invalid_client", "error_description": "Malformed Authorization header"})
     
-    if client_id not in AdditionalDatabase:
-        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}})
-    oauth2 = AdditionalDatabase[client_id]
+    if client_id not in AdditionalDatabase or AdditionalDatabase[client_id].Oauth2Data is None:
+            raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}})
+    oauth2 = AdditionalDatabase[client_id].Oauth2Data
     if oauth2.client_secret != client_secret:
         raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}})
     
