@@ -112,7 +112,7 @@ def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
         value = car.update(attribute, value,True)
         if value == True and (config["DEFAULT"]["statusNotification"] == "SET" or config["DEFAULT"]["statusNotification"] == "ALL"):
             notifier.trigger_update(VIN, car, attribute)
-        return value #NOTE: most likely works now /NOT use the update method becouse it will validate the value and trigger the notifier second time
+        return value 
     except ValueError as e:
         raise ValueError(str(e))
 
