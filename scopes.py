@@ -1,6 +1,6 @@
 
 from pydantic import BaseModel, Field
-from database import AdditionalDatabase
+
 # location: means the location API
 # energy: means the energy API
 # conve: means the connectivity API
@@ -19,10 +19,13 @@ class Scopes(BaseModel):
     
 
 def checkScope(api_key: str, scopes: list):
+    from database import AdditionalDatabase
     data = AdditionalDatabase[api_key].ScopesData
+
     if data is None:
         return True
     check = data.checkAccess(scopes)
+    print(f"checkScope: {check}")
     if check == True:
         return True
     raise ValueError(f"The API key does not have access to the requested scope: {check}")

@@ -11,7 +11,7 @@ import secrets
 import hashlib
 from typing import Union
 
-
+from scopes import Scopes, checkScope, scopesList
 from scenarios import scenariosFunc
 from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
@@ -65,7 +65,7 @@ def authenticate(auth_header: AuthHeaderPOST | AuthHeaderGET):
         if auth_header.vcc_api_key == "":
             raise ValueError("Missing API key")
         raise ValueError("Invalid API key")
-    if auth_header.vcc_api_key in AdditionalDatabase:
+    if   AdditionalDatabase[auth_header.vcc_api_key].Oauth2Data is not None:
         if auth_header.authorization != f"Bearer {AdditionalDatabase[auth_header.vcc_api_key].access_token}":
             raise ValueError("Invalid access token")
     if isinstance(auth_header, AuthHeaderPOST):
@@ -226,6 +226,8 @@ def listVehicles(auth_header: AuthHeaderGET = Header(...)):
     """list all vehicles associated with the provided API key."""
     try:
         authenticate(auth_header)
+         
+        checkScope(auth_header.vcc_api_key, ["openid","conve:vehicle_relation"])
     except ValueError as e:
         return autoErrorResponse(e, headers=ResponseHeaderGenerator(auth_header))
     else:
