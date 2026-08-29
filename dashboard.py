@@ -160,7 +160,7 @@ def OAuth2Settings(key: str, request: Request):
             return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
     try:
         authenticateInternal(key)
-        if key not in AdditionalDatabase or AdditionalDatabase[key].Oauth2Data == None:
+        if key not in AdditionalDatabase or AdditionalDatabase[key].Oauth2Data is None:
             oauth2_status = "Not activated"
             return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status, "note": config["SITE"]["Note"]})
         else:
@@ -181,7 +181,7 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
     try:
         authenticateInternal(key)
 
-        if key not in AdditionalDatabase or AdditionalDatabase[key].Oauth2Data == None:
+        if key not in AdditionalDatabase or AdditionalDatabase[key].Oauth2Data is None:
 
             if attribute == "OAuth2":
                 if value.lower() == "true":
