@@ -10,7 +10,7 @@ from copy import deepcopy
 
 
 from notifier import notifier
-from classCar import Car, options, config, timestampGenerator, Oauth2
+from classCar import Car, options, config, timestampGenerator, Oauth2,Scopes
 from database import database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 
@@ -89,7 +89,25 @@ def OAuthGetInternal(vcc_api_key:str = Header(...)):
 
 
 # scopes
-# def setScopesInternal(vcc_api_key:str = Header(...),scopes: list = Body(...)):
+
+def setScopesInternal(vcc_api_key:str = Header(...),scopes: list = Body(default=None)):
+    try:
+        authenticateInternal(vcc_api_key)
+    except ValueError as e:
+        return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
+    else:
+        if scopes is None or scopes == []:
+            AdditionalDatabase[vcc_api_key].Scopes = None
+            return JSONResponse(content={"message": "Scopes disabled successfully"}, status_code=200)
+        else:
+            if vcc_api_key not in AdditionalDatabase or AdditionalDatabase[vcc_api_key].Scopes is None:
+                AdditionalDatabase[vcc_api_key].Scopes = Scopes()
+            scope=AdditionalDatabase[vcc_api_key].Scopes
+            for s in scopes:
+                if not scope.addScope(s):
+                    return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"Invalid scope: {s}"}}, status_code=400)
+        return JSONResponse(content={"message": "Scopes set successfully"}, status_code=200)
+            
 
 #internal endpoints for testing and dashboard purposes. Not part of the official API.
 
