@@ -19,6 +19,7 @@ from notifier import notifier
 
 
 database.database["TEST_NO_OAUTH"] = [Car(VIN="12345678901234567"),Car(VIN="09876543210987654")]
+database.AdditionalDatabase["TEST_NO_OAUTH"] = database.AdditionalData()
 
 database.database["TEST_OAUTH"] = [Car(VIN="12345678901234567")]
 database.AdditionalDatabase["TEST_OAUTH"] = database.AdditionalData(Oauth2Data=database.Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token",code_challenge_method="plain",code_challenge="code_challenge"))
