@@ -873,7 +873,9 @@ def AuthRegenerateInternal(vcc_api_key:str = Header(...)):
     return internal.OAuthRegenerateInternal(vcc_api_key)
 
 
-
+@app.post("/internal/scopes")
+def ScopesInternal(vcc_api_key:str = Header(...),scopes: list = Body(default=None)):
+    return internal.setScopesInternal(vcc_api_key, scopes)
 
 @app.get("/internal/terminal")
 def Terminal(VIN:str,key:str, request: Request):
