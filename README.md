@@ -3,6 +3,8 @@
 # Volvo-API-playground
 This projects aims to provide dynamic alternative to official volvo API sandbox giving developers ways to test every possibility.
 
+This project doesnt give you a ready library but give you tools to write your own implementetion faster and better 
+
 > [!WARNING]
 > This project is still a work in progress, but it is already in a good state. If you don’t rely on comprehensive documentation, you should find it useful for developing applications for Volvo Connected Vehicles.
 
@@ -18,20 +20,6 @@ This projects aims to provide dynamic alternative to official volvo API sandbox 
 - Scenarios and snapshots system
 - Error logger
 
-## Roadmap
-- 2 modes of responses (real life/informative)
-- More error testing
-- Persistent storage
-- Energy and location API
-
-
-
-## How to run:
-Download the repository.
-Packages: fastapi uvicorn pydantic jinja2 python-multipart websockets:
-`uv add fastapi uvicorn pydantic jinja2 python-multipart websockets`
-then:
-`uv run main.py`
 
 ### Want to try it out?
 You can explore the public instance here:
@@ -44,24 +32,17 @@ You can explore the public instance here:
 > You can check the diffrences in the companion app: 
 >[ Try ](https://compareplay.kls.hackclub.app/)
 
-
-## Limitations:
-- One API key per user. This means one refresh token, one access token, and so on. Because of this, the project cannot accurately reproduce real-world scenarios involving multiple users.(Could be comming in future but it would require using real database)
-- No expiration of access token (Usefull?)
-- Only one api and Oauth endpoints. More coming in future
-- No scope checks
-- OAuth2 could not be like the official one
+# Continue the readme 
+[More README](https://github.com/klswar0/Volvo-API-playground/wiki)
 
 ## DOCS:
-- docs.md file (handwritten with additional info) In future deprecated
-- ~~WIKI on github~~ WIP 
+- WIKI on github  
+- **DEPRECATED** docs.md file (handwritten with additional info)
 - /internal/docs , /internal/redoc and /internal/openapi.json (automatic fastapi docs)
+
 
 # Contributions
 When contributing to this project, please keep in mind that it was created for the Hack Club YSWS Stardance event. Contributions that align with the project’s goals and maintain its quality are greatly appreciated even if you don't take part in that event.
-
-## Why created ?
-While thinking about new project i thought about recreating volvo app (part of the reason in the hate for it new desing) but while i looked at API I thought its sandbox isn't very good (It could be it is enough for profesional devs but for me not)
 
 ## Help needed or BUG found?
 Create an issue or contact me on slack
