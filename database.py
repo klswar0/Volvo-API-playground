@@ -53,3 +53,12 @@ AdditionalDatabase={
     "vcc_api_key": AdditionalData(ScopesData=Scopes(scopes=["openid","conve:vehicle_relation"])),
     "all_values": AdditionalData()
 }
+
+def createCar(api_key: str, car: Car):
+    if api_key in database:
+        database[api_key].append(car)
+    else:
+        database[api_key] = [car]
+        
+    if api_key not in AdditionalDatabase:
+        AdditionalDatabase[api_key] = AdditionalData()

@@ -11,7 +11,7 @@ from copy import deepcopy
 
 from notifier import notifier
 from classCar import Car, options, config, timestampGenerator, Oauth2,Scopes
-from database import database, AdditionalDatabase
+from database import database, AdditionalDatabase,createCar
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 
 #internal endpoints 
@@ -261,7 +261,7 @@ def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dic
             except ValueError:
                 return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid attribute value. field:{attribute}"}}, status_code=400)
 
-        cars.append(new_car)
+        createCar(vcc_api_key, new_car)
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/Car added successfully: {VIN}"}, status_code=200)
 
     except KeyError:

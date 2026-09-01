@@ -14,7 +14,7 @@ import secrets
 
 from notifier import notifier
 from classCar import Car, options, config, timestampGenerator, Oauth2
-from database import database, AdditionalDatabase
+from database import createCar, database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
@@ -325,7 +325,7 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
            return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car already exists</p></div>", headers=error_headers)
         except ValueError:
             new_car = Car(VIN=VIN)
-            database[key].append(new_car)
+            createCar(key, new_car)
             # response = Response()
             # response.headers["HX-Redirect"] = f"/internal/dashboard/car?key={key}&VIN={VIN}"
             
