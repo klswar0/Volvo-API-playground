@@ -1,0 +1,47 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scopes Settings</title>
+    <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+    <link rel="stylesheet" href="/internal/style.css">
+
+</head>
+
+<body 
+    class="baseBody animate-fade-in-long ">
+    <header class="baseHeader">
+        <h1 class="text-4xl  md:text-6xl">Scopes Settings</h1>
+        <p class="text-xl  md:text-2xl">API key: {{ key }}</p>
+        <p class="text-xl md:text-2xl text-red-700">{{note}}</p>
+    </header>
+    <main>
+        <section class=" baseSection sec mb-2">
+            <p class="text-lg  md:text-xl">Scopes status: {{ scopes_status }}</p>
+            {% if scopes_status == "Activated" %}
+            <p>Scopes: {{ scopes }}</p>
+
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/scopes/update?key={{ key }}"
+                hx-swap="outerHTML transition:true " hx-target="body">
+                <input type="text" name="value" placeholder="Enter new scopes"
+                    class="inputText">
+                <select name="action" class="inputText">
+                    <option value="add">add</option>
+                    <option value="delete">Delete</option>
+                </select>
+                <input type="submit" value="submit" class="carSelectionButton">
+            </form>
+                <form hx-ext="json-enc" hx-post="/internal/dashboard/scopes/deactivate?key={{ key }}">
+                <input type="submit" value="Deactivate Scopes" class="carSelectionButton">
+            </form>
+            {% else %}
+            <form hx-ext="json-enc" hx-post="/internal/dashboard/scopes/activate?key={{ key }}">
+                <input type="submit" value="Activate Scopes" class="carSelectionButton">
+            </form>
+            {% endif %}
+        </section>
+    </main>
+</body>

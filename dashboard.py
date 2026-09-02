@@ -352,3 +352,22 @@ def deleteCar(key: str, VIN: str, request: Request):
             return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car does not exist</p></div>", headers=error_headers)
     except ValueError as e:
         return HTMLResponse(content=f"<div id=\"Error-response\"><p style=\"color:red\">internal error {e}</p></div>", headers=error_headers)
+
+def scope(key: str, request: Request):
+    if config["SITE"]["Dashboard"] == "False":
+            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    try:
+        authenticateInternal(key)
+        if AdditionalDatabase[key].ScopesData is None:
+            status = "Not activated"
+            data={"scopes":[]}
+        else:
+            data=AdditionalDatabase[key].ScopesData.model_dump()
+            status="Activated"
+        
+        return templates.TemplateResponse(name="scope.html", request=request, context={"key": key,"scopes_status":status, "scopes": data["scopes"], "note": config["SITE"]["Note"]})
+    except ValueError as e:
+        #todo: add error handling for scopes
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+    
+    

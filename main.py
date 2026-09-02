@@ -962,6 +962,10 @@ def snapshotDashUpdate(request: Request,key: str,command: str, name: str):
         return dashboard.snapshotsLoad(key, name, request)
     else:
         return JSONResponse(content={"error": {"message": "BAD_REQUEST", "description": "Invalid command"}}, status_code=400)
+    
+@app.get("/internal/dashboard/scopes", include_in_schema=False)
+def scope(key: str, request: Request):
+    return dashboard.scope(key, request)
 
 #internal endpoints for testing and development. Not part of the official API.
 
