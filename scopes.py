@@ -9,7 +9,7 @@ scopesList=["openid","conve:battery_charge_level","conve:brake_status","conve:cl
 
 
 class Scopes(BaseModel):
-    scopes: list = Field(default=["openid"])
+    scopes: set = Field(default=["openid"])
     
     def checkAccess(self, scopes: list):
         for scope in scopes:
@@ -18,7 +18,7 @@ class Scopes(BaseModel):
         return True
     def addScope(self, scope: str):
         if scope in scopesList:
-            self.scopes.append(scope)
+            self.scopes.add(scope)
             return True
         return False
     def removeScope(self, scope: str):

@@ -379,12 +379,12 @@ def scopeChange(key: str, action: str, value: str, request: Request):
             if AdditionalDatabase[key].ScopesData.addScope(value):
                 return scope(key, request)
             else:
-                return HTMLResponse(content="<p style=\"color:red\">Invalid scope</p>")
+                return HTMLResponse(content="<p style=\"color:red\">Invalid scope</p>", headers=error_headers)
         elif action == "remove":
             if AdditionalDatabase[key].ScopesData.removeScope(value):
                 return scope(key, request)
             else:
-                return HTMLResponse(content="<p style=\"color:red\">Scope not found</p>")
+                return HTMLResponse(content="<p style=\"color:red\">Scope not found</p>", headers=error_headers)
         elif action == "deactivate":
             AdditionalDatabase[key].ScopesData = None
             return scope(key, request)
@@ -392,7 +392,7 @@ def scopeChange(key: str, action: str, value: str, request: Request):
             AdditionalDatabase[key].ScopesData = Scopes()
             return scope(key, request)
         else:
-            return HTMLResponse(content="<p style=\"color:red\">Invalid action</p>")
+            return HTMLResponse(content="<p style=\"color:red\">Invalid action</p>", headers=error_headers)
     except ValueError as e:
          #todo: add error handling for scopes
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
