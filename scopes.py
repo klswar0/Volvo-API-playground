@@ -16,6 +16,16 @@ class Scopes(BaseModel):
             if scope not in self.scopes:
                 return scope
         return True
+    def addScope(self, scope: str):
+        if scope in scopesList:
+            self.scopes.append(scope)
+            return True
+        return False
+    def removeScope(self, scope: str):
+        if scope in self.scopes:
+            self.scopes.remove(scope)
+            return True
+        return False
     
 
 def checkScope(api_key: str, scopes: list):

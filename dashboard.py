@@ -13,7 +13,7 @@ import secrets
 
 
 from notifier import notifier
-from classCar import Car, options, config, timestampGenerator, Oauth2
+from classCar import Car, options, config, timestampGenerator, Oauth2,Scopes
 from database import createCar, database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
@@ -370,4 +370,29 @@ def scope(key: str, request: Request):
         #todo: add error handling for scopes
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
-    
+def scopeChange(key: str, action: str, value: str, request: Request):
+    if config["SITE"]["Dashboard"] == "False":
+            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    try:
+        authenticateInternal(key)
+        if action == "add":
+            if AdditionalDatabase[key].ScopesData.addScope(value):
+                return scope(key, request)
+            else:
+                return HTMLResponse(content="<p style=\"color:red\">Invalid scope</p>")
+        elif action == "remove":
+            if AdditionalDatabase[key].ScopesData.removeScope(value):
+                return scope(key, request)
+            else:
+                return HTMLResponse(content="<p style=\"color:red\">Scope not found</p>")
+        elif action == "deactivate":
+            AdditionalDatabase[key].ScopesData = None
+            return scope(key, request)
+        elif action == "activate":
+            AdditionalDatabase[key].ScopesData = Scopes()
+            return scope(key, request)
+        else:
+            return HTMLResponse(content="<p style=\"color:red\">Invalid action</p>")
+    except ValueError as e:
+         #todo: add error handling for scopes
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")

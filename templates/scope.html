@@ -24,22 +24,26 @@
             {% if scopes_status == "Activated" %}
             <p>Scopes: {{ scopes }}</p>
 
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/scopes/update?key={{ key }}"
-                hx-swap="outerHTML transition:true " hx-target="body">
+            <form hx-post="/internal/dashboard/scopes/update?key={{ key }}"
+                hx-ext="json-enc" hx-swap="outerHTML transition:true " hx-target="body">
                 <input type="text" name="value" placeholder="Enter new scopes"
                     class="inputText">
-                <select name="action" class="inputText">
-                    <option value="add">add</option>
-                    <option value="delete">Delete</option>
+                <select name="action" class="inputSelection mt-2">
+                    <option value="add">Add</option>
+                    <option value="remove">Remove</option>
                 </select>
-                <input type="submit" value="submit" class="carSelectionButton">
+                <input type="submit" value="submit" class="carSelectionButton mt-2">
             </form>
-                <form hx-ext="json-enc" hx-post="/internal/dashboard/scopes/deactivate?key={{ key }}">
+                <form hx-post="/internal/dashboard/scopes/update?key={{ key }}" 
+                hx-swap="outerHTML transition:true " hx-target="body" hx-ext="json-enc">
                 <input type="submit" value="Deactivate Scopes" class="carSelectionButton">
+                <input type="hidden" name="action" value="deactivate">
             </form>
             {% else %}
-            <form hx-ext="json-enc" hx-post="/internal/dashboard/scopes/activate?key={{ key }}">
+            <form hx-post="/internal/dashboard/scopes/update?key={{ key }}"
+            hx-swap="outerHTML transition:true " hx-target="body" hx-ext="json-enc">
                 <input type="submit" value="Activate Scopes" class="carSelectionButton">
+                <input type="hidden" name="action" value="activate">
             </form>
             {% endif %}
         </section>

@@ -967,6 +967,10 @@ def snapshotDashUpdate(request: Request,key: str,command: str, name: str):
 def scope(key: str, request: Request):
     return dashboard.scope(key, request)
 
+@app.post("/internal/dashboard/scopes/update", include_in_schema=False)
+def changeScopes(request: Request,key: str ,value: str=Body(default=""), action:str=Body(...)):
+    return dashboard.scopeChange(key, action, value, request)
+
 #internal endpoints for testing and development. Not part of the official API.
 
 @app.get("/internal/status") 
