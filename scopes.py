@@ -35,7 +35,7 @@ def checkScope(api_key: str, scopes: list):
     if data is None:
         return True
     check = data.checkAccess(scopes)
-    print(f"checkScope: {check}")
+
     if check == True:
         return True
     raise ValueError(f"The API key does not have access to the requested scope: {check}")
