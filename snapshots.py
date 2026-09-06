@@ -42,10 +42,10 @@ def loadFileSnapshots():
                 mainData = decode_main_data(snapshot.get("mainData", []))
                 additional_data_dict = snapshot.get("Additional")
                 if additional_data_dict is not None:
-                    oauth_data = AdditionalData(**additional_data_dict)
+                    additional_data = AdditionalData(**additional_data_dict)
                 else:
-                    oauth_data = None
-                snapshotsData[name] = Snapshots(mainData=mainData, OauthData=oauth_data)
+                    additional_data = None
+                snapshotsData[name] = Snapshots(mainData=mainData, Additional=additional_data)
     except FileNotFoundError:
         print("snapshots.json file not found. Starting with an empty snapshotsData.")
     except Exception as e:
@@ -56,7 +56,7 @@ def saveFileSnapshots():
     for name, snapshot in snapshotsData.items():
         data_to_save[name] = {
             "mainData": jsonable_encoder(snapshot.mainData),
-            "OauthData": snapshot.Additional.model_dump() if snapshot.Additional is not None else None
+            "Additional": jsonable_encoder(snapshot.Additional) if snapshot.Additional is not None else None
         }
     with open("snapshots.json", "w") as file:
         json.dump(data_to_save, file, indent=4)
@@ -109,3 +109,4 @@ def snapshots(vcc_api_key:str,command:str,name:str):
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"THIS IS INTERNAL API/invalid command: {command}"}}, status_code=400)
     except Exception as e:
         return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"THIS IS INTERNAL API/Invalid API key", "details": str(e)}}, status_code=401)
+    
