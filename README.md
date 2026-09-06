@@ -35,6 +35,8 @@ You can explore the public instance here:
 # Continue the readme 
 [More README](https://github.com/klswar0/Volvo-API-playground/wiki)
 
+[Setup](https://github.com/klswar0/Volvo-API-playground/wiki/Setup)
+
 ## DOCS:
 - WIKI on github  
 - **DEPRECATED** docs.md file (handwritten with additional info)
