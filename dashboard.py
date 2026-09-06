@@ -18,7 +18,7 @@ from database import database, Oauth2Data
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
-from snapshots import loadSnapshots, saveSnapshots,snapshotsData
+from snapshots import loadSnapshots, saveFileSnapshots, saveSnapshots,snapshotsData
 
 error_headers = {
     "HX-Retarget": "#error-response",
@@ -266,6 +266,7 @@ def snapshotsSave(key: str,name: str, request: Request):
         authenticateInternal(key)
         response = saveSnapshots(vcc_api_key=key, name=name)
         if response[0] == True:
+            saveFileSnapshots()
             return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"response": f"Snapshot '{response[1]}' saved successfully.","note": config["SITE"]["Note"]})
         else:
             return HTMLResponse(content=f"<p style=\"color:red\">Error occurred while saving snapshot. Internal error.</p>",headers=error_headers)
