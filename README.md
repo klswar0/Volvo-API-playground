@@ -47,7 +47,7 @@ You can explore the public instance here:
 When contributing to this project, please keep in mind that it was created for the Hack Club YSWS Stardance event. Contributions that align with the project’s goals and maintain its quality are greatly appreciated even if you don't take part in that event.
 
 ## Help needed or BUG found?
-Create an issue or contact me on slack
+Create an issue or contact me on [slack](https://hackclub.slack.com/team/U0B3CH1J28G)
 
 ### Connected repository
 - [compare app](https://github.com/klswar0/Volvo-api-playground-compare)
