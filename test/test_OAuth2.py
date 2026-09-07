@@ -7,14 +7,15 @@ from fastapi.testclient import TestClient
 
 
 def change_data(attribute,value):
-    database.Oauth2Data["TEST_OAUTH"].__setattr__(attribute,value)
+    database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data.__setattr__(attribute,value)
     
     
 
 client = TestClient(main.app)
 
 def test_func_PKCECheck_Plain():
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
+    print(data)
     func=main.PKCECheck(code_verifier="bad_code_verifier",oauth2=data)
     assert func == False
     func=main.PKCECheck(code_verifier="code_challenge",oauth2=data)
@@ -28,8 +29,7 @@ def test_func_PKCECheck_S256():
     change_data("code_challenge_method","S256")
     change_data("code_challenge",base64.urlsafe_b64encode(hashlib.sha256("code_challenge".encode()).digest()).decode().rstrip("="))
     
-    data=database.Oauth2Data["TEST_OAUTH"]
-    print(data.code_challenge)
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     func=main.PKCECheck(code_verifier="bad_code_verifier",oauth2=data)
     assert func == False
     func=main.PKCECheck(code_verifier="code_challenge",oauth2=data)
@@ -44,7 +44,7 @@ def test_code_exchange_PKCE():
     change_data("redirect_uri","test/url")
     change_data("PKCE",True)
     
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     
     authorization = "Basic " + base64.b64encode(f"TEST_OAUTH:{data.client_secret}".encode("utf-8")).decode("utf-8") 
     
@@ -60,7 +60,7 @@ def test_code_exchange():
     change_data("redirect_uri","test/url")
     change_data("PKCE",False)
     
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     
     authorization = "Basic " + base64.b64encode(f"TEST_OAUTH:{data.client_secret}".encode("utf-8")).decode("utf-8") 
     
@@ -77,7 +77,7 @@ def test_code_exchange_possibilities():
     # no url set (not real world scenario but possible in this test environment)
     change_data("redirect_uri","")
     
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
 
     
     authorization = "Basic " + base64.b64encode(f"TEST_OAUTH:{data.client_secret}".encode("utf-8")).decode("utf-8") 
@@ -107,7 +107,7 @@ def test_code_exchange_possibilities():
     assert exchange.status_code == 401
 
 def test_refresh_token():
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     
     authorization = "Basic " + base64.b64encode(f"TEST_OAUTH:{data.client_secret}".encode("utf-8")).decode("utf-8")
     
@@ -122,7 +122,7 @@ def test_refresh_token():
 def test_refresh_token_PKCE():
     change_data("PKCE",False)
     
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     
     authorization = "Basic " + base64.b64encode(f"TEST_OAUTH:{data.client_secret}".encode("utf-8")).decode("utf-8")
     
@@ -135,7 +135,7 @@ def test_refresh_token_PKCE():
     assert refresh.json()["refresh_token"] == data.refresh_token
     
 def test_refresh_token_possibilities():
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     
     authorization = "Basic " + base64.b64encode(f"TEST_OAUTH:{data.client_secret}".encode("utf-8")).decode("utf-8")
     
@@ -153,7 +153,7 @@ def test_refresh_token_possibilities():
 def test_OAuth_post_PKCE():
     change_data("PKCE",True)
     
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     
     func=client.post("/as/authorization.internal",data={"client_id": "TEST_OAUTH", "redirect_uri": "url/test","state": "test123","code_challenge": "code_challenge","code_challenge_method": "S256","login":"TEST_OAUTH"})
 
@@ -166,7 +166,7 @@ def test_OAuth_post_PKCE():
     
     
 def test_OAuth_post():
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     
     func=client.post("/as/authorization.internal",data={"client_id": "TEST_OAUTH", "redirect_uri": "url/test","state": "test123","login":"TEST_OAUTH"})
 
@@ -181,7 +181,7 @@ def test_OAuth_post():
 def test_OAuth_post_possibilities():
     change_data("PKCE",True)
     
-    data=database.Oauth2Data["TEST_OAUTH"]
+    data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     
     func=client.post("/as/authorization.internal",data={"client_id": "TEST_OAUTH", "redirect_uri": "url/test","state": "test123","code_challenge": "code_challenge","code_challenge_method": "l","login":"TEST_OAUTH"})
 

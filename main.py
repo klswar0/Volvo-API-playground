@@ -11,14 +11,14 @@ import secrets
 import hashlib
 from typing import Union
 
-
+from scopes import Scopes, checkScope, scopesList
 from scenarios import scenariosFunc
 from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
 import dashboard
 from notifier import notifier
 from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator, config, timestampGenerator, Oauth2
-from database import database, Oauth2Data
+from database import database, AdditionalDatabase
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 import ErrorLogging
 
@@ -52,7 +52,7 @@ print("\033[38;2;0;48;87m"+"██╗   ██╗ ██████╗ ██�
 
 loadFileSnapshots()  # Load snapshots from file at startup
 
-AuthHeader = Union[AuthHeaderPOST, AuthHeaderGET]
+
 
 @app.get("/")
 def index():
@@ -67,13 +67,13 @@ def index():
         
 
 
-def authenticate(auth_header: AuthHeader):
+def authenticate(auth_header: AuthHeaderPOST | AuthHeaderGET):
     if auth_header.vcc_api_key not in database:
         if auth_header.vcc_api_key == "":
             raise ValueError("Missing API key")
         raise ValueError("Invalid API key")
-    if auth_header.vcc_api_key in Oauth2Data:
-        if auth_header.authorization != f"Bearer {Oauth2Data[auth_header.vcc_api_key].access_token}":
+    if   AdditionalDatabase[auth_header.vcc_api_key].Oauth2Data is not None:
+        if auth_header.authorization != f"Bearer {AdditionalDatabase[auth_header.vcc_api_key].access_token}":
             raise ValueError("Invalid access token")
     if isinstance(auth_header, AuthHeaderPOST):
         if auth_header.content_type.split(";")[0].lower() != "application/json": #NOTE: lower case to avoid case sensitivity issues checks needed
@@ -88,7 +88,7 @@ def authenticate(auth_header: AuthHeader):
     return True
 
 
-def VINHandling(VIN:str, auth_header: AuthHeader):
+def VINHandling(VIN:str, auth_header:  AuthHeaderPOST | AuthHeaderGET):
     try:
         authenticate(auth_header)
     except Exception as e:
@@ -143,11 +143,11 @@ def PKCECheck(code_verifier: str, oauth2: Oauth2):
 def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(...),redirect_uri:str=Query(...),scope:str=Query(default=""),state:str=Query(default=""),code_challenge:str=Query(default=""),code_challenge_method:str=Query(default="")):
     if response_type != "code":
         return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>response_type must be 'code'</p>", status_code=400)
-    if client_id not in Oauth2Data:
+    if client_id not in AdditionalDatabase:
         return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid client_id</p>", status_code=400)
-    oauth2 = Oauth2Data[client_id]
+    oauth2 = AdditionalDatabase[client_id].Oauth2Data
     if oauth2.redirect_uri != "":
-        if redirect_uri != Oauth2Data[client_id].redirect_uri:
+        if redirect_uri != AdditionalDatabase[client_id].Oauth2Data.redirect_uri:
             return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid redirect_uri</p>", status_code=400)
     # site needed for "login"
     return templates.TemplateResponse(name="oauth2login.html", request=request, context={"client_id": client_id, "redirect_uri": redirect_uri, "scope": scope, "state": state, "code_challenge": code_challenge, "code_challenge_method": code_challenge_method})
@@ -158,7 +158,7 @@ def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(..
 def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state: str = Form(default=""), login: str = Form(...), code_challenge: str = Form(default=""), code_challenge_method: str = Form(default="")):
     if client_id != login:
         return HTMLResponse(content="<p style='color: red;'>Wrong client_id or login</p>", status_code=200)
-    oauth2 = Oauth2Data[client_id]
+    oauth2 = AdditionalDatabase[client_id].Oauth2Data
 
     if oauth2.PKCE == True :
         if PKCE(code_challenge, code_challenge_method, oauth2) == False:
@@ -193,9 +193,9 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     except Exception:
         raise HTTPException(status_code=401, detail={"error": "invalid_client", "error_description": "Malformed Authorization header"})
     
-    if client_id not in Oauth2Data:
-        raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}})
-    oauth2 = Oauth2Data[client_id]
+    if client_id not in AdditionalDatabase or AdditionalDatabase[client_id].Oauth2Data is None:
+            raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_id"}})
+    oauth2 = AdditionalDatabase[client_id].Oauth2Data
     if oauth2.client_secret != client_secret:
         raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "Invalid client_secret"}})
     
@@ -233,6 +233,8 @@ def listVehicles(auth_header: AuthHeaderGET = Header(...)):
     """list all vehicles associated with the provided API key."""
     try:
         authenticate(auth_header)
+         
+        checkScope(auth_header.vcc_api_key, ["openid","conve:vehicle_relation"])
     except ValueError as e:
         return autoErrorResponse(e, headers=ResponseHeaderGenerator(auth_header))
     else:
@@ -253,6 +255,8 @@ def getVehicle(VIN:str, auth_header: AuthHeaderGET = Header(...)): #TODO: implem
     """get vehicle information for the specified VIN. Mostly static data but enough to test your apps"""
     try:
         car = VINHandling(VIN, auth_header)
+        
+        checkScope(auth_header.vcc_api_key, ["openid","conve:vehicle_relation"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -276,9 +280,10 @@ def getVehicle(VIN:str, auth_header: AuthHeaderGET = Header(...)): #TODO: implem
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 #climetization commands
-def climate(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
+def climate(VIN:str, auth_header:  AuthHeaderPOST = Header(...), command:str=None):
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:climatization_start_stop"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -315,9 +320,10 @@ def climateStop(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     return climate(VIN, auth_header, command="CLIMATIZATION_STOP")
 
 #engine commands
-def engine(VIN:str, auth_header: AuthHeader = Header(...), command:str=None, runtimeMinutes:int = 0):   
+def engine(VIN:str, auth_header:  AuthHeaderPOST = Header(...), command:str=None, runtimeMinutes:int = 0):   
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:engine_start_stop"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -351,6 +357,7 @@ def engineStatus(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current engine status for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:engine_status"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -380,6 +387,7 @@ def windows(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current status of the windows and sunroof for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:windows_status"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -392,6 +400,7 @@ def doors(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current status of the doors and locks for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:doors_status","conve:lock_status"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -404,6 +413,7 @@ def doorLock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to lock the doors for the specified VIN."""
     try:
         car =VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:lock"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -425,6 +435,7 @@ def doorLockReduce(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to lock the doors with reduced guard for the specified VIN. Only for AAOS not Sensus."""
     try:
         car =VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:lock"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -445,6 +456,7 @@ def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
     """send a command to unlock the doors for the specified VIN."""
     try:
         car =VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:unlock"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -461,10 +473,11 @@ def doorUnlock(VIN:str, auth_header: AuthHeaderPOST = Header(...)):
 
 #lights and horn
 
-def lightsAndHorn(VIN:str, auth_header: AuthHeader = Header(...), command:str=None):
+def lightsAndHorn(VIN:str, auth_header: AuthHeaderPOST  = Header(...), command:str=None):
     """send a command to start the lights and horn for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:hork_flash"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -511,6 +524,7 @@ def statistics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get vehicle statistics for the specified VIN. Mostly static data but enough to test your apps"""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:trip_statistics"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -584,6 +598,7 @@ def tyres(VIN:str, auth_header: AuthHeaderGET= Header(...)):
     """get the current tyre warnings status for the specified VIN.""" 
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:tyre_status"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -600,6 +615,7 @@ def commands(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     href=f"/v2/vehicles/{VIN}/commands/" 
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:commands"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -618,6 +634,7 @@ def commands(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 def commandAccessibility(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """check if the car is ready to receive commands or why it is not for the specified VIN."""
     try:
+        checkScope(auth_header.vcc_api_key, ["openid","conve:command-accessibility"])
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
@@ -637,6 +654,8 @@ def getFuel(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current fuel level or/and battery charge level"""
     try:
         car = VINHandling(VIN, auth_header)
+        # this check scope could be wrong becouse if the car doesnt have a battery it dont need ?
+        checkScope(auth_header.vcc_api_key, ["openid","conve:fuel","conve:battery_charge_level"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:   # docs says  thath only liters and % are  valid
@@ -663,6 +682,7 @@ def getOdometer(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current odometer reading for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:odometer_status"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:   #Units and timestamp here again only km is valid Why volvo Why?
@@ -678,6 +698,7 @@ def engineDiagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current engine diagnostics for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:diagnostics_engine_status"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -689,6 +710,7 @@ def diagnostics(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current diagnostics for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:diagnostics_workshop"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -714,6 +736,7 @@ def Brakes(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current brake status for the specified VIN."""
     try:
         car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid","conve:brake_status"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -725,6 +748,7 @@ def Brakes(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """get the current warning status for the specified VIN. STATIC for now"""
     try:
+        checkScope(auth_header.vcc_api_key, ["openid","conve:warnings"])
         car = VINHandling(VIN, auth_header)
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
@@ -856,7 +880,9 @@ def AuthRegenerateInternal(vcc_api_key:str = Header(...)):
     return internal.OAuthRegenerateInternal(vcc_api_key)
 
 
-
+@app.post("/internal/scopes")
+def ScopesInternal(vcc_api_key:str = Header(...),scopes: list = Body(default=None)):
+    return internal.setScopesInternal(vcc_api_key, scopes)
 
 @app.get("/internal/terminal")
 def Terminal(VIN:str,key:str, request: Request):
@@ -943,6 +969,14 @@ def snapshotDashUpdate(request: Request,key: str,command: str, name: str):
         return dashboard.snapshotsLoad(key, name, request)
     else:
         return JSONResponse(content={"error": {"message": "BAD_REQUEST", "description": "Invalid command"}}, status_code=400)
+    
+@app.get("/internal/dashboard/scopes", include_in_schema=False)
+def scope(key: str, request: Request):
+    return dashboard.scope(key, request)
+
+@app.post("/internal/dashboard/scopes/update", include_in_schema=False)
+def changeScopes(request: Request,key: str ,value: str=Body(default=""), action:str=Body(...)):
+    return dashboard.scopeChange(key, action, value, request)
 
 #internal endpoints for testing and development. Not part of the official API.
 

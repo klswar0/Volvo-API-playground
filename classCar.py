@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from notifier import notifier
 from datetime import datetime, timezone
 import configparser
-
+from scopes import Scopes
 
 config = configparser.ConfigParser()
 config['DEFAULT'] = {
@@ -33,6 +33,9 @@ config.read('config.ini')
 #     "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
 # }
 
+
+
+    
 
 
 class Tracking(BaseModel):
@@ -67,7 +70,17 @@ class Oauth2(BaseModel):
     
     #expires_in: datetime #to implement
 
+class AdditionalData(BaseModel):
 
+    Oauth2Data: Oauth2 = Field(default=None)
+    ScopesData: Scopes = Field(default=None)
+    # validation: bool = Field(default=True)
+    
+    
+    def checkOauth2(self):
+        if self.Oauth2Data is None:
+            return False
+        return True
 
 def ResponseHeaderGenerator(auth_header: AuthHeader):
     header={"vcc_api_operationId":str(auth_header.vcc_api_operationId)}
@@ -371,6 +384,8 @@ class Car(BaseModel):
     
     def updated(self):
         self.lastTimestamp = timestampGenerator()
+        
+ 
 
         
         

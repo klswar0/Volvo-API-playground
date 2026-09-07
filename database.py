@@ -1,4 +1,5 @@
-from classCar import Car, Oauth2
+from classCar import Car, AdditionalData, Oauth2, Scopes
+
 
 from datetime import datetime, timezone
 
@@ -46,6 +47,18 @@ database = {
 }
 
 #client id == api key for this playground
-Oauth2Data={
-    "vcc_api_key_Oauth2": Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token")
+# could we changes this to additonal data for scopes?
+AdditionalDatabase={
+    "vcc_api_key_Oauth2": AdditionalData(Oauth2Data=Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token")),
+    "vcc_api_key": AdditionalData(ScopesData=Scopes(scopes=["openid","conve:vehicle_relation"])),
+    "all_values": AdditionalData()
 }
+
+def createCar(api_key: str, car: Car):
+    if api_key in database:
+        database[api_key].append(car)
+    else:
+        database[api_key] = [car]
+        
+    if api_key not in AdditionalDatabase:
+        AdditionalDatabase[api_key] = AdditionalData()
