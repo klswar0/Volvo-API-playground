@@ -6,7 +6,7 @@ This projects aims to provide dynamic alternative to official volvo API sandbox 
 This project doesnt give you a ready library but give you tools to write your own implementetion faster and better 
 
 > [!WARNING]
-> This project is still a work in progress, but it is already in a good state. If you don’t rely on comprehensive documentation, you should find it useful for developing applications for Volvo Connected Vehicles.
+> To view the latest version check `dev` branch
 
 > [!IMPORTANT]
 > Help needed!
