@@ -1,6 +1,7 @@
 
 
 import base64
+import uuid
 
 from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form, Request,HTTPException
 from fastapi.responses import FileResponse, JSONResponse ,HTMLResponse, RedirectResponse 
@@ -853,6 +854,62 @@ def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...)):
             }
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
+
+# Location section https://api.volvocars.com/location/
+
+@app.get("/connected-vehicle/v2/vehicles/{VIN}/location") #STATIC 
+def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
+    # it has style of the old connecte vehicle API but it is the newest location API
+    # TODO: add old error responses for this endpoint
+    """
+    {
+    "data": {
+        "geometry": {
+        "coordinates": [
+            11.968307501897431,
+            57.68877357281511,
+            0
+        ],
+        "type": "Point"
+        },
+        "properties": {
+        "timestamp": "2026-09-07T19:11:24.701051642Z",
+        "heading": "347"
+        },
+        "type": "Feature"
+    },
+    "operationId": "81ea34aa92b14186b3a9d6c15710fb3c",
+    "status": 200
+    }
+    """
+    try:
+        car = VINHandling(VIN, auth_header)
+        checkScope(auth_header.vcc_api_key, ["openid"] )# ,"location:read"])
+    except ValueError as e:
+        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
+    else:
+        
+        data = {
+            "data": {
+                "geometry": {
+                    "coordinates": [
+                        11.968307501897431,
+                        57.68877357281511,
+                        0
+                    ],
+                    "type": "Point"
+                },
+                "properties": {
+                    "timestamp": car.timestamp(),
+                    "heading": "347"
+                },
+                "type": "Feature"
+            },
+            "operationId": str(uuid.uuid4()),
+            "status": 200
+        }
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
+    
 
 #internal endpoints 
 

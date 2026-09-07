@@ -40,7 +40,7 @@ config.read('config.ini')
 
 class Tracking(BaseModel):
     traceparent:str=Field(default="") # NOT IMPLEMENTED FULLY starndard traceparent header  W3C traceparent (search online)
-    vcc_api_operationId:str=Field(default=str(uuid.uuid4()),alias="vcc-api-operationId") # UUID
+    vcc_api_operationId:str=Field(default=str(uuid.uuid4()),alias="vcc-api-operationId") # UUID #depracted since? Deprecated since 2025-09-29. Please use traceparent instead. (about operationId not vcc_api_operationId)
 
 
 class AuthHeader(Tracking):
