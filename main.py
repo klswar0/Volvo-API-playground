@@ -893,15 +893,15 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
             "data": {
                 "geometry": {
                     "coordinates": [
-                        11.968307501897431,
-                        57.68877357281511,
-                        0
+                        car.longitude,
+                        car.latitude,
+                        car.altitude
                     ],
                     "type": "Point"
                 },
                 "properties": {
                     "timestamp": car.timestamp(),
-                    "heading": "347"
+                    "heading": str(car.heading)
                 },
                 "type": "Feature"
             },

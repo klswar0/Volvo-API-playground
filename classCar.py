@@ -159,7 +159,13 @@ options = {
 
     "lightTimestamp": "", 
     "hornTimestamp": "",
-    "commands": ""
+    "commands": "",
+    
+    # WGS 84 decimal or reference ellipsoid.
+    "longitude": "float", 
+    "latitude": "float",
+    "altitude": "float", 
+    "heading": "int", # 0-360 degrees
 }
 
 
@@ -276,6 +282,22 @@ class Car(BaseModel):
     nextInvoiceStatus:str = Field(default="") # Possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
     # running available for climate or engine commands
     
+    
+    ###
+    ### location 
+    ### parameters
+    ###
+    
+    longitude:float=Field(default=11.968307501897431)
+    latitude:float=Field(default=57.68877357281511) 
+    altitude:float=Field(default=0.0)
+    
+    heading:int=Field(default=0) # 0-360 degrees
+    
+    
+    
+    
+    
     #additional parameters for error like if you want fail engine start nextInvoice status, last timestamp
     def timestamp(self):
         if self.availabilityStatus_value == "AVAILABLE":
@@ -295,6 +317,12 @@ class Car(BaseModel):
             if valid == "int":
                 try:
                     value=int(value) #check if value is int todo
+                    return True
+                except ValueError:
+                    return False
+            if valid == "float":
+                try:
+                    value=float(value) #check if value is float todo
                     return True
                 except ValueError:
                     return False
@@ -318,6 +346,12 @@ class Car(BaseModel):
                 if valid == "int":
                     try:
                         int(value)  # Check if value can be converted to int
+                    except ValueError:
+                        return False,attribute
+                    continue
+                if valid == "float":
+                    try:
+                        float(value)  # Check if value can be converted to float
                     except ValueError:
                         return False,attribute
                     continue
