@@ -857,6 +857,71 @@ def Warnings(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 
 # Location section https://api.volvocars.com/location/
 
+def OLD_errorResponse(e: ValueError, VIN: str, headers: dict):
+    detail=None
+    
+    if str(e) == "Missing API key":
+        status_code = 401
+        message = "UNAUTHORIZED"
+        description = "Access denied due to missing header VCC-API-KEY. Make sure to provide a valid key for an active application."
+
+        
+    elif str(e) == "Invalid API key":
+        status_code = 401
+        message = "UNAUTHORIZED"
+        description = "Access denied due to invalid header VCC-API-KEY. Make sure to provide a valid key for an active application."
+   
+        
+    elif str(e) == "Invalid access token":
+        status_code = 401
+        message = "UNAUTHORIZED"
+        description = "Full authentication is required to access this resource."
+        detail= "INFO: The access token is not valid"
+    elif str(e) == "Invalid VIN":
+        status_code = 404
+        message = "FORBIDDEN"
+        description = f"No relationship to UUID."
+        detail= "INFO:{VIN} not found"
+        
+    elif str(e) == "Invalid Content-Type":
+        status_code = 415
+        message = "BAD_REQUEST"
+        description = "Invalid Content-Type. Only 'application/json' is accepted."
+
+    elif str(e) == "Invalid Accept header":
+        status_code = 406
+        message = "BAD_REQUEST"
+        description = "Invalid Accept header."
+    elif str(e).startswith("The API key does not have access to the requested scope"):
+        status_code = 403
+        message = "FORBIDDEN"
+        description = str(e)
+    else:
+        status_code = 500
+        message = "INTERNAL_SERVER_ERROR"
+        description = "An internal server error occurred."
+        detail= str(e)
+    if detail is None:
+         data = {
+                "status": status_code,
+                "operationId": str(uuid.uuid4()),
+                "error": {
+                    "message": message,
+                    "description": description,
+                }
+            }
+    else:
+        data = {
+            "status": status_code,
+            "operationId": str(uuid.uuid4()),
+            "error": {
+                "message": message,
+                "description": description,
+                "detail": detail
+            }
+        }
+    return JSONResponse(content=data, status_code=status_code, headers=headers) # TODO: check what headers are sent
+
 @app.get("/connected-vehicle/v2/vehicles/{VIN}/location") #STATIC 
 def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     # it has style of the old connecte vehicle API but it is the newest location API
@@ -886,7 +951,7 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         car = VINHandling(VIN, auth_header)
         checkScope(auth_header.vcc_api_key, ["openid","location:read"])
     except ValueError as e:
-        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
+        return OLD_errorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         
         data = {

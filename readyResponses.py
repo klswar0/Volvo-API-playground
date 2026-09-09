@@ -19,7 +19,7 @@ def autoErrorResponse(e:str, VIN:str=None, headers:dict=None):
     elif str(e) == "Invalid Content-Type":
         return ErrorResponse("BAD_REQUEST", "Invalid Content-Type. Only 'application/json' is accepted.", 415, headers=headers)
     elif str(e) == "Invalid Accept header":
-            return ErrorResponse("BAD_REQUEST", "Invalid Accept header. Only 'application/json' is accepted.", 406, headers=headers)
+            return ErrorResponse("BAD_REQUEST", "Invalid Accept header.", 406, headers=headers)
     elif str(e).startswith("The API key does not have access to the requested scope"):
         return ErrorResponse("FORBIDDEN", f"{str(e)}", 403, headers=headers)
     else:
