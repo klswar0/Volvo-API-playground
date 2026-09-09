@@ -884,7 +884,7 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     """
     try:
         car = VINHandling(VIN, auth_header)
-        checkScope(auth_header.vcc_api_key, ["openid"] )# ,"location:read"])
+        checkScope(auth_header.vcc_api_key, ["openid","location:read"])
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
