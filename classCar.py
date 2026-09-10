@@ -39,8 +39,8 @@ config.read('config.ini')
 
 
 class Tracking(BaseModel):
-    traceparent:str=Field(default="") # NOT IMPLEMENTED FULLY starndard traceparent header  W3C traceparent (search online)
-    vcc_api_operationId:str=Field(default=str(uuid.uuid4()),alias="vcc-api-operationId") # UUID #depracted since? Deprecated since 2025-09-29. Please use traceparent instead. (about operationId not vcc_api_operationId)
+    traceparent:str=Field(default=None) # NOT IMPLEMENTED FULLY starndard traceparent header  W3C traceparent (search online)
+    vcc_api_operationId:str=Field(default=None,alias="vcc-api-operationId") # UUID #depracted since? Deprecated since 2025-09-29. Please use traceparent instead. (about operationId not vcc_api_operationId)
 
 
 class AuthHeader(Tracking):
@@ -83,10 +83,13 @@ class AdditionalData(BaseModel):
         return True
 
 def ResponseHeaderGenerator(auth_header: AuthHeader):
+    if auth_header.vcc_api_operationId is None:
+        auth_header.vcc_api_operationId = str(uuid.uuid4())
     header={"vcc_api_operationId":str(auth_header.vcc_api_operationId)}
-    if auth_header.traceparent!="":
-        header["traceparent"] = auth_header.traceparent
     
+    if auth_header.traceparent is not None:
+        header["traceparent"] = auth_header.traceparent
+
     return header
 
 
