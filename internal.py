@@ -18,7 +18,7 @@ from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInter
 
 
 def Internal():
-    return JSONResponse(content={"message": "Welcome to the internal API", "description": config.items()}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
+    return JSONResponse(content={"message": "Welcome to the internal API"}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
 
 def Terminal(VIN: str, key: str, request: Request):
