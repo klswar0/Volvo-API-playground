@@ -12,6 +12,7 @@ import secrets
 import hashlib
 from typing import Union
 
+
 from scopes import Scopes, checkScope, scopesList
 from scenarios import scenariosFunc
 from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
@@ -920,6 +921,7 @@ def OLD_errorResponse(e: ValueError, VIN: str, headers: dict):
                 "detail": detail
             }
         }
+
     return JSONResponse(content=data, status_code=status_code, headers=headers) # TODO: check what headers are sent
 
 @app.get("/connected-vehicle/v2/vehicles/{VIN}/location") #STATIC 
@@ -951,7 +953,7 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         car = VINHandling(VIN, auth_header)
         checkScope(auth_header.vcc_api_key, ["openid","location:read"])
     except ValueError as e:
-        return OLD_errorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
+        return OLD_errorResponse(e, VIN,ResponseHeaderGenerator(auth_header).pop("vcc_api_operationid", None))
     else:
         
         data = {
@@ -973,7 +975,7 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
             "operationId": str(uuid.uuid4()),
             "status": 200
         }
-        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
+        return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header).pop("vcc_api_operationid", None))
     
 
 #internal endpoints 
