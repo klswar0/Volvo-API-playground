@@ -19,7 +19,7 @@ from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
 import internal
 import dashboard
 from notifier import notifier
-from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator, config, timestampGenerator, Oauth2
+from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator, readConfig, timestampGenerator, Oauth2
 from database import database, AdditionalDatabase
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 import ErrorLogging
@@ -33,7 +33,7 @@ templates = Jinja2Templates(directory="templates")
 app = FastAPI()
 
 
-if config["DEFAULT"]["fastAPIdocs"] == "False":
+if readConfig("DEFAULT", "fastAPIdocs",True) == False:
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 else:
     app = FastAPI(docs_url="/internal/docs", redoc_url="/internal/redoc", openapi_url="/internal/openapi.json")
@@ -58,7 +58,7 @@ loadFileSnapshots()  # Load snapshots from file at startup
 
 @app.get("/")
 def index():
-    if config["SITE"]["Public"] == "True":
+    if readConfig("SITE", "Public",True) == True:
         return FileResponse("templates/index.html")
     else:
         return RedirectResponse(url="/internal/welcome")

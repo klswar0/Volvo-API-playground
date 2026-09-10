@@ -8,6 +8,11 @@ from datetime import datetime, timezone
 import configparser
 from scopes import Scopes
 
+def readConfig(section, option, boolean=False):
+    if boolean:
+        return config.getboolean(section, option)
+    return config.get(section, option)
+
 config = configparser.ConfigParser()
 config['DEFAULT'] = {
     'Validation': 'True',

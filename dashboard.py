@@ -13,7 +13,7 @@ import secrets
 
 
 from notifier import notifier
-from classCar import Car, options, config, timestampGenerator, Oauth2,Scopes
+from classCar import Car, options, readConfig, timestampGenerator, Oauth2,Scopes
 from database import createCar, database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
@@ -29,6 +29,11 @@ error_headers = {
 
 #site section
 
+def checkDashboardEnabled():
+    if readConfig("SITE", "Dashboard",True) == False:
+        return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    return None
+
 def style():
     return FileResponse("templates/style.css")
 
@@ -37,19 +42,21 @@ def style():
 
 
 def DashboardCar(key: str,VIN: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         car = VINHandlingInternal(VIN, key)
-        data={"VIN":VIN,"key":key,"note": config["SITE"]["Note"]}
+        data={"VIN":VIN,"key":key,"note": readConfig("SITE","Note")}
         return templates.TemplateResponse(name="dashboard.html", request=request, context=data)
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
 
 def DashboardRedirect(key: str,VIN: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         response = Response()
         response.headers["HX-Redirect"] = f"/internal/dashboard/car?key={key}&VIN={VIN}"
@@ -60,7 +67,7 @@ def DashboardRedirect(key: str,VIN: str, request: Request):
 
 async def DashboardWS(websocket: WebSocket):
     await websocket.accept()
-    if config["DEFAULT"]["Websocket"] == "False":
+    if readConfig("DEFAULT", "Websocket",True) == False:
             await websocket.send_text("<div id=\"car-info\"><p style=\"color:red\">Websocket is disabled in the configuration</p></div>")
             await websocket.close()
             return
@@ -112,8 +119,9 @@ async def DashboardWS(websocket: WebSocket):
     
 
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         if value == "True":
             value = True
@@ -142,33 +150,35 @@ def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(.
 
 
 def Dashboard(key: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
         cars = database[key]
         VINs = []
         for car in cars:
             VINs.append(car.VIN)
-        return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key,"note": config["SITE"]["Note"]})
+        return templates.TemplateResponse(name="dashboardCarSel.html", request=request, context={"VINs": VINs,"key": key,"note": readConfig("SITE","Note")})
     # why there where here Oauth2 status check?
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>") 
 
 def OAuth2Settings(key: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
         if key not in AdditionalDatabase or AdditionalDatabase[key].Oauth2Data is None:
             oauth2_status = "Not activated"
-            return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status, "note": config["SITE"]["Note"]})
+            return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status, "note": readConfig("SITE","Note")})
         else:
             oauth2_status = "Activated"
         data=AdditionalDatabase[key].Oauth2Data.model_dump()
         data["oauth2_status"] = oauth2_status
         data["key"]=key
-        data["note"] = config["SITE"]["Note"]
+        data["note"] = readConfig("SITE","Note")
         return templates.TemplateResponse(name="oauth2settings.html", request=request, context=data)
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
@@ -176,8 +186,9 @@ def OAuth2Settings(key: str, request: Request):
 
 
 def OAuth2Change(key: str, attribute: str, value: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
 
@@ -222,20 +233,22 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
     
     
 def scenarios(key: str,VIN: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
         car = VINHandlingInternal(VIN, key)
         scenarios = list(set(list(SCENARIO_TEMPLATES.keys()) + list(SCENARIO_USER.keys())))
-        data={"vin":VIN,"key":key,"scenarios":scenarios,"note": config["SITE"]["Note"]}
+        data={"vin":VIN,"key":key,"scenarios":scenarios,"note": readConfig("SITE","Note")}
         return templates.TemplateResponse(name="loading.html", request=request, context=data)
     except ValueError as e:
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. details: {e}</p>",headers=error_headers)
 
 def scenarioLoad(key: str,VIN: str,name: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
         car = VINHandlingInternal(VIN, key)
@@ -250,14 +263,15 @@ def scenarioLoad(key: str,VIN: str,name: str, request: Request):
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
 def snapshotsSave(key: str,name: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
         response = saveSnapshots(vcc_api_key=key, name=name)
         if response[0] == True:
             saveFileSnapshots()
-            return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"response": f"Snapshot '{response[1]}' saved successfully.","note": config["SITE"]["Note"]})
+            return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"response": f"Snapshot '{response[1]}' saved successfully.","note": readConfig("SITE","Note")})
         else:
             return HTMLResponse(content=f"<p style=\"color:red\">Error occurred while saving snapshot. Internal error.</p>",headers=error_headers)
     except ValueError as e:
@@ -265,8 +279,9 @@ def snapshotsSave(key: str,name: str, request: Request):
 
 
 def snapshotsLoad(key: str,name: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
         response = loadSnapshots(vcc_api_key=key, name=name)
@@ -280,23 +295,26 @@ def snapshotsLoad(key: str,name: str, request: Request):
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
 def snapshots(key: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
-        return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"note": config["SITE"]["Note"]})
+        return templates.TemplateResponse(name="snapshots.html", request=request, context={"key": key,"snapshots": list(snapshotsData.keys()),"note": readConfig("SITE","Note")})
     except ValueError as e:
         return HTMLResponse(content=f"<p style=\"color:red\">internal error occurred. Details: {e}</p>",headers=error_headers)
 
 def Welcome(request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
-    return templates.TemplateResponse(name="welcome.html", request=request, context={"note": config["SITE"]["Note"]})
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
+    return templates.TemplateResponse(name="welcome.html", request=request, context={"note": readConfig("SITE","Note")})
 
 
 def WelcomeCheck(vcc_api_key: str):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(vcc_api_key)
     except ValueError as e:
@@ -315,8 +333,9 @@ def WelcomeAPIKey(request: Request):
 
 
 def WelcomeNewCar(request: Request, key: str, VIN: str):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         if key not in database:
             raise ValueError("Invalid API key")
@@ -339,8 +358,9 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
     
     
 def deleteCar(key: str, VIN: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         if key not in database:
             raise ValueError("Invalid API key")
@@ -355,8 +375,9 @@ def deleteCar(key: str, VIN: str, request: Request):
         return HTMLResponse(content=f"<div id=\"Error-response\"><p style=\"color:red\">internal error {e}</p></div>", headers=error_headers)
 
 def scope(key: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
         if AdditionalDatabase[key].ScopesData is None:
@@ -366,14 +387,15 @@ def scope(key: str, request: Request):
             data=AdditionalDatabase[key].ScopesData.model_dump()
             status="Activated"
         
-        return templates.TemplateResponse(name="scope.html", request=request, context={"key": key,"scopes_status":status, "scopes": data["scopes"], "note": config["SITE"]["Note"]})
+        return templates.TemplateResponse(name="scope.html", request=request, context={"key": key,"scopes_status":status, "scopes": data["scopes"], "note": readConfig("SITE","Note")})
     except ValueError as e:
         #todo: add error handling for scopes
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
 def scopeChange(key: str, action: str, value: str, request: Request):
-    if config["SITE"]["Dashboard"] == "False":
-            return HTMLResponse(content="<p style=\"color:red\">Dashboard is disabled in the configuration</p>")
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
     try:
         authenticateInternal(key)
         if action == "add":

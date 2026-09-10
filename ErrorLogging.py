@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from starlette.background import BackgroundTask
 import asyncio
 
-from classCar import config
+from classCar import readConfig
 # error logging V1
 
 
@@ -55,7 +55,7 @@ async def log_error(req: req_eror, exc: Exception):
     print(f"{RED}Headers:{RESET} {req.headers}")
     print(f"{RED}Query Params:{RESET} {req.query_params}")
     print(f"{RED}Body:{RESET} {req.body}")
-    if config["ERROR_LOGGING"]["Write"] == "True":
+    if readConfig("ERROR_LOGGING","Write",True) == True:
         await asyncio.to_thread(write_log, req, exc)  # Write to file in a separate thread
 
         
@@ -63,7 +63,7 @@ async def log_error(req: req_eror, exc: Exception):
 def setup_error_logging(app: FastAPI):
     @app.exception_handler(RequestValidationError)
     async def error_handler(request: Request, exc: RequestValidationError):
-        if config["ERROR_LOGGING"]["STATUS"] == "False":
+        if readConfig("ERROR_LOGGING","STATUS",True) == False:
             return await request_validation_exception_handler(request, exc) 
         if request.url.path.startswith("/internal"):
             return await request_validation_exception_handler(request, exc)
@@ -111,7 +111,7 @@ def setup_error_logging(app: FastAPI):
     
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
-        if config["ERROR_LOGGING"]["STATUS"] == "False":
+        if readConfig("ERROR_LOGGING","STATUS",True) == False:
             return await request_validation_exception_handler(request, exc) 
         if request.url.path.startswith("/internal"):
             return await request_validation_exception_handler(request, exc)

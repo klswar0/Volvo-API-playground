@@ -50,7 +50,7 @@ database = {
 # could we changes this to additonal data for scopes?
 AdditionalDatabase={
     "vcc_api_key_Oauth2": AdditionalData(Oauth2Data=Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token")),
-    "vcc_api_key": AdditionalData(ScopesData=Scopes(scopes=["openid","conve:vehicle_relation"])),
+    "vcc_api_key": AdditionalData(ScopesData=Scopes(scopes=["openid","conve:vehicle_relation","location:read"])),
     "all_values": AdditionalData()
 }
 

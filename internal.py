@@ -10,7 +10,7 @@ from copy import deepcopy
 
 
 from notifier import notifier
-from classCar import Car, options, config, timestampGenerator, Oauth2,Scopes
+from classCar import Car, options, readConfig, timestampGenerator, Oauth2,Scopes
 from database import database, AdditionalDatabase,createCar
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 
@@ -18,7 +18,7 @@ from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInter
 
 
 def Internal():
-    return JSONResponse(content={"message": "Welcome to the internal API", "description": config.items()}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
+    return JSONResponse(content={"message": "Welcome to the internal API"}, status_code=200) # here will be displayed any options like authetication using tokens and so on.
 
 
 def Terminal(VIN: str, key: str, request: Request):
@@ -130,7 +130,7 @@ def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
         value = car.update(attribute, value,True)
-        if value == True and (config["DEFAULT"]["statusNotification"] == "SET" or config["DEFAULT"]["statusNotification"] == "ALL"):
+        if value == True and (readConfig("DEFAULT", "statusNotification") == "SET" or readConfig("DEFAULT", "statusNotification") == "ALL"):
             notifier.trigger_update(VIN, car, attribute)
         return value 
     except ValueError as e:
@@ -154,7 +154,7 @@ def getStatus(VIN: str = Header(...),vcc_api_key: str = Header(...)):
 async def statusWS(websocket: WebSocket):
     await websocket.accept()
     
-    if config["DEFAULT"]["Websocket"] == "False":
+    if readConfig("DEFAULT", "Websocket",True) == False:
         await websocket.send_text("{\"error\": {\"message\": \"BAD_REQUEST\",\"description\": \"Websocket is disabled in the configuration.\"}}")
         await websocket.close()
         return
@@ -224,7 +224,7 @@ def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attri
         for attr, val in update_data.items():
             car.update(attr, val, True)
 
-        if config["DEFAULT"]["statusNotification"] == "ALL" or config["DEFAULT"]["statusNotification"] == "SET":
+        if readConfig("DEFAULT", "statusNotification") == "ALL" or readConfig("DEFAULT", "statusNotification") == "SET":
             notifier.trigger_update_multiple(VIN, car, list(update_data.keys()))
 
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/attributes updated successfully"}, status_code=200)
