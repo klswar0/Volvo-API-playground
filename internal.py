@@ -242,8 +242,11 @@ def internal_updates(VIN: str = Header(...),vcc_api_key: str = Header(...),attri
 
 
 
-def genAPIKey():                    
-    api_key=secrets.token_hex(16)
+def genAPIKey():
+    if readConfig("DEFAULT","ShortKeys",True) == True:
+        api_key=secrets.token_hex(16)
+    else:            
+        api_key=secrets.token_hex(32)
     database[api_key] = []
     return JSONResponse(content={"message": api_key,"description": f"THIS IS INTERNAL API/API key generated successfully"}, status_code=200)
 

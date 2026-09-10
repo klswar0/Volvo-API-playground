@@ -15,6 +15,7 @@ def readConfig(section, option, boolean=False):
 
 config = configparser.ConfigParser()
 config['DEFAULT'] = {
+    'ShortKeys': 'True',
     'Validation': 'True',
     'Websocket': 'True',
     'statusNotification': 'ALL' # FIX planned when new error logger+notification system /possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
