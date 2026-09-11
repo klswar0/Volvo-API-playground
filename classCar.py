@@ -175,6 +175,20 @@ options = {
     "latitude": "float",
     "altitude": "float", 
     "heading": "int", # 0-360 degrees
+    
+    
+    # capabilities energy API
+    "getEnergyState": [True, False],
+    "batteryChargeLevel":[True, False],
+    "electricRange": [True, False],
+    "chargerConnectionStatus":[True, False],
+    "chargingSystemStatus":[True, False],
+    "chargingType": [True, False],
+    "chargerPowerStatus":[True, False],
+    "estimatedChargingTimeToTargetBatteryChargeLevel":[True, False],
+    "targetBatteryChargeLevel":[True, False],
+    "chargingCurrentLimit": [True, False],
+    "chargingPower":[True, False],
 }
 
 
@@ -303,6 +317,22 @@ class Car(BaseModel):
     
     heading:int=Field(default=0) # 0-360 degrees
     
+    ###
+    ### energy API
+    ### capabilities
+    ###
+    
+    getEnergyState:bool=Field(default=True)
+    batteryChargeLevel:bool=Field(default=True)
+    electricRange:bool=Field(default=True)
+    chargerConnectionStatus:bool=Field(default=True)
+    chargingSystemStatus:bool=Field(default=True)
+    chargingType:bool=Field(default=True)
+    chargerPowerStatus:bool=Field(default=True)
+    estimatedChargingTimeToTargetBatteryChargeLevel:bool=Field(default=True)
+    targetBatteryChargeLevel:bool=Field(default=True)
+    chargingCurrentLimit:bool=Field(default=True)
+    chargingPower:bool=Field(default=True)
     
     
     
@@ -436,3 +466,5 @@ class Car(BaseModel):
 def timestampGenerator():
     return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
 
+# def tokenGenerator():
+#  TODO: add 3 part token generatori header payload signature
