@@ -924,7 +924,7 @@ def OLD_errorResponse(e: ValueError, VIN: str, headers: dict):
 
     return JSONResponse(content=data, status_code=status_code, headers=headers) # TODO: check what headers are sent
 
-@app.get("/connected-vehicle/v2/vehicles/{VIN}/location") #STATIC 
+@app.get("/location/v1/vehicles/{vin}/location") 
 def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     # it has style of the old connecte vehicle API but it is the newest location API
     # TODO: add old error responses for this endpoint
@@ -977,6 +977,8 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         }
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header).pop("vcc_api_operationid", None))
     
+
+
 
 #internal endpoints 
 
