@@ -1012,7 +1012,7 @@ def energyAutoErrorResponse(e: ValueError, VIN: str, headers: dict):
 def capabilities(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
-        checkScope(auth_header.vcc_api_key, ["openid"])
+        checkScope(auth_header.vcc_api_key, ["openid", "energy:capability:read"])
     except ValueError as e:
         return energyAutoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
@@ -1077,7 +1077,7 @@ def batterySectionGen(capability, value, timestamp, unit=None):
 def energyState(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
-        checkScope(auth_header.vcc_api_key, ["openid"])
+        checkScope(auth_header.vcc_api_key, ["openid", "energy:state:read"])
         if not car.getEnergyState:
             return energyErrorResponseGen("RESOURCE_NOT_SUPPORTED", "Energy state not supported", ResponseHeaderGenerator(auth_header), status_code=404)
     except ValueError as e:
