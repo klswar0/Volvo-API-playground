@@ -980,7 +980,7 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 # Energy API section
 
 ##
-### TODO: difrent error responses than the main connective vehicle API.
+### TODO: some Error looked more like connectivity API and some are unique to enrgy API need to check and implemented.
 ##
 
 def energyErrorResponseGen(code: str, message: str,headers: dict, status_code: int = 500,details: list=None):
@@ -999,13 +999,19 @@ def energyAutoErrorResponse(e: ValueError, VIN: str, headers: dict):
     elif str(e) == "Invalid access token":
         return energyErrorResponseGen("UNAUTHORIZED", "Full authentication is required to access this resource.", headers, status_code=401)
     elif str(e) == "Invalid VIN":
-        return energyErrorResponseGen("FORBIDDEN", f"No relationship to UUID.", headers, status_code=404)
+        return energyErrorResponseGen("VEHICLE_NOT_FOUND", f"Vehicle with VIN {VIN} could not be found", headers, status_code=404)
     elif str(e) == "Invalid Accept header":
         return energyErrorResponseGen("BAD_REQUEST", "Invalid Accept header.", headers, status_code=406)
     elif str(e).startswith("The API key does not have access to the requested scope"):
         return energyErrorResponseGen("FORBIDDEN", str(e), headers, status_code=403)
     else:
         return energyErrorResponseGen("INTERNAL_SERVER_ERROR", "An internal server error occurred.", headers, status_code=500)
+    """{  
+                "status": 401,
+                "error": {  
+                "message": "Access denied due to invalid VCC-API-KEY. Make sure to provide a valid key for an active application."
+            }
+    }"""
 
 
 @app.get("/energy/v2/vehicles/{VIN}/energy/capabilities")
@@ -1098,13 +1104,13 @@ def energyState(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 
         data["chargerPowerStatus"] = batterySectionGen(car.chargerPowerStatus,car.chargerPowerStatusValue,  timeStamp)
 
-        data["estimatedChargingTimeToTargetBatteryChargeLevel"] = batterySectionGen(car.estimatedChargingTimeToTargetBatteryChargeLevel,car.estimatedChargingTimeToTargetBatteryChargeLevel, timeStamp, "minutes")
+        data["estimatedChargingTimeToTargetBatteryChargeLevel"] = batterySectionGen(car.estimatedChargingTimeToTargetBatteryChargeLevel,car.estimatedChargingTimeToTargetBatteryChargeLevelValue, timeStamp, "minutes")
 
-        data["chargingCurrentLimit"] = batterySectionGen(car.chargingCurrentLimit,car.chargingCurrentLimit, timeStamp, "ampere")
+        data["chargingCurrentLimit"] = batterySectionGen(car.chargingCurrentLimit,car.chargingCurrentLimitValue, timeStamp, "ampere")
 
-        data["targetBatteryChargeLevel"] = batterySectionGen(car.targetBatteryChargeLevel,car.targetBatteryChargeLevel, timeStamp, "percentage")
+        data["targetBatteryChargeLevel"] = batterySectionGen(car.targetBatteryChargeLevel,car.targetBatteryChargeLevelValue, timeStamp, "percentage")
 
-        data["chargingPower"] = batterySectionGen(car.chargingPower,car.chargingPower, timeStamp, "watts")
+        data["chargingPower"] = batterySectionGen(car.chargingPower,car.chargingPowerValue, timeStamp, "watts")
             
     
         # data = {

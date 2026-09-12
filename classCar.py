@@ -358,13 +358,13 @@ class Car(BaseModel):
     
     chargerPowerStatusValue:str=Field(default="") # Value provided from charger example: PROVIDING_POWER
     
-    estimatedChargingTimeToTargetBatteryChargeLevel:int=Field(default=0) # in minutes
+    estimatedChargingTimeToTargetBatteryChargeLevelValue:int=Field(default=0) # in minutes
     
-    chargingCurrentLimit:int=Field(default=0) # in Amperes
+    chargingCurrentLimitValue:int=Field(default=0) # in Amperes
     
-    targetBatteryChargeLevel:int=Field(default=0) # in % so 0-100
+    targetBatteryChargeLevelValue:int=Field(default=0) # in % so 0-100
     
-    chargingPower:int=Field(default=0) # in watts
+    chargingPowerValue:int=Field(default=0) # in watts
     
     
     
