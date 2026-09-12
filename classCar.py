@@ -189,6 +189,18 @@ options = {
     "targetBatteryChargeLevel":[True, False],
     "chargingCurrentLimit": [True, False],
     "chargingPower":[True, False],
+    
+    # values for energy API
+    "electricRangeValue": "int", # in km or miles
+    "electricRangeUnit": ["km", "miles"],
+    "chargerConnectionStatusValue": ["DISCONNECTED", "CONNECTED", "FAULT"],
+    "chargingStatusValue": ["IDLE", "CHARGING", "SCHEDULED", "DISCHARGING", "ERROR", "DONE"],
+    "chargingTypeValue": ["AC", "DC", "NONE"],
+    "chargerPowerStatusValue": "", # Value provided from charger example: PROVIDING_POWER
+    "estimatedChargingTimeToTargetBatteryChargeLevel": "int", # in minutes
+    "chargingCurrentLimit": "int", # in Amperes
+    "targetBatteryChargeLevel": "int", # in % so 0-100
+    "chargingPower": "int", # in watts
 }
 
 
@@ -333,6 +345,27 @@ class Car(BaseModel):
     targetBatteryChargeLevel:bool=Field(default=True)
     chargingCurrentLimit:bool=Field(default=True)
     chargingPower:bool=Field(default=True)
+    
+    # states for energy API
+    electricRangeValue:int=Field(default=0) # in km or miles
+    electricRangeUnit:str=Field(default="km")
+    
+    chargerConnectionStatusValue:str=Field(default="DISCONNECTED") # possible values: DISCONNECTED, CONNECTED, FAULT
+    
+    chargingStatusValue:str=Field(default="IDLE") # possible values: IDLE, CHARGING, SCHEDULED, DISCHARGING, ERROR, DONE
+    
+    chargingTypeValue:str=Field(default="NONE") # possible values: AC, DC, NONE
+    
+    chargerPowerStatusValue:str=Field(default="") # Value provided from charger example: PROVIDING_POWER
+    
+    estimatedChargingTimeToTargetBatteryChargeLevel:int=Field(default=0) # in minutes
+    
+    chargingCurrentLimit:int=Field(default=0) # in Amperes
+    
+    targetBatteryChargeLevel:int=Field(default=0) # in % so 0-100
+    
+    chargingPower:int=Field(default=0) # in watts
+    
     
     
     

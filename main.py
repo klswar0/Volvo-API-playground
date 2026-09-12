@@ -978,6 +978,10 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header).pop("vcc_api_operationid", None))
     
 # Energy API section
+
+##
+### TODO: difrent error responses than the main connective vehicle API.
+##
 @app.get("/energy/v2/vehicles/{VIN}/energy/capabilities")
 def capabilities(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
@@ -1023,75 +1027,124 @@ def capabilities(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         }
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
     
+def batterySectionGen(capability, value, timestamp, unit=None):
+    if capability is False:
+        return {
+                "status": "ERROR",
+                "code": "PROPERTY_NOT_FOUND",
+                "message": "No valid value could be found for the requested property"
+            }
+    if unit is None:
+        return {
+            "status": "OK",
+            "value": value,
+            "updatedAt": timestamp
+        }
+    return {
+        "status": "OK",
+        "value": value,
+        "unit": unit,
+        "updatedAt": timestamp
+    }
+    
 @app.get("/energy/v2/vehicles/{VIN}/energy/state")
 def energyState(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
         checkScope(auth_header.vcc_api_key, ["openid"])
         if not car.getEnergyState:
-            return NotSupportedResponse("getEnergyState") #check response if not supported
+            data = {
+                "code": "RESOURCE_NOT_SUPPORTED",
+                "message": "Energy state not supported",
+                "details": []
+            }
+            return JSONResponse(content=data, status_code=404, headers=ResponseHeaderGenerator(auth_header))
     except ValueError as e:
         return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         timeStamp = car.timestamp()
-        data = {
-            "batteryChargeLevel": {
-                "status": "OK",
-                "value": car.fuelElectric,
-                "unit": "percentage",
-                "updatedAt": timeStamp
-            },
-            "electricRange": {
-                "status": "OK",
-                "value": 180,
-                "unit": "km",
-                "updatedAt": timeStamp
-            },
-            "chargerConnectionStatus": {
-                "status": "OK",
-                "value": "CONNECTED",
-                "updatedAt": timeStamp
-            },
-            "chargingStatus": {
-                "status": "OK",
-                "value": "IDLE",
-                "updatedAt": timeStamp
-            },
-            "chargingType": {
-                "status": "OK",
-                "value": "AC",
-                "updatedAt": timeStamp
-            },
-            "chargerPowerStatus": {
-                "status": "OK",
-                "value": "PROVIDING_POWER",
-                "updatedAt": timeStamp
-            },
-            "estimatedChargingTimeToTargetBatteryChargeLevel": {
-                "status": "OK",
-                "value": 120,
-                "unit": "minutes",
-                "updatedAt": timeStamp
-            },
-            "chargingCurrentLimit": {
-                "status": "OK",
-                "value": 32,
-                "unit": "ampere",
-                "updatedAt": timeStamp
-            },
-            "targetBatteryChargeLevel": {
-                "status": "OK",
-                "value": 85,
-                "unit": "percentage",
-                "updatedAt": timeStamp
-            },
-            "chargingPower": {
-                "status": "OK",
-                "value": 8000,
-                "unit": "watts",
-                "updatedAt": timeStamp
-            }
-        }
+        data = {}
+        # check if the car doesnt have capabilitie its removed from the response . there IS a error response for property not found
+        data["batteryChargeLevel"] = batterySectionGen(car.batteryChargeLevel,car.fuelElectric, timeStamp, "percentage")
+        
+        data["electricRange"] = batterySectionGen(car.electricRange,car.electricRangeValue, timeStamp, "km")
+
+        data["chargerConnectionStatus"] = batterySectionGen(car.chargerConnectionStatus,car.chargerConnectionStatusValue, timeStamp)
+
+        data["chargingStatus"] = batterySectionGen(car.chargingSystemStatus,car.chargingStatusValue, timeStamp)
+
+        data["chargingType"] = batterySectionGen(car.chargingType,car.chargingTypeValue, timeStamp)
+
+        data["chargerPowerStatus"] = batterySectionGen(car.chargerPowerStatus,car.chargerPowerStatusValue,  timeStamp)
+
+        data["estimatedChargingTimeToTargetBatteryChargeLevel"] = batterySectionGen(car.estimatedChargingTimeToTargetBatteryChargeLevel,car.estimatedChargingTimeToTargetBatteryChargeLevel, timeStamp, "minutes")
+
+        data["chargingCurrentLimit"] = batterySectionGen(car.chargingCurrentLimit,car.chargingCurrentLimit, timeStamp, "ampere")
+
+        data["targetBatteryChargeLevel"] = batterySectionGen(car.targetBatteryChargeLevel,car.targetBatteryChargeLevel, timeStamp, "percentage")
+
+        data["chargingPower"] = batterySectionGen(car.chargingPower,car.chargingPower, timeStamp, "watts")
+            
+    
+        # data = {
+        #     "batteryChargeLevel": {
+        #         "status": "OK",
+        #         "value": car.fuelElectric,
+        #         "unit": "percentage",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "electricRange": {
+        #         "status": "OK",
+        #         "value": 180,
+        #         "unit": "km",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "chargerConnectionStatus": {
+        #         "status": "OK",
+        #         "value": "CONNECTED",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "chargingStatus": {
+        #         "status": "OK",
+        #         "value": "IDLE",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "chargingType": {
+        #         "status": "OK",
+        #         "value": "AC",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "chargerPowerStatus": {
+        #         "status": "OK",
+        #         "value": "PROVIDING_POWER",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "estimatedChargingTimeToTargetBatteryChargeLevel": {
+        #         "status": "OK",
+        #         "value": 120,
+        #         "unit": "minutes",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "chargingCurrentLimit": {
+        #         "status": "OK",
+        #         "value": 32,
+        #         "unit": "ampere",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "targetBatteryChargeLevel": {
+        #         "status": "OK",
+        #         "value": 85,
+        #         "unit": "percentage",
+        #         "updatedAt": timeStamp
+        #     },
+        #     "chargingPower": {
+        #         "status": "OK",
+        #         "value": 8000,
+        #         "unit": "watts",
+        #         "updatedAt": timeStamp
+        #     }
+        # }
+        
         return JSONResponse(content=data, status_code=200, headers=ResponseHeaderGenerator(auth_header))
 
 
