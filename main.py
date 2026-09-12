@@ -982,13 +982,39 @@ def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
 ##
 ### TODO: difrent error responses than the main connective vehicle API.
 ##
+
+def energyErrorResponseGen(code: str, message: str,headers: dict, status_code: int = 500,details: list=None):
+    data={
+        "code": code,
+        "message": message,
+        "details": details
+    }
+
+    return JSONResponse(content=data, status_code=status_code, headers=headers) #check what headers are sent
+def energyAutoErrorResponse(e: ValueError, VIN: str, headers: dict):
+    if str(e) == "Missing API key":
+        return energyErrorResponseGen("UNAUTHORIZED", "Access denied due to missing header VCC-API-KEY. Make sure to provide a valid key for an active application.", headers, status_code=401)
+    elif str(e) == "Invalid API key":
+        return energyErrorResponseGen("UNAUTHORIZED", "Access denied due to invalid header VCC-API-KEY. Make sure to provide a valid key for an active application.", headers, status_code=401)
+    elif str(e) == "Invalid access token":
+        return energyErrorResponseGen("UNAUTHORIZED", "Full authentication is required to access this resource.", headers, status_code=401)
+    elif str(e) == "Invalid VIN":
+        return energyErrorResponseGen("FORBIDDEN", f"No relationship to UUID.", headers, status_code=404)
+    elif str(e) == "Invalid Accept header":
+        return energyErrorResponseGen("BAD_REQUEST", "Invalid Accept header.", headers, status_code=406)
+    elif str(e).startswith("The API key does not have access to the requested scope"):
+        return energyErrorResponseGen("FORBIDDEN", str(e), headers, status_code=403)
+    else:
+        return energyErrorResponseGen("INTERNAL_SERVER_ERROR", "An internal server error occurred.", headers, status_code=500)
+
+
 @app.get("/energy/v2/vehicles/{VIN}/energy/capabilities")
 def capabilities(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
         checkScope(auth_header.vcc_api_key, ["openid"])
     except ValueError as e:
-        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
+        return energyAutoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         data = {
             "getEnergyState": {
@@ -1053,14 +1079,9 @@ def energyState(VIN:str, auth_header: AuthHeaderGET = Header(...)):
         car = VINHandling(VIN, auth_header)
         checkScope(auth_header.vcc_api_key, ["openid"])
         if not car.getEnergyState:
-            data = {
-                "code": "RESOURCE_NOT_SUPPORTED",
-                "message": "Energy state not supported",
-                "details": []
-            }
-            return JSONResponse(content=data, status_code=404, headers=ResponseHeaderGenerator(auth_header))
+            return energyErrorResponseGen("RESOURCE_NOT_SUPPORTED", "Energy state not supported", ResponseHeaderGenerator(auth_header), status_code=404)
     except ValueError as e:
-        return autoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
+        return energyAutoErrorResponse(e, VIN,ResponseHeaderGenerator(auth_header))
     else:
         timeStamp = car.timestamp()
         data = {}
