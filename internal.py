@@ -11,7 +11,7 @@ from copy import deepcopy
 
 from notifier import notifier
 from classCar import Car, options, readConfig, timestampGenerator, Oauth2,Scopes
-from database import database, AdditionalDatabase,createCar
+from database import database, AdditionalDatabase,createCar,oauth2Generator
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 
 #internal endpoints 
@@ -66,11 +66,7 @@ def OAuthRegenerateInternal(vcc_api_key:str = Header(...)):
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 not activated for this API key"}}, status_code=400)
         else:
             oauth2=AdditionalDatabase[vcc_api_key].Oauth2Data
-            oauth2.client_secret = "client_secret_"+secrets.token_urlsafe(32)
-            oauth2.code = ""
-            oauth2.access_token =  "access_token_"+secrets.token_urlsafe(32)
-            oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32)
-            #oauth2.expires_in = 
+            oauth2=oauth2Generator(vcc_api_key,oauth2)
             data={"access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
             return JSONResponse(content=data, status_code=200)
 

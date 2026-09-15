@@ -5,6 +5,7 @@ import uuid
 from pydantic import BaseModel, Field 
 from notifier import notifier
 from datetime import datetime, timezone
+
 import configparser
 from scopes import Scopes
 
@@ -74,7 +75,7 @@ class Oauth2(BaseModel):
     refresh_token: str = Field(default="")
     redirect_uri: str = Field(default="")
     
-    #expires_in: datetime #to implement
+    expires_in: int= Field(default=-1)
 
 class AdditionalData(BaseModel):
 
@@ -499,5 +500,3 @@ class Car(BaseModel):
 def timestampGenerator():
     return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
 
-# def tokenGenerator():
-#  TODO: add 3 part token generatori header payload signature

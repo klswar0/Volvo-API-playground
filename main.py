@@ -20,7 +20,7 @@ import internal
 import dashboard
 from notifier import notifier
 from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator, readConfig, timestampGenerator, Oauth2
-from database import database, AdditionalDatabase
+from database import database, AdditionalDatabase, oauth2Generator
 from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse
 import ErrorLogging
 
@@ -218,11 +218,8 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
     else:
         raise HTTPException(status_code=400, detail={"error": {"message": "BAD_REQUEST","description": "grant_type must be 'authorization_code' or 'refresh_token'"}})
     
-    oauth2.access_token = "access_token_"+secrets.token_urlsafe(32) #generate
-    oauth2.refresh_token = "refresh_token_"+secrets.token_urlsafe(32) #generate
-    # NOTE: what i meant?  added the acces_token for simplicity of development but Bearer is still ineeded
-    oauth2.code = "" #invalidate code
-    #oauth2.expires_in = 
+    oauth2Generator(client_id,oauth2)
+
     data={"access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
     return JSONResponse(content=data, status_code=200)
     
@@ -928,27 +925,27 @@ def OLD_errorResponse(e: ValueError, VIN: str, headers: dict):
 def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     # it has style of the old connecte vehicle API but it is the newest location API
     # TODO: add old error responses for this endpoint
-    """
-    {
-    "data": {
-        "geometry": {
-        "coordinates": [
-            11.968307501897431,
-            57.68877357281511,
-            0
-        ],
-        "type": "Point"
-        },
-        "properties": {
-        "timestamp": "2026-09-07T19:11:24.701051642Z",
-        "heading": "347"
-        },
-        "type": "Feature"
-    },
-    "operationId": "81ea34aa92b14186b3a9d6c15710fb3c",
-    "status": 200
-    }
-    """
+    # """
+    # {
+    # "data": {
+    #     "geometry": {
+    #     "coordinates": [
+    #         11.968307501897431,
+    #         57.68877357281511,
+    #         0
+    #     ],
+    #     "type": "Point"
+    #     },
+    #     "properties": {
+    #     "timestamp": "2026-09-07T19:11:24.701051642Z",
+    #     "heading": "347"
+    #     },
+    #     "type": "Feature"
+    # },
+    # "operationId": "81ea34aa92b14186b3a9d6c15710fb3c",
+    # "status": 200
+    # }
+    # """
     try:
         car = VINHandling(VIN, auth_header)
         checkScope(auth_header.vcc_api_key, ["openid","location:read"])
@@ -1006,12 +1003,12 @@ def energyAutoErrorResponse(e: ValueError, VIN: str, headers: dict):
         return energyErrorResponseGen("FORBIDDEN", str(e), headers, status_code=403)
     else:
         return energyErrorResponseGen("INTERNAL_SERVER_ERROR", "An internal server error occurred.", headers, status_code=500)
-    """{  
-                "status": 401,
-                "error": {  
-                "message": "Access denied due to invalid VCC-API-KEY. Make sure to provide a valid key for an active application."
-            }
-    }"""
+    # """{  
+    #             "status": 401,
+    #             "error": {  
+    #             "message": "Access denied due to invalid VCC-API-KEY. Make sure to provide a valid key for an active application."
+    #         }
+    # }"""
 
 
 @app.get("/energy/v2/vehicles/{VIN}/energy/capabilities")
