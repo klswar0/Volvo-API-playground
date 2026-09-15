@@ -100,6 +100,7 @@ def oauth2Generator(api_key:str,oauth2:Oauth2):
     oauth2.access_token = tokenGenerator(api_key, timeGeneration, scopes=scopes) #generate
     oauth2.refresh_token = base64.urlsafe_b64encode(uuid.uuid4().bytes).decode().rstrip('=') #generate
     oauth2.code = "" #invalidate code
-    oauth2.expires_in = time() + 3599 
+    if oauth2.expires_in != -1:
+        oauth2.expires_in = time() + 3599 
 
     return oauth2
