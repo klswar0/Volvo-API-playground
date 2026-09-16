@@ -1198,7 +1198,9 @@ def AuthDeactivateInternal(vcc_api_key:str = Header(...)):
 @app.post("/internal/oauth2/regenerate")
 def AuthRegenerateInternal(vcc_api_key:str = Header(...)):
     return internal.OAuthRegenerateInternal(vcc_api_key)
-
+@app.post("/internal/oauth2/expire")
+def AuthExpireInternal(vcc_api_key:str = Header(...)):
+    return internal.Oauth2ExpireInternal(vcc_api_key)
 
 @app.post("/internal/scopes")
 def ScopesInternal(vcc_api_key:str = Header(...),scopes: list = Body(default=None)):

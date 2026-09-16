@@ -18,6 +18,7 @@ config = configparser.ConfigParser()
 config['DEFAULT'] = {
     'ShortKeys': 'True',
     'Validation': 'True',
+    'expirity': 'True',
     'Websocket': 'True',
     'statusNotification': 'ALL' # FIX planned when new error logger+notification system /possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
 }
@@ -74,8 +75,10 @@ class Oauth2(BaseModel):
     access_token: str = Field(default="")
     refresh_token: str = Field(default="")
     redirect_uri: str = Field(default="")
-    
-    expires_in: int= Field(default=-1)
+    if readConfig("DEFAULT","expirity",True)==True:
+        expires_in: int= Field(default=0)
+    else:
+        expires_in: int= Field(default=-1)
 
 class AdditionalData(BaseModel):
 

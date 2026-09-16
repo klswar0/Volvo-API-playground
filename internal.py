@@ -80,9 +80,23 @@ def OAuthGetInternal(vcc_api_key:str = Header(...)):
             return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 not activated for this API key"}}, status_code=400)
         else:
             oauth2=AdditionalDatabase[vcc_api_key].Oauth2Data
-            data={"client_secret": oauth2.client_secret, "code": oauth2.code, "access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599, "redirect_uri": oauth2.redirect_uri}
+            data={"client_secret": oauth2.client_secret, "code": oauth2.code, "access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": oauth2.expires_in, "redirect_uri": oauth2.redirect_uri}
             return JSONResponse(content=data, status_code=200)
-
+        
+def Oauth2ExpireInternal(vcc_api_key:str = Header(...)):
+    try:
+        authenticateInternal(vcc_api_key)
+        if readConfig("DEFAULT","expirity",True)==False:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"Expirity is disabled in the configuration."}}, status_code=400)
+    except ValueError as e:
+        return JSONResponse(content={"error": {"message": "UNAUTHORIZED","description": f"Invalid API key"}}, status_code=401)
+    else:
+        if vcc_api_key not in AdditionalDatabase or AdditionalDatabase[vcc_api_key].Oauth2Data is None:
+            return JSONResponse(content={"error": {"message": "BAD_REQUEST","description": f"OAuth2 not activated for this API key"}}, status_code=400)
+        else:
+            oauth2=AdditionalDatabase[vcc_api_key].Oauth2Data
+            oauth2.expires_in = 0
+            return JSONResponse(content={"message": "OAuth2 expired successfully"}, status_code=200)
 
 # scopes
 
