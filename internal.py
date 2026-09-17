@@ -27,7 +27,7 @@ def Terminal(VIN: str, key: str, request: Request):
 
 #OAuth2 endpoints for testing and dashboard purposes. Not part of the official API.
 
-def OAuthActivateInternal(vcc_api_key:str = Header(...),client_secret:str = Body(...),PKCE:bool = Body(...),redirect_uri:str = Body(default="")):
+def OAuthActivateInternal(vcc_api_key:str,client_secret:str,PKCE:bool,redirect_uri:str):
     try:
         authenticateInternal(vcc_api_key)
     except ValueError as e:
