@@ -24,6 +24,10 @@ database.AdditionalDatabase["TEST_NO_OAUTH"] = database.AdditionalData()
 database.database["TEST_OAUTH"] = [Car(VIN="12345678901234567")]
 database.AdditionalDatabase["TEST_OAUTH"] = database.AdditionalData(Oauth2Data=database.Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token",code_challenge_method="plain",code_challenge="code_challenge"))
 
+database.database["TEST_SCOPE"] = [Car(VIN="12345678901234567")]
+database.AdditionalDatabase["TEST_SCOPE"] = database.AdditionalData(ScopesData=database.Scopes(scopes=["openid"]))
+
+
 database_backup = copy.deepcopy(database.database)
 additional_data_backup = copy.deepcopy(database.AdditionalDatabase)
 # snapshots_backup = copy.deepcopy(snapshots.snapshotsData)
