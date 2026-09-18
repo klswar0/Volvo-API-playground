@@ -234,8 +234,9 @@ def listVehicles(auth_header: AuthHeaderGET = Header(...)):
     """list all vehicles associated with the provided API key."""
     try:
         authenticate(auth_header)
-         
+
         checkScope(auth_header.vcc_api_key, ["openid","conve:vehicle_relation"])
+
     except ValueError as e:
         return autoErrorResponse(e, headers=ResponseHeaderGenerator(auth_header))
     else:
@@ -923,7 +924,7 @@ def OLD_errorResponse(e: ValueError, VIN: str, headers: dict):
 
     return JSONResponse(content=data, status_code=status_code, headers=headers) # TODO: check what headers are sent
 
-@app.get("/location/v1/vehicles/{vin}/location") 
+@app.get("/location/v1/vehicles/{VIN}/location") 
 def getLocation(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     # it has style of the old connecte vehicle API but it is the newest location API
     # TODO: add old error responses for this endpoint
