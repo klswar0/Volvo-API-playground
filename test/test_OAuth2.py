@@ -1,5 +1,6 @@
 import database
 import main
+import OAuth2
 import hashlib
 import base64
 
@@ -16,9 +17,9 @@ client = TestClient(main.app)
 def test_func_PKCECheck_Plain():
     data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
     print(data)
-    func=main.PKCECheck(code_verifier="bad_code_verifier",oauth2=data)
+    func=OAuth2.PKCECheck(code_verifier="bad_code_verifier",oauth2=data)
     assert func == False
-    func=main.PKCECheck(code_verifier="code_challenge",oauth2=data)
+    func=OAuth2.PKCECheck(code_verifier="code_challenge",oauth2=data)
     assert func == True
     assert data.code_challenge_method == ""
     assert data.code_challenge == ""
@@ -30,9 +31,9 @@ def test_func_PKCECheck_S256():
     change_data("code_challenge",base64.urlsafe_b64encode(hashlib.sha256("code_challenge".encode()).digest()).decode().rstrip("="))
     
     data=database.AdditionalDatabase["TEST_OAUTH"].Oauth2Data
-    func=main.PKCECheck(code_verifier="bad_code_verifier",oauth2=data)
+    func=OAuth2.PKCECheck(code_verifier="bad_code_verifier",oauth2=data)
     assert func == False
-    func=main.PKCECheck(code_verifier="code_challenge",oauth2=data)
+    func=OAuth2.PKCECheck(code_verifier="code_challenge",oauth2=data)
     assert func == True
     assert data.code_challenge_method == ""
     assert data.code_challenge == ""

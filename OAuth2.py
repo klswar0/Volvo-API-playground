@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 
-
+from scopes import scopesList
 from database import AdditionalDatabase
 from classCar import Oauth2, readConfig
 

@@ -110,19 +110,19 @@ def VINHandling(VIN:str, auth_header:  AuthHeaderPOST | AuthHeaderGET):
 
 @app.get("/as/authorization.oauth2")
 def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(...),redirect_uri:str=Query(...),scope:str=Query(default=""),state:str=Query(default=""),code_challenge:str=Query(default=""),code_challenge_method:str=Query(default="")):
-    OAuth2.oauth2(request, response_type, client_id, redirect_uri, scope, state, code_challenge, code_challenge_method)
+    return OAuth2.oauth2(request, response_type, client_id, redirect_uri, scope, state, code_challenge, code_challenge_method)
 
 @app.post("/as/authorization.internal")
 def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state: str = Form(default=""), login: str = Form(...), code_challenge: str = Form(default=""), code_challenge_method: str = Form(default="")):
-    OAuth2.oauth2_post(client_id, redirect_uri, state, login, code_challenge, code_challenge_method)
+    return OAuth2.oauth2_post(client_id, redirect_uri, state, login, code_challenge, code_challenge_method)
 
 @app.get("/internal/test")
 def test(code:str=Query(...),state:str=Query(default="")):
-    OAuth2.test(code, state)
+    return OAuth2.test(code, state)
     
 @app.post("/as/token.oauth2") 
 def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:str=Header(...),grant_type:str=Form(...),refresh_token:str=Form(default=""),code:str=Form(default=""),redirect_uri:str=Form(default=""),code_verifier:str=Form(default=""),):
-    OAuth2.OAuthToken(content_type, authorization, grant_type, refresh_token, code, redirect_uri, code_verifier)
+    return OAuth2.OAuthToken(content_type, authorization, grant_type, refresh_token, code, redirect_uri, code_verifier)
 
 # https://api.volvocars.com/connected-vehicle/v2/ section
 
