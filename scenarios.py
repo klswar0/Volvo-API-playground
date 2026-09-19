@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from config import readConfig
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
-from internal import VINHandlingInternal, authenticateInternal
+from internal import VINHandlingInternal
 from notifier import notifier
 
 #NOTE: NOT TESTED

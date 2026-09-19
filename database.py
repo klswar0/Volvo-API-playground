@@ -1,13 +1,6 @@
-import base64
-import json
-import uuid
-import secrets
 
 from classCar import Car, AdditionalData, Oauth2, Scopes
-from scopes import scopesList
-from time import time
-from datetime import datetime, timezone
-from config import readConfig
+
 
 database = {
     "vcc_api_key": [Car(VIN="VIN123", fuelType="HYBRID")],

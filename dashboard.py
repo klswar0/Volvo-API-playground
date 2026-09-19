@@ -1,6 +1,6 @@
 
 
-from fastapi import Body, Query ,Request , Response, WebSocket, WebSocketDisconnect
+from fastapi import Body, Request , Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
 from fastapi.templating import Jinja2Templates
 
@@ -13,7 +13,7 @@ import secrets
 
 
 from notifier import notifier
-from classCar import Car, options, timestampGenerator, Oauth2,Scopes
+from classCar import Car, Oauth2,Scopes
 from config import readConfig
 from database import createCar, database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal

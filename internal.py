@@ -1,16 +1,15 @@
-from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, WebSocketDisconnect, Form
-from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
+from fastapi import Body, Header ,Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 
 templates = Jinja2Templates(directory="templates")
 
 import json
 import secrets
-from copy import deepcopy
 
 
 from notifier import notifier
-from classCar import Car, options, timestampGenerator, Oauth2,Scopes
+from classCar import Car, Oauth2,Scopes
 from config import readConfig
 from database import database, AdditionalDatabase,createCar
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
