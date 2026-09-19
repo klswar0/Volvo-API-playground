@@ -10,7 +10,8 @@ from copy import deepcopy
 
 
 from notifier import notifier
-from classCar import Car, options, readConfig, timestampGenerator, Oauth2,Scopes
+from classCar import Car, options, timestampGenerator, Oauth2,Scopes
+from config import readConfig
 from database import database, AdditionalDatabase,createCar
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from OAuth2 import oauth2Generator

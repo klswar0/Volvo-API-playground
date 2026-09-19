@@ -13,7 +13,8 @@ import secrets
 
 
 from notifier import notifier
-from classCar import Car, options, readConfig, timestampGenerator, Oauth2,Scopes
+from classCar import Car, options, timestampGenerator, Oauth2,Scopes
+from config import readConfig
 from database import createCar, database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import update, genAPIKey

@@ -12,7 +12,8 @@ from fastapi.templating import Jinja2Templates
 
 from scopes import scopesList
 from database import AdditionalDatabase
-from classCar import Oauth2, readConfig
+from classCar import Oauth2
+from config import readConfig
 
 
 

@@ -7,7 +7,7 @@ from classCar import Car, AdditionalData, Oauth2, Scopes
 from scopes import scopesList
 from time import time
 from datetime import datetime, timezone
-from classCar import readConfig
+from config import readConfig
 
 database = {
     "vcc_api_key": [Car(VIN="VIN123", fuelType="HYBRID")],

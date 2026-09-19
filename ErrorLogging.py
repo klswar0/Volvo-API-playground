@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from starlette.background import BackgroundTask
 import asyncio
 
-from classCar import readConfig
+from config import readConfig
 # error logging V1
 
 
