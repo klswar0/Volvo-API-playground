@@ -84,7 +84,7 @@ def tokenGenerator(api_key:str,timeGen:int,scopes:list=None):
         signature = secrets.token_urlsafe(2).rstrip("=") 
     signature = secrets.token_urlsafe(16).rstrip("=") # testing secret is used here bc i dont use this data
     return f"{base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip('=')}.{base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')}.{signature}"
-#  TODO: add 3 part token generatori header payload signature
+
 
 def oauth2Generator(api_key:str,oauth2:Oauth2):
     additonal=AdditionalDatabase[api_key]

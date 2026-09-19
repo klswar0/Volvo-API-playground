@@ -14,7 +14,7 @@ import secrets
 
 from notifier import notifier
 from classCar import Car, options, readConfig, timestampGenerator, Oauth2,Scopes
-from database import createCar, database, AdditionalDatabase
+from database import createCar, database, AdditionalDatabase, oauth2Generator
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
@@ -204,7 +204,7 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
                     return OAuth2Settings(key, request)
 
             return HTMLResponse(content="<p style=\"color:red\">OAuth2 not activated for this API key</p>")
-        print(f"Changing OAuth2 attribute {attribute} to {value} for key {key}")
+
         if attribute == "client_secret":
             AdditionalDatabase[key].Oauth2Data.client_secret = value
         elif attribute == "redirect_uri":   
@@ -221,6 +221,10 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
         elif attribute == "OAuth2":
             if value.lower() == "false":
                 AdditionalDatabase[key].Oauth2Data = None
+        elif attribute == "generate":
+            oauth2Generator(key, AdditionalDatabase[key].Oauth2Data)
+        elif attribute == "expire":
+            AdditionalDatabase[key].Oauth2Data.expires_in = 0
         else:
             return HTMLResponse(content="<p style=\"color:red\">Invalid attribute</p>")
         # response=Response()
@@ -230,7 +234,7 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
     except ValueError as e:
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
-    
+# def OAuth2Generate(key: str, request: Request):  
     
 def scenarios(key: str,VIN: str, request: Request):
     check = checkDashboardEnabled()
