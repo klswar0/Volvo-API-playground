@@ -70,37 +70,3 @@ def createCar(api_key: str, car: Car):
         AdditionalDatabase[api_key] = AdditionalData()
         
         
-def tokenGenerator(api_key:str,timeGen:int,scopes:list=None):
-    header={"alg": "HS256", "kid": api_key}# api key is used here bc i dont use this data
-
-    if scopes is None:
-        scopes=scopesList
-    payload={"scope":scopes,"authorization_details": [],"client_id": api_key,"sub":"user", "iss": "https://playground.kls.hackclub.app","aud": "https://playground.kls.hackclub.app","exp": int(timeGen + 3599),"iat": int(timeGen)}
-    # TODO
-    # if multi user change sub
-    # while doing that rewrtie Oauth2 logic (kid)
-    #
-    if readConfig("DEFAULT","ShortKeys",True)==True:
-        signature = secrets.token_urlsafe(2).rstrip("=") 
-    signature = secrets.token_urlsafe(16).rstrip("=") # testing secret is used here bc i dont use this data
-    return f"{base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip('=')}.{base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')}.{signature}"
-
-
-def oauth2Generator(api_key:str,oauth2:Oauth2):
-    additonal=AdditionalDatabase[api_key]
-    scopes=None
-    if additonal.ScopesData is not None:
-        scopes=list(additonal.ScopesData.scopes)
-    
-    timeGeneration=time()
-    if readConfig("DEFAULT","ShortKeys",True)==True:
-        oauth2.access_token = "access_token_"+tokenGenerator(api_key, timeGeneration, scopes=scopes) #generate
-        oauth2.refresh_token = "refresh_token_"+base64.urlsafe_b64encode(uuid.uuid4().bytes).decode() #generate
-        
-    oauth2.access_token = tokenGenerator(api_key, timeGeneration, scopes=scopes) #generate
-    oauth2.refresh_token = base64.urlsafe_b64encode(uuid.uuid4().bytes).decode().rstrip('=') #generate
-    oauth2.code = "" #invalidate code
-    if oauth2.expires_in != -1:
-        oauth2.expires_in = int(time()) + 3599 
-
-    return oauth2

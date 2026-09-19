@@ -14,11 +14,12 @@ import secrets
 
 from notifier import notifier
 from classCar import Car, options, readConfig, timestampGenerator, Oauth2,Scopes
-from database import createCar, database, AdditionalDatabase, oauth2Generator
+from database import createCar, database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import VINHandlingInternal, authenticateInternal, update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
 from snapshots import loadSnapshots, saveFileSnapshots, saveSnapshots,snapshotsData
+from OAuth2 import  oauth2Generator
 
 error_headers = {
     "HX-Retarget": "#error-response",

@@ -58,3 +58,32 @@ def UnauthorizedResponseInternal():
 def BadRequestResponseInternal(VIN:str):
     return JSONResponse(content={ "error": {"message": "THIS IS INTERNAL API/BAD_REQUEST","description": f"invalid VIN value. field:{VIN}"}}, status_code=400)
 
+def energyErrorResponseGen(code: str, message: str,headers: dict, status_code: int = 500,details: list=None):
+    data={
+        "code": code,
+        "message": message,
+        "details": details
+    }
+
+    return JSONResponse(content=data, status_code=status_code, headers=headers) #check what headers are sent
+def energyAutoErrorResponse(e: ValueError, VIN: str, headers: dict):
+    if str(e) == "Missing API key":
+        return energyErrorResponseGen("UNAUTHORIZED", "Access denied due to missing header VCC-API-KEY. Make sure to provide a valid key for an active application.", headers, status_code=401)
+    elif str(e) == "Invalid API key":
+        return energyErrorResponseGen("UNAUTHORIZED", "Access denied due to invalid header VCC-API-KEY. Make sure to provide a valid key for an active application.", headers, status_code=401)
+    elif str(e) == "Invalid access token":
+        return energyErrorResponseGen("UNAUTHORIZED", "Full authentication is required to access this resource.", headers, status_code=401)
+    elif str(e) == "Invalid VIN":
+        return energyErrorResponseGen("VEHICLE_NOT_FOUND", f"Vehicle with VIN {VIN} could not be found", headers, status_code=404)
+    elif str(e) == "Invalid Accept header":
+        return energyErrorResponseGen("BAD_REQUEST", "Invalid Accept header.", headers, status_code=406)
+    elif str(e).startswith("The API key does not have access to the requested scope"):
+        return energyErrorResponseGen("FORBIDDEN", str(e), headers, status_code=403)
+    else:
+        return energyErrorResponseGen("INTERNAL_SERVER_ERROR", "An internal server error occurred.", headers, status_code=500)
+    # """{  
+    #             "status": 401,
+    #             "error": {  
+    #             "message": "Access denied due to invalid VCC-API-KEY. Make sure to provide a valid key for an active application."
+    #         }
+    # }"""
