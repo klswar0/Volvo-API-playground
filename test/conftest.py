@@ -13,7 +13,8 @@ if str(ROOT) not in sys.path:
 
 import database 
 import snapshots 
-from classCar import Car, config 
+from classCar import Car
+from config import readConfig 
 from notifier import notifier 
 
 
