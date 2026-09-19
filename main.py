@@ -1,29 +1,24 @@
 
 
-import base64
+
 import uuid
-
-from fastapi import Body, FastAPI, Header ,Request ,Query, Response, WebSocket, Form, Request,HTTPException
-from fastapi.responses import FileResponse, JSONResponse ,HTMLResponse, RedirectResponse 
+from fastapi import Body, FastAPI, Header ,Request ,Query, WebSocket, Form, Request
+from fastapi.responses import FileResponse, JSONResponse , RedirectResponse 
 from fastapi.templating import Jinja2Templates
-
 import uvicorn
-import secrets
-import hashlib
-from typing import Union
-from time import time
+
+
 
 import energy
-from scopes import Scopes, checkScope, scopesList
+from scopes import checkScope
 from scenarios import scenariosFunc
-from snapshots import snapshots,loadFileSnapshots, saveFileSnapshots
+from snapshots import snapshots,loadFileSnapshots
 import internal
 import dashboard
-from notifier import notifier
-from classCar import Car, options, AuthHeaderPOST,AuthHeaderGET,Tracking,ResponseHeaderGenerator, timestampGenerator, Oauth2
+from classCar import  AuthHeaderPOST,AuthHeaderGET,ResponseHeaderGenerator
 from config import readConfig
-from database import database, AdditionalDatabase
-from readyResponses import ErrorResponse, UnauthorizedResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse, energyAutoErrorResponse, energyErrorResponseGen, OLD_errorResponse
+from database import database
+from readyResponses import ErrorResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse, OLD_errorResponse
 import ErrorLogging
 import OAuth2
 from auth import authenticate,VINHandling
