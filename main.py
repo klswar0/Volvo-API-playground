@@ -1014,7 +1014,7 @@ def energyAutoErrorResponse(e: ValueError, VIN: str, headers: dict):
     # }"""
 
 
-@app.get("/energy/v2/vehicles/{VIN}/energy/capabilities")
+@app.get("/energy/v2/vehicles/{VIN}/capabilities")
 def capabilities(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
@@ -1079,7 +1079,7 @@ def batterySectionGen(capability, value, timestamp, unit=None):
         "updatedAt": timestamp
     }
     
-@app.get("/energy/v2/vehicles/{VIN}/energy/state")
+@app.get("/energy/v2/vehicles/{VIN}/state")
 def energyState(VIN:str, auth_header: AuthHeaderGET = Header(...)):
     try:
         car = VINHandling(VIN, auth_header)
