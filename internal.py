@@ -14,7 +14,7 @@ from classCar import Car, options, readConfig, timestampGenerator, Oauth2,Scopes
 from database import database, AdditionalDatabase,createCar
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from OAuth2 import oauth2Generator
-
+from auth import authenticateInternal, VINHandlingInternal
 #internal endpoints 
 
 
@@ -126,20 +126,7 @@ def setScopesInternal(vcc_api_key:str = Header(...),scopes: list = Body(default=
 #internal endpoints for testing and dashboard purposes. Not part of the official API.
 
 
-def authenticateInternal(vcc_api_key: str):
-    if vcc_api_key not in database:
-        raise ValueError("Invalid API key")
-    
-def VINHandlingInternal(VIN:str, vcc_api_key: str):
-    try:
-        authenticateInternal(vcc_api_key)
-    except ValueError:
-        raise ValueError("Invalid API key")
-    for car in database[vcc_api_key]:
-        if car.VIN == VIN:
-            return car
-    raise ValueError("Invalid VIN")
-    
+
 def update(VIN:str, attribute: str, value: str, vcc_api_key: str):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
