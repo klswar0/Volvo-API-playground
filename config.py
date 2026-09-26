@@ -1,5 +1,6 @@
 
 import configparser
+import os
 
 
 def readConfig(section, option, boolean=False):
@@ -25,6 +26,14 @@ config['ERROR_LOGGING'] = {
     'Write': 'True'
 }
 config.read('config.ini')
+
+all_options=['DEFAULT']+config.sections()
+for section in all_options:
+    for option in config[section].keys():
+        envName=f"{section}_{option}".upper()
+        if envName in os.environ:
+            config.set(section, option, os.environ[envName])
+            
 
 # startUp={
 #     "Public": True,
