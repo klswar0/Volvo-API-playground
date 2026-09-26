@@ -98,6 +98,13 @@ def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(..
     if oauth2.redirect_uri != "":
         if redirect_uri != AdditionalDatabase[client_id].Oauth2Data.redirect_uri:
             return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid redirect_uri</p>", status_code=400)
+    if AdditionalDatabase[client_id].ScopesData is not None:
+        scope_list = scope.split(" ")
+        for s in scope_list:
+            if s not in AdditionalDatabase[client_id].ScopesData.scopes:
+                return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Invalid scope</p>", status_code=400)
+        if len(scope_list) != len(AdditionalDatabase[client_id].ScopesData.scopes) and readConfig("DEFAULT","scopeWarning",True)==True:
+            return HTMLResponse(content="<h1>BAD_REQUEST</h1><p>Not all scopes are requested INFO: works in normal API but here it is not allowed</p>", status_code=400)
     # site needed for "login"
     return templates.TemplateResponse(name="oauth2login.html", request=request, context={"client_id": client_id, "redirect_uri": redirect_uri, "scope": scope, "state": state, "code_challenge": code_challenge, "code_challenge_method": code_challenge_method})
     
@@ -169,3 +176,5 @@ def OAuthToken(content_type:str=Header(...,alias="content-type"),authorization:s
 
     data={"access_token": oauth2.access_token, "refresh_token": oauth2.refresh_token, "token_type": "Bearer", "expires_in": 3599}
     return JSONResponse(content=data, status_code=200)
+
+
