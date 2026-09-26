@@ -5,39 +5,19 @@ import uuid
 from pydantic import BaseModel, Field 
 from notifier import notifier
 from datetime import datetime, timezone
-import configparser
+
+from config import readConfig
+from scopes import Scopes
 
 
-config = configparser.ConfigParser()
-config['DEFAULT'] = {
-    'Validation': 'True',
-    'Websocket': 'True',
-    'statusNotification': 'ALL' # FIX planned when new error logger+notification system /possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
-}
-config['SITE'] = {
-    'Public': 'True',
-    'Dashboard': 'True',
-    'Note': ''
-}
-config['ERROR_LOGGING'] = {
-    'STATUS': 'True',
-    'Write': 'True'
-}
-config.read('config.ini')
 
-# startUp={
-#     "Public": True,
-#     "Validation": True,
-#     "Dashboard": True,
-#     "Websocket": True,
-#     "statusNotification": "ALL" # possible values: SET-data is change, ALL- all debug info, VOLVO-only volvo api changes (chaning this  to VOLVO could breake the dashboard and websocket)
-# }
 
+    
 
 
 class Tracking(BaseModel):
-    traceparent:str=Field(default="") # NOT IMPLEMENTED FULLY starndard traceparent header  W3C traceparent (search online)
-    vcc_api_operationId:str=Field(default=str(uuid.uuid4()),alias="vcc-api-operationId") # UUID
+    traceparent:str=Field(default=None) # NOT IMPLEMENTED FULLY starndard traceparent header  W3C traceparent (search online)
+    vcc_api_operationId:str=Field(default=None,alias="vcc-api-operationId") # UUID #depracted since? Deprecated since 2025-09-29. Please use traceparent instead. (about operationId not vcc_api_operationId)
 
 
 class AuthHeader(Tracking):
@@ -64,16 +44,31 @@ class Oauth2(BaseModel):
     access_token: str = Field(default="")
     refresh_token: str = Field(default="")
     redirect_uri: str = Field(default="")
+    if readConfig("DEFAULT","expirity",True)==True:
+        expires_in: int= Field(default=0)
+    else:
+        expires_in: int= Field(default=-1)
+
+class AdditionalData(BaseModel):
+
+    Oauth2Data: Oauth2 = Field(default=None)
+    ScopesData: Scopes = Field(default=None)
+    # validation: bool = Field(default=True)
     
-    #expires_in: datetime #to implement
-
-
+    
+    def checkOauth2(self):
+        if self.Oauth2Data is None:
+            return False
+        return True
 
 def ResponseHeaderGenerator(auth_header: AuthHeader):
+    if auth_header.vcc_api_operationId is None:
+        auth_header.vcc_api_operationId = str(uuid.uuid4())
     header={"vcc_api_operationId":str(auth_header.vcc_api_operationId)}
-    if auth_header.traceparent!="":
-        header["traceparent"] = auth_header.traceparent
     
+    if auth_header.traceparent is not None:
+        header["traceparent"] = auth_header.traceparent
+
     return header
 
 
@@ -146,7 +141,39 @@ options = {
 
     "lightTimestamp": "", 
     "hornTimestamp": "",
-    "commands": ""
+    "commands": "",
+    
+    # WGS 84 decimal or reference ellipsoid.
+    "longitude": "float", 
+    "latitude": "float",
+    "altitude": "float", 
+    "heading": "int", # 0-360 degrees
+    
+    
+    # capabilities energy API
+    "getEnergyState": [True, False],
+    "batteryChargeLevel":[True, False],
+    "electricRange": [True, False],
+    "chargerConnectionStatus":[True, False],
+    "chargingSystemStatus":[True, False],
+    "chargingType": [True, False],
+    "chargerPowerStatus":[True, False],
+    "estimatedChargingTimeToTargetBatteryChargeLevel":[True, False],
+    "targetBatteryChargeLevel":[True, False],
+    "chargingCurrentLimit": [True, False],
+    "chargingPower":[True, False],
+    
+    # values for energy API
+    "electricRangeValue": "int", # in km or miles
+    "electricRangeUnit": ["km", "miles"],
+    "chargerConnectionStatusValue": ["DISCONNECTED", "CONNECTED", "FAULT"],
+    "chargingStatusValue": ["IDLE", "CHARGING", "SCHEDULED", "DISCHARGING", "ERROR", "DONE"],
+    "chargingTypeValue": ["AC", "DC", "NONE"],
+    "chargerPowerStatusValue": "", # Value provided from charger example: PROVIDING_POWER
+    "estimatedChargingTimeToTargetBatteryChargeLevel": "int", # in minutes
+    "chargingCurrentLimit": "int", # in Amperes
+    "targetBatteryChargeLevel": "int", # in % so 0-100
+    "chargingPower": "int", # in watts
 }
 
 
@@ -263,6 +290,59 @@ class Car(BaseModel):
     nextInvoiceStatus:str = Field(default="") # Possible values: RUNNING, WAITING, COMPLETED, REJECTED, UNKNOWN, TIMEOUT, CONNECTION_FAILURE, VEHICLE_IN_SLEEP, DELIVERED, CAR_ERROR, NOT_ALLOWED_PRIVACY_ENABLED, NOT_ALLOWED_WRONG_USAGE_MODE.
     # running available for climate or engine commands
     
+    
+    ###
+    ### location 
+    ### parameters
+    ###
+    
+    longitude:float=Field(default=11.968307501897431)
+    latitude:float=Field(default=57.68877357281511) 
+    altitude:float=Field(default=0.0)
+    
+    heading:int=Field(default=0) # 0-360 degrees
+    
+    ###
+    ### energy API
+    ### capabilities
+    ###
+    
+    getEnergyState:bool=Field(default=True)
+    batteryChargeLevel:bool=Field(default=True)
+    electricRange:bool=Field(default=True)
+    chargerConnectionStatus:bool=Field(default=True)
+    chargingSystemStatus:bool=Field(default=True)
+    chargingType:bool=Field(default=True)
+    chargerPowerStatus:bool=Field(default=True)
+    estimatedChargingTimeToTargetBatteryChargeLevel:bool=Field(default=True)
+    targetBatteryChargeLevel:bool=Field(default=True)
+    chargingCurrentLimit:bool=Field(default=True)
+    chargingPower:bool=Field(default=True)
+    
+    # states for energy API
+    electricRangeValue:int=Field(default=0) # in km or miles
+    electricRangeUnit:str=Field(default="km")
+    
+    chargerConnectionStatusValue:str=Field(default="DISCONNECTED") # possible values: DISCONNECTED, CONNECTED, FAULT
+    
+    chargingStatusValue:str=Field(default="IDLE") # possible values: IDLE, CHARGING, SCHEDULED, DISCHARGING, ERROR, DONE
+    
+    chargingTypeValue:str=Field(default="NONE") # possible values: AC, DC, NONE
+    
+    chargerPowerStatusValue:str=Field(default="") # Value provided from charger example: PROVIDING_POWER
+    
+    estimatedChargingTimeToTargetBatteryChargeLevelValue:int=Field(default=0) # in minutes
+    
+    chargingCurrentLimitValue:int=Field(default=0) # in Amperes
+    
+    targetBatteryChargeLevelValue:int=Field(default=0) # in % so 0-100
+    
+    chargingPowerValue:int=Field(default=0) # in watts
+    
+    
+    
+    
+    
     #additional parameters for error like if you want fail engine start nextInvoice status, last timestamp
     def timestamp(self):
         if self.availabilityStatus_value == "AVAILABLE":
@@ -272,7 +352,7 @@ class Car(BaseModel):
     
     
     def checkValidity(self,attribute,value):
-        if config["DEFAULT"]["Validation"] == "False":
+        if readConfig("DEFAULT","Validation",True)==False:
             return True
         
         if attribute in options:
@@ -285,6 +365,12 @@ class Car(BaseModel):
                     return True
                 except ValueError:
                     return False
+            if valid == "float":
+                try:
+                    value=float(value) #check if value is float todo
+                    return True
+                except ValueError:
+                    return False
             # if valid == [True, False]: #temporary solution
             #     if bool(value) not in valid:
             #         return False
@@ -294,7 +380,7 @@ class Car(BaseModel):
         return True
     #NOTE:needs checking implement with notifier trigger update multiple
     def checkValidityMultiple(self, attributes_values: dict):
-        if config["DEFAULT"]["Validation"] == "False":
+        if readConfig("DEFAULT","Validation",True)==False:
             return True
         
         for attribute, value in attributes_values.items():
@@ -305,6 +391,12 @@ class Car(BaseModel):
                 if valid == "int":
                     try:
                         int(value)  # Check if value can be converted to int
+                    except ValueError:
+                        return False,attribute
+                    continue
+                if valid == "float":
+                    try:
+                        float(value)  # Check if value can be converted to float
                     except ValueError:
                         return False,attribute
                     continue
@@ -349,7 +441,7 @@ class Car(BaseModel):
 
     def update(self,attribute,value,internal=False): #TODO: update to send inforamtion if the attribute or value is invalid
         if self.checkValidity(attribute,value):
-                if config["DEFAULT"]["Validation"] == "True":
+                if readConfig("DEFAULT","Validation",True)==True:
                     if attribute=="fuelElectric":
                         value=int(value)
                         if value>100:
@@ -371,6 +463,8 @@ class Car(BaseModel):
     
     def updated(self):
         self.lastTimestamp = timestampGenerator()
+        
+ 
 
         
         

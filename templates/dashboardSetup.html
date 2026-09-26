@@ -1122,7 +1122,418 @@
             </section>
         </div>
 
+        <h2 class="mt-6 text-center text-2xl md:text-4xl">Location</h2>
+        <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">Longitude:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="longitude">{{longitude}}</p>
+                </div>
+                <form data-attribute="longitude" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="longitude">
+                    <input type="number" name="value" step="any" placeholder="Enter new longitude" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">Latitude:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="latitude">{{latitude}}</p>
+                </div>
+                <form data-attribute="latitude" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="latitude">
+                    <input type="number" name="value" step="any" placeholder="Enter new latitude" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">Altitude:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="altitude">{{altitude}}</p>
+                </div>
+                <form data-attribute="altitude" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="altitude">
+                    <input type="number" name="value" step="any" placeholder="Enter new altitude" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">Heading:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="heading">{{heading}}</p>
+                </div>
+                <form data-attribute="heading" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="heading">
+                    <input type="number" name="value" min="0" max="360" placeholder="Enter new heading" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+
+        </div>
+        
+        <h2 class="mt-6 text-center text-2xl md:text-4xl">Energy</h2>
+        <p class="text-lg md:text-xl text-center mt-2">Capabilities:</p>
+        <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
+            
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">getEnergyState:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="getEnergyState">{{getEnergyState}}</p>
+                </div>
+                <form data-attribute="getEnergyState" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="getEnergyState">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">battery charge level (bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="batteryChargeLevel">{{batteryChargeLevel}}</p>
+                </div>
+                <form data-attribute="batteryChargeLevel" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="batteryChargeLevel">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">electric range(bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="electricRange">{{electricRange}}</p>
+                </div>
+                <form data-attribute="electricRange" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="electricRange">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">charger connection status (bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargerConnectionStatus">{{chargerConnectionStatus}}</p>
+                </div>
+                <form data-attribute="chargerConnectionStatus" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargerConnectionStatus">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">charging system status (bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargingSystemStatus">{{chargingSystemStatus}}</p>
+                </div>
+                <form data-attribute="chargingSystemStatus" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargingSystemStatus">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">charging type (bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargingType">{{chargingType}}</p>
+                </div>
+                <form data-attribute="chargingType" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargingType">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">charger power status (bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargerPowerStatus">{{chargerPowerStatus}}</p>
+                </div>
+                <form data-attribute="chargerPowerStatus" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargerPowerStatus">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">estimatitation for target battery level (bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="estimatedChargingTimeToTargetBatteryChargeLevel">{{estimatedChargingTimeToTargetBatteryChargeLevel}}</p>
+                </div>
+                <form data-attribute="estimatedChargingTimeToTargetBatteryChargeLevel" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="estimatedChargingTimeToTargetBatteryChargeLevel">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">target battery charge level (bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="targetBatteryChargeLevel">{{targetBatteryChargeLevel}}</p>
+                </div>
+                <form data-attribute="targetBatteryChargeLevel" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="targetBatteryChargeLevel">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">Current limit (bool):</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargingCurrentLimit">{{chargingCurrentLimit}}</p>
+                </div>
+                <form data-attribute="chargingCurrentLimit" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargingCurrentLimit">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">chargingPower:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargingPower">{{chargingPower}}</p>
+                </div>
+                <form data-attribute="chargingPower" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargingPower">
+                    <select name="value" class="inputSelection">
+                        <option value="True">True</option>
+                        <option value="False">False</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+        </div>
+        <p class="text-lg md:text-xl text-center">Values:</p>
+        <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">electric range:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="electricRangeValue">{{electricRangeValue}}</p>
+                </div>
+                <form data-attribute="electricRangeValue" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="electricRangeValue">
+                    <input type="number" name="value" step="any" placeholder="Enter new electricRangeValue" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+                        
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">electric range unit:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="electricRangeUnit">{{electricRangeUnit}}</p>
+                </div>
+                <form data-attribute="electricRangeUnit" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="electricRangeUnit">
+                    <select name="value" class="inputSelection">
+                        <option value="miles">miles</option>
+                        <option value="km">km</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">charger connection status:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargerConnectionStatusValue">{{chargerConnectionStatusValue}}</p>
+                </div>
+                <form data-attribute="chargerConnectionStatusValue" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargerConnectionStatusValue">
+                    <select name="value" class="inputSelection">
+                        <option value="DISCONNECTED">DISCONNECTED</option>
+                        <option value="CONNECTED">CONNECTED</option>
+                        <option value="FAULT">FAULT</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">Charging status:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargingStatusValue">{{chargingStatusValue}}</p>
+                </div>
+                <form data-attribute="chargingStatusValue" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargingStatusValue">
+                    <select name="value" class="inputSelection">
+                        <option value="IDLE">IDLE</option>
+                        <option value="CHARGING">CHARGING</option>
+                        <option value="SCHEDULED">SCHEDULED</option>
+                        <option value="DISCHARGING">DISCHARGING</option>
+                        <option value="ERROR">ERROR</option>
+                        <option value="DONE">DONE</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+                
+            </section>
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">Charging type:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="chargingTypeValue">{{chargingTypeValue}}</p>
+                </div>
+                <form data-attribute="chargingTypeValue" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="chargingTypeValue">
+                    <select name="value" class="inputSelection">
+                        <option value="AC">AC</option>
+                        <option value="DC">DC</option>
+                        <option value="NONE">NONE</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+                
+            </section>
+
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">Charger power status:</p>
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="chargerPowerStatusValue">{{chargerPowerStatusValue}}</p>
+                    </div>
+                    <form data-attribute="chargerPowerStatusValue" hx-ext="json-enc" 
+                        hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                        <input type="hidden" name="attribute" value="chargerPowerStatusValue">
+                        <input type="text" name="value" placeholder="Enter new charger power status" class="min-w-50 max-w-75 inputText">
+                        <input type="submit" value="change" class="submitButtonDash">
+
+                    </form>
+
+            </section>
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">Estimated time to target battery level:</p>
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="estimatedChargingTimeToTargetBatteryChargeLevelValue">{{estimatedChargingTimeToTargetBatteryChargeLevelValue}}</p>
+                    </div>
+                    <form data-attribute="estimatedChargingTimeToTargetBatteryChargeLevelValue" hx-ext="json-enc" 
+                        hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                        <input type="hidden" name="attribute" value="estimatedChargingTimeToTargetBatteryChargeLevelValue">
+                        <input type="number" min="0" name="value" placeholder="Enter new estimated charging time" class="min-w-50 max-w-75 inputText">
+                        <input type="submit" value="change" class="submitButtonDash">
+
+                    </form>
+
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">Current limit (A):</p>
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="chargingCurrentLimitValue">{{chargingCurrentLimitValue}}</p>
+                    </div>
+                    <form data-attribute="chargingCurrentLimitValue" hx-ext="json-enc" 
+                        hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                        <input type="hidden" name="attribute" value="chargingCurrentLimitValue">
+                        <input type="number" min="0" name="value" placeholder="Enter new charging current limit" class="min-w-50 max-w-75 inputText">
+                        <input type="submit" value="change" class="submitButtonDash">
+
+                    </form>
+
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">Target battery charge level:</p>
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="targetBatteryChargeLevelValue">{{targetBatteryChargeLevelValue}}</p>
+                    </div>
+                    <form data-attribute="targetBatteryChargeLevelValue" hx-ext="json-enc" 
+                        hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                        <input type="hidden" name="attribute" value="targetBatteryChargeLevelValue">
+                        <input type="number" min="0" max="100" name="value" placeholder="Enter new target battery charge level" class="min-w-50 max-w-75 inputText">
+                        <input type="submit" value="change" class="submitButtonDash">
+
+                    </form>
+
+            </section>
+
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+                <p class="text-lg md:text-xl">Charging power (W):</p>
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="chargingPowerValue">{{chargingPowerValue}}</p>
+                    </div>
+                    <form data-attribute="chargingPowerValue" hx-ext="json-enc" 
+                        hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                        <input type="hidden" name="attribute" value="chargingPowerValue">
+                        <input type="number" min="0" name="value" placeholder="Enter new charging power value" class="min-w-50 max-w-75 inputText">
+                        <input type="submit" value="change" class="submitButtonDash">
+
+                    </form>
+
+            </section>
+        </div>
 
 </div>
 
-{# I forgot about windows ....#}
