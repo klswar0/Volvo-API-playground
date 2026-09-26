@@ -63,7 +63,8 @@ def tokenGenerator(api_key:str,timeGen:int,scopes:list=None):
     #
     if readConfig("DEFAULT","ShortKeys",True)==True:
         signature = secrets.token_urlsafe(2).rstrip("=") 
-    signature = secrets.token_urlsafe(16).rstrip("=") # testing secret is used here bc i dont use this data
+    else:
+        signature = secrets.token_urlsafe(16).rstrip("=") # testing secret is used here bc i dont use this data
     return f"{base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip('=')}.{base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')}.{signature}"
 
 
@@ -77,9 +78,9 @@ def oauth2Generator(api_key:str,oauth2:Oauth2):
     if readConfig("DEFAULT","ShortKeys",True)==True:
         oauth2.access_token = "access_token_"+tokenGenerator(api_key, timeGeneration, scopes=scopes) #generate
         oauth2.refresh_token = "refresh_token_"+base64.urlsafe_b64encode(uuid.uuid4().bytes).decode() #generate
-        
-    oauth2.access_token = tokenGenerator(api_key, timeGeneration, scopes=scopes) #generate
-    oauth2.refresh_token = base64.urlsafe_b64encode(uuid.uuid4().bytes).decode().rstrip('=') #generate
+    else: 
+        oauth2.access_token = tokenGenerator(api_key, timeGeneration, scopes=scopes) #generate
+        oauth2.refresh_token = base64.urlsafe_b64encode(uuid.uuid4().bytes).decode().rstrip('=') #generate
     oauth2.code = "" #invalidate code
     if oauth2.expires_in != -1:
         oauth2.expires_in = int(time()) + 3599 
