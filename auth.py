@@ -1,7 +1,7 @@
 from time import time
 
 from classCar import AuthHeaderGET, AuthHeaderPOST
-from database import database, AdditionalDatabase
+from database import databaseInterface as database, AdditionalDatabase
 
 
 

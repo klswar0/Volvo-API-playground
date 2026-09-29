@@ -15,7 +15,7 @@ import secrets
 from notifier import notifier
 from classCar import Car, Oauth2,Scopes
 from config import readConfig
-from database import createCar, database, AdditionalDatabase
+from database import createCar, databaseInterface as database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc

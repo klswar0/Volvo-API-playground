@@ -11,7 +11,7 @@ import secrets
 from notifier import notifier
 from classCar import Car, Oauth2,Scopes
 from config import readConfig
-from database import database, AdditionalDatabase,createCar
+from database import databaseInterface as database, AdditionalDatabase,createCar
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from OAuth2 import oauth2Generator
 from auth import authenticateInternal, VINHandlingInternal

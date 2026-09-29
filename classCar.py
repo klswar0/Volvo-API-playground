@@ -2,7 +2,9 @@
 
 import uuid
 
-from pydantic import BaseModel, Field 
+from asyncmy.converters import JSON
+from pydantic import BaseModel, Field
+from sqlalchemy import Column 
 from notifier import notifier
 from datetime import datetime, timezone
 
@@ -186,7 +188,7 @@ class Car(BaseModel):
     fuelElectric:int = Field(default=0) # fuel level for electric and hybrid cars
     odometer: int = Field(default=0) 
     climate: bool =Field(default=False) # in future time based it can be set to time when the climate will be turned off (why you can set time thru app not thru api. how long api climate lasts? OR only engine has a timer)
-    commands:list =Field(default=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP","FLASH","HONK", "HONK_AND_FLASH","LOCK","UNLOCK"]) # and reduced guard lock but not implemented yet. TO IMPLEMENT
+    commands:list =Field(default=["CLIMATIZATION_START", "CLIMATIZATION_STOP","ENGINE_START","ENGINE_STOP","FLASH","HONK", "HONK_AND_FLASH","LOCK","UNLOCK"]) # and reduced guard lock but not implemented yet. TO IMPLEMENT                     
     availabilityStatus_value: str = Field(default="AVAILABLE") # AVAILABLE, UNAVAILABLE, UNSPECIFIED # AVAILABLE is needed for any command TO IMPLEMENT
     availabilityStatus_unavailableReason: str = Field(default="") # Description of why the vehicle is unavailable UNSPECIFIED, NO_INTERNET, POWER_SAVING_MODE, CAR_IN_USE
     engineStatus:str = Field(default="STOPPED") # possible values: STOPPED, RUNNING
@@ -438,6 +440,7 @@ class Car(BaseModel):
         if self.nextInvoiceStatus == "REJECTED" or self.nextInvoiceStatus == "UNKNOWN" or self.nextInvoiceStatus == "TIMEOUT" or self.nextInvoiceStatus == "CONNECTION_FAILURE" or self.nextInvoiceStatus == "VEHICLE_IN_SLEEP" or self.nextInvoiceStatus == "CAR_ERROR" or self.nextInvoiceStatus == "NOT_ALLOWED_PRIVACY_ENABLED" or self.nextInvoiceStatus == "NOT_ALLOWED_WRONG_USAGE_MODE":
             return [self.nextInvoiceStatus,False]
         return [self.nextInvoiceStatus,True]
+
 
     def update(self,attribute,value,internal=False): #TODO: update to send inforamtion if the attribute or value is invalid
         if self.checkValidity(attribute,value):
