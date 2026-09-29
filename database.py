@@ -54,15 +54,7 @@ AdditionalDatabase={
         "all_values": AdditionalData()
     }
 
-def createCar(api_key: str, car: Car):
-    if api_key in database:
-         database[api_key].append(car)
-    else:
-        database[api_key] = [car]
-            
-    if api_key not in AdditionalDatabase:
-        AdditionalDatabase[api_key] = AdditionalData()
-            
+
             
 
 class databaseInterface:
@@ -75,3 +67,14 @@ class databaseInterface:
         return key in database
 
 databaseInterface = databaseInterface()
+
+
+def createCar(api_key: str, car: Car):
+    if api_key in databaseInterface:
+        databaseInterface[api_key].append(car)
+    else:
+        databaseInterface[api_key] = [car]
+            
+    if api_key not in AdditionalDatabase:
+        AdditionalDatabase[api_key] = AdditionalData()
+            
