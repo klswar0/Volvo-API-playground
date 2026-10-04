@@ -29,4 +29,13 @@ class databaseSQL:
             statment=select(ApiKey)
             return session.exec(statment).all()
     def __getitem__(self, key):
+        with Session(engine) as session:
+            statment=select(CarRow).where(CarRow.api_key==key)
+            cars=session.exec(statment).all()
+            data=[]
+            for car in cars:
+                data.append(dictCar(**car.data))
+            return data
+    # def __setattr__():
+        
         

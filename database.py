@@ -65,8 +65,35 @@ class databaseInterface:
     
     def __contains__(self, key):
         return key in database
-
+    def __setattr__(self, key, value):
+        database[key] = value
+    def __setitem__(self, key, value):
+        database[key] = value
+        
+    def carFind(self, VIN:str, vcc_api_key: str):
+        for car in database[vcc_api_key]:
+            if car.VIN == VIN:
+                return car
+        raise ValueError("Invalid VIN")
 databaseInterface = databaseInterface()
+
+if True:
+    class carInstance:
+        def __init__(self,api_key:str,VIN:str):
+            self.api_key = api_key
+            self.car = databaseInterface.carFind(VIN,api_key)
+        def keys(self):
+            return self.car.__dict__.keys()
+        def __getitem__(self, key):
+            return self.car.__dict__[key]
+        def __setitem__(self, key, value):
+            databaseInterface[self.api_key][0].__dict__[key] = value
+
+        def update(self,attribute,value,internal=False):
+            self.car.update(attribute,value,internal=internal)
+else:
+    class carInstance:
+        pass
 
 
 def createCar(api_key: str, car: Car):

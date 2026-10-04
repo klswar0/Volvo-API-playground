@@ -2,7 +2,7 @@
 
 import uuid
 
-from asyncmy.converters import JSON
+
 from pydantic import BaseModel, Field
 from sqlalchemy import Column 
 from notifier import notifier
@@ -456,6 +456,7 @@ class Car(BaseModel):
                         if value<0:
                             value=0
                 setattr(self, attribute, value)
+                
                 if not internal:
                     notifier.trigger_update(self.VIN, self, changed_attribute=attribute)
                 self.updated()
