@@ -50,7 +50,7 @@ database = {
     # could we changes this to additonal data for scopes?
 AdditionalDatabase={
         "vcc_api_key_Oauth2": AdditionalData(Oauth2Data=Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token")),
-        "vcc_api_key": AdditionalData(ScopesData=Scopes(scopes=["openid","conve:vehicle_relation","location:read"])),
+        "vcc_api_key": AdditionalData(),#ScopesData=Scopes(scopes=["openid","conve:vehicle_relation","location:read"])
         "all_values": AdditionalData()
     }
 
@@ -71,6 +71,7 @@ class databaseInterface:
         database[key] = value
         
     def carFind(self, VIN:str, vcc_api_key: str):
+        print(f"Searching for car with VIN: {VIN} and API key: {vcc_api_key}")
         for car in database[vcc_api_key]:
             if car.VIN == VIN:
                 return car
@@ -79,15 +80,25 @@ databaseInterface = databaseInterface()
 
 if True:
     class carInstance:
-        def __init__(self,api_key:str,VIN:str):
-            self.api_key = api_key
-            self.car = databaseInterface.carFind(VIN,api_key)
+        def __init__(self, api_key: str, VIN: str):
+            object.__setattr__(self, "api_key", api_key)
+            object.__setattr__(
+                self,
+                "car",
+                databaseInterface.carFind(VIN=VIN, vcc_api_key=api_key),
+            )
         def keys(self):
             return self.car.__dict__.keys()
         def __getitem__(self, key):
             return self.car.__dict__[key]
         def __setitem__(self, key, value):
-            databaseInterface[self.api_key][0].__dict__[key] = value
+            return self.car.__dict__.__setitem__(key, value)
+        
+        def __getattr__(self, key):
+            return self.car.__getattribute__(key)
+        
+        def __setattr__(self, key, value):
+            return self.car.__setattr__(self.car, key, value)
 
         def update(self,attribute,value,internal=False):
             self.car.update(attribute,value,internal=internal)

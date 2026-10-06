@@ -38,7 +38,8 @@ def VINHandling(VIN:str, auth_header:  AuthHeaderPOST | AuthHeaderGET):
     #     if car.VIN == VIN:
     #         return car
 
-    car= carInstance(VIN, auth_header.vcc_api_key)
+    car= carInstance(auth_header.vcc_api_key,VIN)
+    return car
     raise ValueError("Invalid VIN")
 
 def authenticateInternal(vcc_api_key: str):
