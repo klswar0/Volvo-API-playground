@@ -54,31 +54,37 @@ AdditionalDatabase={
         "all_values": AdditionalData()
     }
 
-
-            
-
-class databaseInterface:
-    def keys(self):
-        return database.keys()
-    def __getitem__(self, key):
-        return database[key]
-    
-    def __contains__(self, key):
-        return key in database
-    def __setattr__(self, key, value):
-        database[key] = value
-    def __setitem__(self, key, value):
-        database[key] = value
+if readConfig("DATABASE", "TYPE") == "SQL":
+    from databaseSQL import databaseSQL as databaseInterface
+   
+else:
+    class databaseInterface:
+        def keys(self):
+            return database.keys()
+        def __getitem__(self, key):
+            return database[key]
         
-    def carFind(self, VIN:str, vcc_api_key: str):
-        print(f"Searching for car with VIN: {VIN} and API key: {vcc_api_key}")
-        for car in database[vcc_api_key]:
-            if car.VIN == VIN:
-                return car
-        raise ValueError("Invalid VIN")
+        def __contains__(self, key):
+            return key in database
+        def __setattr__(self, key, value):
+            database[key] = value
+        def __setitem__(self, key, value):
+            database[key] = value
+            
+        def carFind(self, VIN:str, vcc_api_key: str):
+            print(f"Searching for car with VIN: {VIN} and API key: {vcc_api_key}")
+            for car in database[vcc_api_key]:
+                if car.VIN == VIN:
+                    return car
+            raise ValueError("Invalid VIN")
+
+        
 databaseInterface = databaseInterface()
 
-if True:
+if readConfig("DATABASE", "TYPE") == "SQL":
+    from databaseSQL import carInstanceSQL as carInstance
+   
+else:
     class carInstance:
         def __init__(self, api_key: str, VIN: str):
             object.__setattr__(self, "api_key", api_key)
@@ -102,9 +108,8 @@ if True:
 
         def update(self,attribute,value,internal=False):
             self.car.update(attribute,value,internal=internal)
-else:
-    class carInstance:
-        pass
+
+
 
 
 def createCar(api_key: str, car: Car):

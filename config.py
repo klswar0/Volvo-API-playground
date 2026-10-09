@@ -26,6 +26,9 @@ config['ERROR_LOGGING'] = {
     'STATUS': 'True',
     'Write': 'True'
 }
+config['DATABASE'] = {
+    'TYPE': 'SQL',
+}
 config.read('config.ini')
 
 all_options=['DEFAULT']+config.sections()
