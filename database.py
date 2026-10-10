@@ -60,6 +60,7 @@ if readConfig("DATABASE", "TYPE") == "SQL":
 else:
     class databaseInterface:
         def keys(self):
+            
             return database.keys()
         def __getitem__(self, key):
             return database[key]
@@ -93,22 +94,29 @@ else:
                 "car",
                 databaseInterface.carFind(VIN=VIN, vcc_api_key=api_key),
             )
+
         def keys(self):
-            return self.car.__dict__.keys()
+            if hasattr(self.car, "keys"):
+                return self.car.keys()
+            return self.__dict__.keys()
+
         def __getitem__(self, key):
-            return self.car.__dict__[key]
+            return self.car[key]
+
         def __setitem__(self, key, value):
-            return self.car.__dict__.__setitem__(key, value)
-        
+            self.car[key] = value
+
         def __getattr__(self, key):
-            return self.car.__getattribute__(key)
-        
+            return getattr(self.car, key)
+
         def __setattr__(self, key, value):
-            return self.car.__setattr__(self.car, key, value)
+            if key in ("api_key", "car"):
+                object.__setattr__(self, key, value)
+            else:
+                setattr(self.car, key, value)
 
-        def update(self,attribute,value,internal=False):
-            self.car.update(attribute,value,internal=internal)
-
+        def update(self, attribute, value, internal=False):
+            self.car.update(attribute, value, internal=internal)
 
 
 
