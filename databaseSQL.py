@@ -47,7 +47,7 @@ class databaseSQL:
             cars=session.exec(statment).all()
             data=[]
             for car in cars:
-                data.append(dictCar(**car.data))
+                data.append(Car(**car.data))
             return data
     def __setattr__(self, key, value):
         with Session(engine) as session:
