@@ -15,6 +15,7 @@ class CarRow(SQLModel, table=True):
     api_key: str = Field(foreign_key="apikey.api_key", index=True)
     vin: str = Field(index=True)
     data: dict = Field(sa_column=Column(JSON))
+    # could we change from data json to columns for attributes
 
 class AdditionalRow(SQLModel, table=True):
     api_key: str = Field(primary_key=True)
@@ -125,10 +126,11 @@ class carInstanceSQL:
         
 def regenerateDatabase():
     api_key=ApiKey(api_key="vcc_api_key")
-    car1=CarRow(api_key="vcc_api_key", vin="WBA5A7C50ED607123", data=dictCar(Car(VIN="VIN123")))
+    car1=CarRow(api_key="vcc_api_key", vin=database.database["vcc_api_key"][0].VIN, data=dictCar(database.database["vcc_api_key"][0]))
     with Session(engine) as session:
-        session.exec(delete(CarRow))
-        session.exec(delete(ApiKey))
+        session.exec(delete(CarRow).where(CarRow.api_key=="vcc_api_key"))
+        session.exec(delete(ApiKey).where(ApiKey.api_key=="vcc_api_key"))
+        session.commit()
         session.add(api_key)
         session.add(car1)
         session.commit()
