@@ -1,8 +1,11 @@
 
 
 import database 
-from sqlmodel import Column, JSON, Field, SQLModel, Session, create_engine, select
-from classCar import Car as dictCar, AdditionalData, Oauth2, Scopes
+from sqlmodel import Column, JSON, Field, SQLModel, Session, create_engine, delete, select
+from classCar import Car, AdditionalData, Oauth2, Scopes
+
+def dictCar(car:Car):
+    return car.__dict__
 
 class ApiKey(SQLModel, table=True):
     api_key: str = Field(primary_key=True)
@@ -20,17 +23,19 @@ class AdditionalRow(SQLModel, table=True):
 
 
 # Format: mysql+pymysql://<user>:<password>@<host>:<port>/<database_name>
-engine = create_engine("mysql+pymysql://mian:1234@127.0.0.1:3306/your_database")
+engine = create_engine("mysql+pymysql://test:1234@127.0.0.1:3306/api")
 
 
 SQLModel.metadata.create_all(engine)
 
     
 class databaseSQL:
-    def _contains__(self, key):
+    def __contains__(self, key):
+        print(f"Checking if key exists: {key}")
         with Session(engine) as session:
             statment=select(ApiKey).where(ApiKey.api_key==key)
             api_key=session.exec(statment).first()
+            print(f"Key exists: {api_key is not None}")
             return api_key is not None
     def keys(self):
         with Session(engine) as session:
@@ -116,3 +121,14 @@ class carInstanceSQL:
     def update(self,attribute,value,internal=False):
         self.car.update(attribute,value,internal=internal)
         
+        
+        
+def regenerateDatabase():
+    api_key=ApiKey(api_key="vcc_api_key")
+    car1=CarRow(api_key="vcc_api_key", vin="WBA5A7C50ED607123", data=dictCar(Car(VIN="VIN123")))
+    with Session(engine) as session:
+        session.exec(delete(CarRow))
+        session.exec(delete(ApiKey))
+        session.add(api_key)
+        session.add(car1)
+        session.commit()
