@@ -1,8 +1,9 @@
 
 
 import database 
-from sqlmodel import Column, JSON, Field, SQLModel, Session, create_engine, delete, select
+from sqlmodel import Column, JSON, Field, SQLModel, Session, create_engine, delete, select, text
 from classCar import Car, AdditionalData, Oauth2, Scopes
+
 
 def dictCar(car:Car):
     return car.__dict__
@@ -19,12 +20,13 @@ class CarRow(SQLModel, table=True):
 
 class AdditionalRow(SQLModel, table=True):
     api_key: str = Field(primary_key=True)
-    data: dict = Field(sa_column=Column(JSON))
+    scopes: dict = Field(sa_column=Column(JSON))
+    Oauth2: dict = Field(sa_column=Column(JSON))
     
 
 
 # Format: mysql+pymysql://<user>:<password>@<host>:<port>/<database_name>
-engine = create_engine("mysql+pymysql://test:1234@127.0.0.1:3306/api")
+engine = engine = create_engine("mysql+pymysql://test:1234@127.0.0.1:3306/api")
 
 
 SQLModel.metadata.create_all(engine)
@@ -81,6 +83,9 @@ class databaseSQL:
             if car is None:
                 raise ValueError("Invalid VIN")
             return dictCar(**car.data)
+        
+class additionalDataSQL:
+    pass
         
 class carInstanceSQL:
     def __init__(self, api_key: str, VIN: str):

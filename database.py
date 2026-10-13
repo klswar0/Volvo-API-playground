@@ -56,7 +56,7 @@ AdditionalDatabase={
 
 if readConfig("DATABASE", "TYPE") == "SQL":
     from databaseSQL import databaseSQL as databaseInterface
-   
+    print("Using SQL database interface")
 else:
     class databaseInterface:
         def keys(self):
@@ -84,7 +84,7 @@ databaseInterface = databaseInterface()
 
 if readConfig("DATABASE", "TYPE") == "SQL":
     from databaseSQL import carInstanceSQL as carInstance
-   
+    print("Using SQL car instance")
 else:
     class carInstance:
         def __init__(self, api_key: str, VIN: str):
@@ -118,7 +118,26 @@ else:
         def update(self, attribute, value, internal=False):
             self.car.update(attribute, value, internal=internal)
 
+if readConfig("DATABASE", "TYPE") == "a":
+    from databaseSQL import additionalDataSQL as additionalDataInstance
+    print("Using SQL additional data instance")
+else:
+    class additionalDataInstance:
+        def keys(self):
+            
+            return database.keys()
+        def __getitem__(self, key):
+            return database[key]
+        
+        def __contains__(self, key):
+            return key in database
+        def __setattr__(self, key, value):
+            database[key] = value
+        def __setitem__(self, key, value):
+            database[key] = value
 
+    
+additionalDataInstance = additionalDataInstance()
 
 def createCar(api_key: str, car: Car):
     if api_key in databaseInterface:
