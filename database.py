@@ -118,7 +118,7 @@ else:
         def update(self, attribute, value, internal=False):
             self.car.update(attribute, value, internal=internal)
 
-if readConfig("DATABASE", "TYPE") == "a":
+if readConfig("DATABASE", "TYPE") == "SQL":
     from databaseSQL import additionalDataSQL as additionalDataInstance
     print("Using SQL additional data instance")
 else:

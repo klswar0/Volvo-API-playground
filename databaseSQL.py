@@ -85,7 +85,56 @@ class databaseSQL:
             return dictCar(**car.data)
         
 class additionalDataSQL:
-    pass
+    def __contains__(self, key):
+        print(f"Checking if key exists: {key}/AdditionalData")
+        with Session(engine) as session:
+            statment=select(ApiKey).where(ApiKey.api_key==key)
+            api_key=session.exec(statment).first()
+            print(f"Key exists: {api_key is not None}")
+            return api_key is not None
+    def keys(self):
+        with Session(engine) as session:
+            statment=select(ApiKey)
+            return session.exec(statment).all()
+    def __getitem__(self, key):
+        with Session(engine) as session:
+            print(f"Getting item: {key}/AdditionalData")
+            statment=select(AdditionalData).where(AdditionalData.api_key==key)
+            cars=session.exec(statment).all()
+            data=[]
+            for car in cars:
+                data.append(AdditionalData(**car.data))
+            return data
+    def __setattr__(self, key, value):
+        with Session(engine) as session:
+            statment=select(ApiKey).where(ApiKey.api_key==key)
+            api_key=session.exec(statment).first()
+            if api_key is None:
+                api_key=ApiKey(api_key=key)
+                session.add(api_key)
+                session.commit()
+            for car in value:
+                car_row=AdditionalData(api_key=key, vin=car.VIN, data=car.__dict__)
+                session.add(car_row)
+            session.commit()
+    def __setitem__(self, key, value):
+        with Session(engine) as session:
+            statment=select(ApiKey).where(ApiKey.api_key==key)
+            api_key=session.exec(statment).first()
+            if api_key is None:
+                api_key=ApiKey(api_key=key)
+                session.add(api_key)
+                session.commit()
+            for car in value:
+                car_row=AdditionalData(api_key=key, vin=car.VIN, data=car.__dict__)
+                session.add(car_row)
+            session.commit()
+    
+    
+
+# class InstanceAdditionalDataSQL:
+#     pass
+        
         
 class carInstanceSQL:
     def __init__(self, api_key: str, VIN: str):
