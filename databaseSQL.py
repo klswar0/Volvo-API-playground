@@ -5,13 +5,14 @@ from sqlmodel import Column, JSON, Field, SQLModel, Session, create_engine, dele
 from classCar import Car, AdditionalData, Oauth2, Scopes
 from config import readConfig
 
+
 def dictCar(car:Car):
     return car.__dict__
 
 class ApiKey(SQLModel, table=True):
     api_key: str = Field(primary_key=True)
 
-class CarRow(SQLModel, table=True):
+class CarRow(SQLModel ,table=True):
     id: int | None = Field(default=None, primary_key=True)
     api_key: str = Field(foreign_key="apikey.api_key", index=True)
     vin: str = Field(index=True)
@@ -26,8 +27,15 @@ class AdditionalRow(SQLModel, table=True):
 
 
 # Format: mysql+pymysql://<user>:<password>@<host>:<port>/<database_name>
-engine = engine = create_engine(f"mysql+pymysql://{readConfig('DATABASE', 'USER')}:{readConfig('DATABASE', 'PASSWORD')}@{readConfig('DATABASE', 'HOST')}:{readConfig('DATABASE', 'PORT')}/{readConfig('DATABASE', 'NAME')}")
-
+try:
+    engine = create_engine(f"mysql+pymysql://{readConfig('DATABASE', 'USER')}:{readConfig('DATABASE', 'PASSWORD')}@{readConfig('DATABASE', 'HOST')}:{readConfig('DATABASE', 'PORT')}/{readConfig('DATABASE', 'NAME')}")
+    with Session(engine) as session:
+        session.exec(text("SELECT 1"))
+        print("Database connection successful.")
+        
+except Exception as e:
+    print(f"Error creating database engine: {e}")
+    exit(1)
 
 SQLModel.metadata.create_all(engine)
 
@@ -180,11 +188,18 @@ class carInstanceSQL:
         
 def regenerateDatabase():
     api_key=ApiKey(api_key="vcc_api_key")
+    api_key_Oauth2=ApiKey(api_key="vcc_api_key_Oauth2")
     car1=CarRow(api_key="vcc_api_key", vin=database.database["vcc_api_key"][0].VIN, data=dictCar(database.database["vcc_api_key"][0]))
+    car2=CarRow(api_key="vcc_api_key_Oauth2", vin=database.database["vcc_api_key_Oauth2"][0].VIN, data=dictCar(database.database["vcc_api_key_Oauth2"][0]))
     with Session(engine) as session:
         session.exec(delete(CarRow).where(CarRow.api_key=="vcc_api_key"))
         session.exec(delete(ApiKey).where(ApiKey.api_key=="vcc_api_key"))
+        session.exec(delete(CarRow).where(CarRow.api_key=="vcc_api_key_Oauth2"))
+        session.exec(delete(ApiKey).where(ApiKey.api_key=="vcc_api_key_Oauth2"))
         session.commit()
+        
         session.add(api_key)
         session.add(car1)
+        session.add(api_key_Oauth2)
+        session.add(car2)
         session.commit()
