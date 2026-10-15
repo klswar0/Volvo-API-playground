@@ -28,6 +28,12 @@ config['ERROR_LOGGING'] = {
 }
 config['DATABASE'] = {
     'TYPE': 'SQL',
+    'HOST': 'localhost',
+    'PORT': '3306',
+    'USER': 'test',
+    'PASSWORD': '1234',
+    'NAME': 'api'
+    
 }
 config.read('config.ini')
 

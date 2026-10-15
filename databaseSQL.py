@@ -3,7 +3,7 @@
 import database 
 from sqlmodel import Column, JSON, Field, SQLModel, Session, create_engine, delete, select, text
 from classCar import Car, AdditionalData, Oauth2, Scopes
-
+from config import readConfig
 
 def dictCar(car:Car):
     return car.__dict__
@@ -26,7 +26,7 @@ class AdditionalRow(SQLModel, table=True):
 
 
 # Format: mysql+pymysql://<user>:<password>@<host>:<port>/<database_name>
-engine = engine = create_engine("mysql+pymysql://test:1234@127.0.0.1:3306/api")
+engine = engine = create_engine(f"mysql+pymysql://{readConfig('DATABASE', 'USER')}:{readConfig('DATABASE', 'PASSWORD')}@{readConfig('DATABASE', 'HOST')}:{readConfig('DATABASE', 'PORT')}/{readConfig('DATABASE', 'NAME')}")
 
 
 SQLModel.metadata.create_all(engine)
