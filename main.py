@@ -18,7 +18,6 @@ import dashboard
 from classCar import  AuthHeaderPOST,AuthHeaderGET,ResponseHeaderGenerator
 from config import readConfig
 from database import databaseInterface as database
-from databaseSQL import regenerateDatabase
 from readyResponses import ErrorResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse, OLD_errorResponse
 import ErrorLogging
 import OAuth2
@@ -50,7 +49,7 @@ print("\033[38;2;0;48;87m"+"██╗   ██╗ ██████╗ ██�
 
 
 
-regenerateDatabase()  # test avlues
+
 loadFileSnapshots()  # Load snapshots from file at startup
 
 
