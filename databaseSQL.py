@@ -27,28 +27,19 @@ class AdditionalRow(SQLModel, table=True):
 
 
 # Format: mysql+pymysql://<user>:<password>@<host>:<port>/<database_name>
-# try:
-#     engine = create_engine(f"mysql+pymysql://{readConfig('DATABASE', 'USER')}:{readConfig('DATABASE', 'PASSWORD')}@{readConfig('DATABASE', 'HOST')}:{readConfig('DATABASE', 'PORT')}/{readConfig('DATABASE', 'NAME')}")
-#     with Session(engine) as session:
-#         session.exec(text("SELECT 1"))
-#         print("Database connection successful.")
+try:
+    engine = create_engine(f"mysql+pymysql://{readConfig('DATABASE', 'USER')}:{readConfig('DATABASE', 'PASSWORD')}@{readConfig('DATABASE', 'HOST')}:{readConfig('DATABASE', 'PORT')}/{readConfig('DATABASE', 'NAME')}")
+    with Session(engine) as session:
+        session.exec(text("SELECT 1"))
+        print("Database connection successful.")
         
-# except Exception as e:
-#     print(f"Error creating database engine: {e}")
-#     exit(1)
-engine=None
+except Exception as e:
+    print(f"Error creating database engine: {e}")
+    exit(1)
 
 
     
 class databaseSQL:
-    def __init__(self):
-        try:
-            engine = create_engine(f"mysql+pymysql://{readConfig('DATABASE', 'USER')}:{readConfig('DATABASE', 'PASSWORD')}@{readConfig('DATABASE', 'HOST')}:{readConfig('DATABASE', 'PORT')}/{readConfig('DATABASE', 'NAME')}")
-            regenerateDatabase()
-            SQLModel.metadata.create_all(engine)
-        except Exception as e:
-            print(f"Error creating database engine: {e}")
-            exit(1)
             
 
     def __contains__(self, key):
