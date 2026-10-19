@@ -61,6 +61,8 @@ class databaseSQL:
             for car in cars:
                 data.append(Car(**car.data))
             return data
+        # apiInstance=apiKeySQL(api_key=key)
+        # return apiInstance
     def __setattr__(self, key, value):
         with Session(engine) as session:
             statment=select(ApiKey).where(ApiKey.api_key==key)
@@ -92,6 +94,13 @@ class databaseSQL:
             if car is None:
                 raise ValueError("Invalid VIN")
             return dictCar(**car.data)
+    def addCar(self, VIN:str, vcc_api_key: str, car:Car):
+        with Session(engine) as session:
+            car_row=CarRow(api_key=vcc_api_key, vin=VIN, data=car.__dict__)
+            session.add(car_row)
+            session.commit()
+        
+         
         
 class additionalDataSQL:
     def __contains__(self, key):
@@ -138,13 +147,15 @@ class additionalDataSQL:
                 car_row=AdditionalData(api_key=key, vin=car.VIN, data=car.__dict__)
                 session.add(car_row)
             session.commit()
+
     
     
 
 # class InstanceAdditionalDataSQL:
 #     pass
         
-        
+
+    
 class carInstanceSQL:
     def __init__(self, api_key: str, VIN: str):
         object.__setattr__(self, "api_key", api_key)
@@ -184,7 +195,7 @@ class carInstanceSQL:
 
     def update(self,attribute,value,internal=False):
         self.car.update(attribute,value,internal=internal)
-        
+       
         
         
 def regenerateDatabase():

@@ -140,11 +140,15 @@ else:
 additionalDataInstance = additionalDataInstance()
 
 def createCar(api_key: str, car: Car):
-    if api_key in databaseInterface:
-        databaseInterface[api_key].append(car)
+    if readConfig("DATABASE", "TYPE") == "SQL":
+        databaseInterface.addCar(VIN=car.VIN, vcc_api_key=api_key, car=car)
     else:
-        databaseInterface[api_key] = [car]
-            
-    if api_key not in AdditionalDatabase:
-        AdditionalDatabase[api_key] = AdditionalData()
+        if api_key in databaseInterface:
+            databaseInterface[api_key].append(car)
+        else:
+            databaseInterface[api_key] = [car]
+
+                
+    # if api_key not in AdditionalDatabase:
+    #     AdditionalDatabase[api_key] = AdditionalData()
             
