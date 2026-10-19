@@ -24,14 +24,41 @@ class AdditionalRow(SQLModel, table=True):
     scopes: dict = Field(sa_column=Column(JSON))
     Oauth2: dict = Field(sa_column=Column(JSON))
     
-
+def regenerateDatabase():
+    api_key=ApiKey(api_key="vcc_api_key")
+    api_key_Oauth2=ApiKey(api_key="vcc_api_key_Oauth2")
+    car1=CarRow(api_key="vcc_api_key", vin=database.database["vcc_api_key"][0].VIN, data=dictCar(database.database["vcc_api_key"][0]))
+    car2=CarRow(api_key="vcc_api_key_Oauth2", vin=database.database["vcc_api_key_Oauth2"][0].VIN, data=dictCar(database.database["vcc_api_key_Oauth2"][0]))
+    
+    all_values =ApiKey(api_key="all_values")
+    car3=CarRow(api_key="all_values", vin=database.database["all_values"][0].VIN, data=dictCar(database.database["all_values"][0]))
+    car4=CarRow(api_key="all_values", vin=database.database["all_values"][1].VIN, data=dictCar(database.database["all_values"][1]))
+    car5=CarRow(api_key="all_values", vin=database.database["all_values"][2].VIN, data=dictCar(database.database["all_values"][2]))
+    
+    with Session(engine) as session:
+        session.exec(delete(CarRow).where(CarRow.api_key=="vcc_api_key"))
+        session.exec(delete(ApiKey).where(ApiKey.api_key=="vcc_api_key"))
+        session.exec(delete(CarRow).where(CarRow.api_key=="vcc_api_key_Oauth2"))
+        session.exec(delete(ApiKey).where(ApiKey.api_key=="vcc_api_key_Oauth2"))
+        session.exec(delete(CarRow).where(CarRow.api_key=="all_values"))
+        session.exec(delete(ApiKey).where(ApiKey.api_key=="all_values"))
+        session.commit()
+        
+        session.add(api_key)
+        session.add(car1)
+        session.add(api_key_Oauth2)
+        session.add(car2)
+        session.add(all_values)
+        session.add(car3)
+        session.add(car4)
+        session.add(car5)
+        session.commit()
 
 # Format: mysql+pymysql://<user>:<password>@<host>:<port>/<database_name>
 try:
     engine = create_engine(f"mysql+pymysql://{readConfig('DATABASE', 'USER')}:{readConfig('DATABASE', 'PASSWORD')}@{readConfig('DATABASE', 'HOST')}:{readConfig('DATABASE', 'PORT')}/{readConfig('DATABASE', 'NAME')}")
-    with Session(engine) as session:
-        session.exec(text("SELECT 1"))
-        print("Database connection successful.")
+    regenerateDatabase()
+    print("Database connection successful.")
         
 except Exception as e:
     print(f"Error creating database engine: {e}")
@@ -39,15 +66,12 @@ except Exception as e:
 
 
     
-class databaseSQL:
-            
+class databaseSQL:       
 
     def __contains__(self, key):
-        print(f"Checking if key exists: {key}")
         with Session(engine) as session:
             statment=select(ApiKey).where(ApiKey.api_key==key)
             api_key=session.exec(statment).first()
-            print(f"Key exists: {api_key is not None}")
             return api_key is not None
     def keys(self):
         with Session(engine) as session:
@@ -104,11 +128,11 @@ class databaseSQL:
         
 class additionalDataSQL:
     def __contains__(self, key):
-        print(f"Checking if key exists: {key}/AdditionalData")
+
         with Session(engine) as session:
             statment=select(ApiKey).where(ApiKey.api_key==key)
             api_key=session.exec(statment).first()
-            print(f"Key exists: {api_key is not None}")
+
             return api_key is not None
     def keys(self):
         with Session(engine) as session:
@@ -198,20 +222,3 @@ class carInstanceSQL:
        
         
         
-def regenerateDatabase():
-    api_key=ApiKey(api_key="vcc_api_key")
-    api_key_Oauth2=ApiKey(api_key="vcc_api_key_Oauth2")
-    car1=CarRow(api_key="vcc_api_key", vin=database.database["vcc_api_key"][0].VIN, data=dictCar(database.database["vcc_api_key"][0]))
-    car2=CarRow(api_key="vcc_api_key_Oauth2", vin=database.database["vcc_api_key_Oauth2"][0].VIN, data=dictCar(database.database["vcc_api_key_Oauth2"][0]))
-    with Session(engine) as session:
-        session.exec(delete(CarRow).where(CarRow.api_key=="vcc_api_key"))
-        session.exec(delete(ApiKey).where(ApiKey.api_key=="vcc_api_key"))
-        session.exec(delete(CarRow).where(CarRow.api_key=="vcc_api_key_Oauth2"))
-        session.exec(delete(ApiKey).where(ApiKey.api_key=="vcc_api_key_Oauth2"))
-        session.commit()
-        
-        session.add(api_key)
-        session.add(car1)
-        session.add(api_key_Oauth2)
-        session.add(car2)
-        session.commit()
