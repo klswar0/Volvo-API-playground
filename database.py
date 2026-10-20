@@ -43,7 +43,8 @@ database = {
                 tailGate="AJAR",
             ),
         ],
-        "vcc_api_key_Oauth2": [Car(VIN="VIN123", fuelType="HYBRID")]
+        "vcc_api_key_Oauth2": [Car(VIN="VIN123", fuelType="HYBRID")],
+        "scopes":[Car(VIN="VIN123", fuelType="HYBRID")],
     }
 
     #client id == api key for this playground
@@ -51,7 +52,8 @@ database = {
 AdditionalDatabase={
         "vcc_api_key_Oauth2": AdditionalData(Oauth2Data=Oauth2(client_secret="client_secret", code="code", access_token="access_token", refresh_token="refresh_token")),
         "vcc_api_key": AdditionalData(),#ScopesData=Scopes(scopes=["openid","conve:vehicle_relation","location:read"])
-        "all_values": AdditionalData()
+        "all_values": AdditionalData(),
+        "scopes": AdditionalData(ScopesData=Scopes(scopes=["openid","conve:vehicle_relation","location:read"]))
     }
 
 if readConfig("DATABASE", "TYPE") == "SQL":

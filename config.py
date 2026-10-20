@@ -32,7 +32,8 @@ config['DATABASE'] = {
     'PORT': '3306',
     'USER': 'test',
     'PASSWORD': '1234',
-    'NAME': 'api'
+    'NAME': 'api',
+    'DEBUG': 'True'
     
 }
 config.read('config.ini')
