@@ -150,7 +150,12 @@ def createCar(api_key: str, car: Car):
         else:
             databaseInterface[api_key] = [car]
 
-                
+def removeCar(api_key: str, car: Car):
+    if readConfig("DATABASE", "TYPE") == "SQL":
+        databaseInterface.remove(api_key, car.VIN)
+    else:
+        databaseInterface[api_key].remove(car)
+
     # if api_key not in AdditionalDatabase:
     #     AdditionalDatabase[api_key] = AdditionalData()
             

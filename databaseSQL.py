@@ -139,6 +139,17 @@ class databaseSQL:
             session.add(car_row)
             session.commit()
             self.log(f"Added car for VIN: {VIN} under API key: {vcc_api_key}")
+    def remove(self,api_key: str, VIN: str):
+        print("accessing remove method")
+        with Session(engine) as session:
+            statment=select(CarRow).where(CarRow.api_key==api_key, CarRow.vin==VIN)
+            car=session.exec(statment).first()
+            if car is None:
+                self.log(f"Car not found for VIN: {VIN} under API key: {api_key}", error=True)
+                raise ValueError("Invalid VIN")
+            session.delete(car)
+            session.commit()
+            self.log(f"Removed car for VIN: {VIN} under API key: {api_key}")
         
          
         
@@ -257,5 +268,6 @@ class carInstanceSQL:
     def update(self,attribute,value,internal=False):
         self.car.update(attribute,value,internal=internal)
         self.log(f"Updated car data for VIN: {self.car.VIN} under API key: {self.api_key}")
+
         
         

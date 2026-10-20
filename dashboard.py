@@ -15,7 +15,7 @@ import secrets
 from notifier import notifier
 from classCar import Car, Oauth2,Scopes
 from config import readConfig
-from database import createCar, databaseInterface as database, AdditionalDatabase
+from database import createCar,removeCar, databaseInterface as database, AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
@@ -372,8 +372,8 @@ def deleteCar(key: str, VIN: str, request: Request):
             raise ValueError("Invalid API key")
         try:
             car = VINHandlingInternal(VIN, key)
-            database[key].remove(car)
-
+            #database[key].remove(car)
+            removeCar(key, car)
             return Dashboard(key, request)
         except ValueError:
             return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car does not exist</p></div>", headers=error_headers)
