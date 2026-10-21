@@ -24,12 +24,22 @@ class AdditionalRow(SQLModel, table=True):
     scopes: dict = Field(sa_column=Column(JSON))
     Oauth2: dict = Field(sa_column=Column(JSON))
     
-def regenerateDatabase():
+def regenerateDatabase(full:bool=False):
+    SQLModel.metadata.create_all(engine)
+    if  full:
+        with Session(engine) as session:
+            session.exec(delete(CarRow))
+            session.exec(delete(AdditionalRow))
+            session.exec(delete(ApiKey))
+            session.commit()
+            log("All database rows have been cleanly deleted.")
+    
+
     api_key=ApiKey(api_key="vcc_api_key")
     api_key_Oauth2=ApiKey(api_key="vcc_api_key_Oauth2")
     car1=CarRow(api_key="vcc_api_key", vin=database.database["vcc_api_key"][0].VIN, data=dictCar(database.database["vcc_api_key"][0]))
     car2=CarRow(api_key="vcc_api_key_Oauth2", vin=database.database["vcc_api_key_Oauth2"][0].VIN, data=dictCar(database.database["vcc_api_key_Oauth2"][0]))
-    
+        
     all_values =ApiKey(api_key="all_values")
     car3=CarRow(api_key="all_values", vin=database.database["all_values"][0].VIN, data=dictCar(database.database["all_values"][0]))
     car4=CarRow(api_key="all_values", vin=database.database["all_values"][1].VIN, data=dictCar(database.database["all_values"][1]))
@@ -63,7 +73,8 @@ def log(text:str,error:bool=False):
 # Format: mysql+pymysql://<user>:<password>@<host>:<port>/<database_name>
 try:
     engine = create_engine(f"mysql+pymysql://{readConfig('DATABASE', 'USER')}:{readConfig('DATABASE', 'PASSWORD')}@{readConfig('DATABASE', 'HOST')}:{readConfig('DATABASE', 'PORT')}/{readConfig('DATABASE', 'NAME')}")
-    regenerateDatabase()
+    
+    regenerateDatabase(readConfig('DATABASE', 'Purge', True))
     log(f"Database connection successful.")
         
 except Exception as e:
@@ -111,6 +122,7 @@ class databaseSQL:
                 session.add(car_row)
             self.log(f"Added data for VIN: {car.VIN} under API key: {key}")
             session.commit()
+    # TODO check add logic dahsboard
     def __setitem__(self, key, value):
         with Session(engine) as session:
             statment=select(ApiKey).where(ApiKey.api_key==key)
@@ -124,7 +136,7 @@ class databaseSQL:
                 car_row=CarRow(api_key=key, vin=car.VIN, data=car.__dict__)
                 session.add(car_row)
             session.commit()
-            self.log(f"Added data for VIN: {car.VIN} under API key: {key}")
+            self.log(f"Added data for VIN: {value} under API key: {key}")
     def carFind(self, VIN:str, vcc_api_key: str):
         with Session(engine) as session:
             statment=select(CarRow).where(CarRow.api_key==vcc_api_key, CarRow.vin==VIN)

@@ -33,7 +33,8 @@ config['DATABASE'] = {
     'USER': 'test',
     'PASSWORD': '1234',
     'NAME': 'api',
-    'DEBUG': 'True'
+    'DEBUG': 'True',
+    'Purge': 'True'
     
 }
 config.read('config.ini')
