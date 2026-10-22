@@ -268,7 +268,8 @@ class carInstanceSQL:
         self.log(f"Accessing keys for VIN: {self.car.VIN} under API key: {self.api_key}")
         return self.car.__dict__.keys()
     def __getitem__(self, key):
-        self.refresh()
+        if readConfig("DATABASE", "ALWAYS_REFRESH",True):
+            self.refresh()
         self.log(f"Accessing item {key} for VIN: {self.car.VIN} under API key: {self.api_key}")
         return self.car.__dict__[key]
     def __setitem__(self, key, value):
@@ -276,7 +277,8 @@ class carInstanceSQL:
         return self.car.__dict__.__setitem__(key, value)
     
     def __getattr__(self, key):
-        self.refresh()
+        if readConfig("DATABASE", "ALWAYS_REFRESH",True):
+            self.refresh()
         self.log(f"Accessing attribute {key} for VIN: {self.car.VIN} under API key: {self.api_key}")
         return self.car.__getattribute__(key)
     

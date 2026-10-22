@@ -34,7 +34,8 @@ config['DATABASE'] = {
     'PASSWORD': '1234',
     'NAME': 'api',
     'DEBUG': 'True',
-    'Purge': 'True'
+    'Purge': 'True',
+    'ALWAYS_REFRESH': 'False'
     
 }
 config.read('config.ini')
