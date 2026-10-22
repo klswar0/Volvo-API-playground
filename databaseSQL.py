@@ -144,7 +144,7 @@ class databaseSQL:
             if car is None:
                 self.log(f"Car not found for VIN: {VIN}", error=True)
                 raise ValueError("Invalid VIN")
-            return dictCar(**car.data)
+            return Car(**car.data)
     def addCar(self, VIN:str, vcc_api_key: str, car:Car):
         with Session(engine) as session:
             car_row=CarRow(api_key=vcc_api_key, vin=VIN, data=car.__dict__)
@@ -185,12 +185,19 @@ class additionalDataSQL:
     def __getitem__(self, key):
         with Session(engine) as session:
             self.log(f"Getting item: {key}/AdditionalData")
-            statment=select(AdditionalData).where(AdditionalData.api_key==key)
-            cars=session.exec(statment).all()
-            data=[]
-            for car in cars:
-                data.append(AdditionalData(**car.data))
-            return data
+
+            statement = select(AdditionalRow).where(
+                AdditionalRow.api_key == key
+            )
+            row = session.exec(statement).first()
+
+            if row is None:
+                return AdditionalData()
+
+            return AdditionalData(
+                Oauth2Data=Oauth2(**row.Oauth2) if row.Oauth2 else None,
+                ScopesData=Scopes(**row.scopes) if row.scopes else None,
+            )
     def __setattr__(self, key, value):
         with Session(engine) as session:
             statment=select(ApiKey).where(ApiKey.api_key==key)
@@ -245,23 +252,23 @@ class carInstanceSQL:
 
     
     def refresh(self):    
-        with Session(engine) as session:
-            statment=select(ApiKey).where(ApiKey.api_key==self.api_key,CarRow.vin==self.car.VIN)
-            car=session.exec(statment).first()
-            if car is None:
-                raise ValueError("Invalid VIN")
+        # with Session(engine) as session:
+        #     # statment=select(ApiKey).where(ApiKey.api_key==self.api_key,CarRow.vin==self.car.VIN)
+        #     # car=session.exec(statment).first()
+        #     # if car is None:
+        #     #     raise ValueError("Invalid VIN")
             object.__setattr__(
                     self,
                     "car",
-                    databaseSQL().carFind(VIN=self.VIN, vcc_api_key=self.api_key),
+                    databaseSQL().carFind(VIN=self.car.VIN, vcc_api_key=self.api_key),
                     )
             self.log(f"Refreshed car data for VIN: {self.car.VIN} under API key: {self.api_key}")
     def keys(self):
-        object.refresh(self)
+        self.refresh()
         self.log(f"Accessing keys for VIN: {self.car.VIN} under API key: {self.api_key}")
         return self.car.__dict__.keys()
     def __getitem__(self, key):
-        object.refresh(self)
+        self.refresh()
         self.log(f"Accessing item {key} for VIN: {self.car.VIN} under API key: {self.api_key}")
         return self.car.__dict__[key]
     def __setitem__(self, key, value):
@@ -269,7 +276,7 @@ class carInstanceSQL:
         return self.car.__dict__.__setitem__(key, value)
     
     def __getattr__(self, key):
-        object.refresh(self)
+        self.refresh()
         self.log(f"Accessing attribute {key} for VIN: {self.car.VIN} under API key: {self.api_key}")
         return self.car.__getattribute__(key)
     
