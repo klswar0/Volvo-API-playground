@@ -25,10 +25,13 @@
             <p class="text-xl md:text-2xl text-red-700">{{note}}</p>
             <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
                 <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                    OAuth2 Settings
+                    OAuth2
                 </button>
                 <button  hx-get="/internal/dashboard/snapshots?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
                     Snapshots
+                </button>
+                <button  hx-get="/internal/dashboard/scopes?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+                    Scopes
                 </button>
             </div>
         </header>
