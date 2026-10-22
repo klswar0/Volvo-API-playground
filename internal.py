@@ -11,7 +11,7 @@ import secrets
 from notifier import notifier
 from classCar import Car, Oauth2,Scopes
 from config import readConfig
-from database import database, AdditionalDatabase,createCar
+from database import databaseInterface as database, AdditionalDatabase,createCar,removeCar
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from OAuth2 import oauth2Generator
 from auth import authenticateInternal, VINHandlingInternal
@@ -251,7 +251,7 @@ def genAPIKey():
     database[api_key] = []
     return JSONResponse(content={"message": api_key,"description": f"THIS IS INTERNAL API/API key generated successfully"}, status_code=200)
 
-
+#TODO: check it!!!
 def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dict = Body(default={})):
     try:
         cars =database[vcc_api_key]
@@ -275,12 +275,12 @@ def addCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dic
 
    
 
-def delCar(vcc_api_key: str = Header(...), VIN: str = Body(...), attributes: dict = Body(default={})): #add to DOCS
+def delCar(vcc_api_key: str = Header(...), VIN: str = Body(...)): #add to DOCS
     try:
         cars =database[vcc_api_key]
         for i, car in enumerate(cars):
             if car.VIN == VIN:
-                del cars[i]
+                removeCar(vcc_api_key, car)
                 return JSONResponse(content={"message": f"THIS IS INTERNAL API/Car deleted successfully: {VIN}"}, status_code=200)
         return BadRequestResponseInternal(VIN)
 

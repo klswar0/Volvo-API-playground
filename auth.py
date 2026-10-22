@@ -1,7 +1,7 @@
 from time import time
 
 from classCar import AuthHeaderGET, AuthHeaderPOST
-from database import database, AdditionalDatabase
+from database import databaseInterface as database, additionalDataInstance as AdditionalDatabase, carInstance
 
 
 
@@ -34,12 +34,16 @@ def VINHandling(VIN:str, auth_header:  AuthHeaderPOST | AuthHeaderGET):
     except Exception as e:
         raise ValueError(str(e))
     
-    for car in database[auth_header.vcc_api_key]:
-        if car.VIN == VIN:
-            return car
+    # for car in database[auth_header.vcc_api_key]:
+    #     if car.VIN == VIN:
+    #         return car
+
+    car= carInstance(auth_header.vcc_api_key,VIN)
+    return car
     raise ValueError("Invalid VIN")
 
 def authenticateInternal(vcc_api_key: str):
+    print(vcc_api_key not in database)
     if vcc_api_key not in database:
         raise ValueError("Invalid API key")
     

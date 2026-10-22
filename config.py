@@ -26,6 +26,18 @@ config['ERROR_LOGGING'] = {
     'STATUS': 'True',
     'Write': 'True'
 }
+config['DATABASE'] = {
+    'TYPE': 'SQL',
+    'HOST': 'localhost',
+    'PORT': '3306',
+    'USER': 'test',
+    'PASSWORD': '1234',
+    'NAME': 'api',
+    'DEBUG': 'True',
+    'Purge': 'True',
+    'ALWAYS_REFRESH': 'False'
+    
+}
 config.read('config.ini')
 
 all_options=['DEFAULT']+config.sections()
