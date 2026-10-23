@@ -27,7 +27,8 @@ config['ERROR_LOGGING'] = {
     'Write': 'True'
 }
 config['DATABASE'] = {
-    'TYPE': 'dict',
+    'TYPE': 'SQL',
+    'SQL_TYPE': '',
     'HOST': 'localhost',
     'PORT': '3306',
     'USER': 'test',
