@@ -16,6 +16,7 @@ import snapshots
 from classCar import Car
 from config import readConfig 
 from notifier import notifier 
+from config import config
 
 
 
