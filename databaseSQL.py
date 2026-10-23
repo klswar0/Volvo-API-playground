@@ -21,6 +21,11 @@ class CarRow(SQLModel ,table=True):
     
     def AddValues(self, car:Car):
         for key, value in car.__dict__.items():
+            if key=="VIN":
+                if value != self.vin:
+                    #shoyldnt happen so can  be commented
+                    raise ValueError("VIN mismatch between CarRow and Car object")
+                continue
             setattr(self, key, value)
     
     def generateCar(self):
@@ -211,13 +216,18 @@ def regenerateDatabase(full:bool=False):
 
     api_key=ApiKey(api_key="vcc_api_key")
     api_key_Oauth2=ApiKey(api_key="vcc_api_key_Oauth2")
-    car1=CarRow(api_key="vcc_api_key", vin=database.database["vcc_api_key"][0].VIN, data=dictCar(database.database["vcc_api_key"][0]))
-    car2=CarRow(api_key="vcc_api_key_Oauth2", vin=database.database["vcc_api_key_Oauth2"][0].VIN, data=dictCar(database.database["vcc_api_key_Oauth2"][0]))
+    car1=CarRow(api_key="vcc_api_key", vin=database.database["vcc_api_key"][0].VIN)
+    car1.AddValues(database.database["vcc_api_key"][0])
+    car2=CarRow(api_key="vcc_api_key_Oauth2", vin=database.database["vcc_api_key_Oauth2"][0].VIN)
+    car2.AddValues(database.database["vcc_api_key_Oauth2"][0])
         
     all_values =ApiKey(api_key="all_values")
-    car3=CarRow(api_key="all_values", vin=database.database["all_values"][0].VIN, data=dictCar(database.database["all_values"][0]))
-    car4=CarRow(api_key="all_values", vin=database.database["all_values"][1].VIN, data=dictCar(database.database["all_values"][1]))
-    car5=CarRow(api_key="all_values", vin=database.database["all_values"][2].VIN, data=dictCar(database.database["all_values"][2]))
+    car3=CarRow(api_key="all_values", vin=database.database["all_values"][0].VIN)
+    car3.AddValues(database.database["all_values"][0])
+    car4=CarRow(api_key="all_values", vin=database.database["all_values"][1].VIN)
+    car4.AddValues(database.database["all_values"][1])
+    car5=CarRow(api_key="all_values", vin=database.database["all_values"][2].VIN)
+    car5.AddValues(database.database["all_values"][2])
     
     with Session(engine) as session:
         session.exec(delete(CarRow).where(CarRow.api_key=="vcc_api_key"))
