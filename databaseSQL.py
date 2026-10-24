@@ -283,6 +283,8 @@ class databaseSQL:
         with Session(engine) as session:
             statment=select(ApiKey)
             return session.exec(statment).all()
+            # warning output is wierd
+                
     def __getitem__(self, key):
         with Session(engine) as session:
             statment=select(CarRow).where(CarRow.api_key==key)
@@ -456,7 +458,7 @@ class carInstanceSQL:
                     )
             self.log(f"Refreshed car data for VIN: {self.car.VIN} under API key: {self.api_key}")
     def keys(self):
-        self.refresh()
+        # self.refresh() doesnt need it here keys are a;ways the same
         self.log(f"Accessing keys for VIN: {self.car.VIN} under API key: {self.api_key}")
         return self.car.__dict__.keys()
     def __getitem__(self, key):
