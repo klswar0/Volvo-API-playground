@@ -477,8 +477,9 @@ class carInstanceSQL:
         return self.car.__getattribute__(key)
     
     def __setattr__(self, key, value):
+        #mostly likely unused
         self.log(f"Setting attribute {key} to {value} for VIN: {self.car.VIN} under API key: {self.api_key}")
-        return self.car.__setattr__(self.car, key, value)
+        return self.car.__setattr__(key, value)
 
     def update(self,attribute,value,internal=False):
         self.car.update(attribute,value,internal=internal)

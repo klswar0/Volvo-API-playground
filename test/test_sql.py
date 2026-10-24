@@ -42,3 +42,26 @@ def test_carInstance_keys():
     car_instance = databaseSQL.carInstanceSQL(api_key="vcc_api_key", VIN="VIN123")
     keys = car_instance.keys()
     assert keys == database.database["vcc_api_key"][0].__dict__.keys() 
+
+def test_carInstance_getitem():
+    car_instance = databaseSQL.carInstanceSQL(api_key="vcc_api_key", VIN="VIN123")
+    assert car_instance["VIN"] == database.database["vcc_api_key"][0].VIN
+
+def test_carInstance_setitem():
+    car_instance = databaseSQL.carInstanceSQL(api_key="vcc_api_key", VIN="VIN123")
+    copy=car_instance.car.__dict__.copy()
+    car_instance["VIN"] = "NEWVIN"
+    assert car_instance["VIN"] == "NEWVIN"
+    assert car_instance.car.__dict__ != copy
+
+def test_carInstance_getattr():
+    car_instance = databaseSQL.carInstanceSQL(api_key="vcc_api_key", VIN="VIN123")
+    assert car_instance.VIN == database.database["vcc_api_key"][0].VIN
+
+def test_carInstance_setattr():
+    car_instance = databaseSQL.carInstanceSQL(api_key="vcc_api_key", VIN="VIN123")
+    copy=car_instance.car.__dict__.copy()
+    car_instance.VIN = "NEWVIN"
+    assert car_instance.VIN == "NEWVIN"
+    assert car_instance.car.__dict__ != copy
+
