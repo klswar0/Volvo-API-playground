@@ -350,6 +350,8 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
            
            return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car already exists</p></div>", headers=error_headers)
         except ValueError:
+            if VIN.lower()=="hackclub":
+                return FileResponse("templates/hackclub.html")
             new_car = Car(VIN=VIN)
             createCar(key, new_car)
             # response = Response()
