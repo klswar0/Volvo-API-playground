@@ -386,8 +386,8 @@ class additionalDataSQL:
                 return AdditionalData()
 
             return AdditionalData(
-                Oauth2Data=Oauth2(**row.Oauth2) if row.Oauth2 else None,
-                ScopesData=Scopes(**row.scopes) if row.scopes else None,
+                Oauth2Data=Oauth2(**row.Oauth2) if row.Oauth2 else {},
+                ScopesData=Scopes(**row.scopes) if row.scopes else {},
             )
     def __setattr__(self, key, value):
         with Session(engine) as session:
@@ -420,8 +420,36 @@ class additionalDataSQL:
             self.log('WARNING: check the code or contact the developer. This code is not correct and should be fixed.', error=True)
                 
             session.commit()
-            #self.log(f"Added additional data for VIN: {car.VIN} under API key: {key}")
-
+    #         #self.log(f"Added additional data for VIN: {car.VIN} under API key: {key}")
+    def update(self, key, value:AdditionalData|Oauth2|Scopes|None):
+         with Session(engine) as session:
+            statement = select(AdditionalRow).where(
+                AdditionalRow.api_key == key
+            )
+            row = session.exec(statement).first()
+            if isinstance(value, AdditionalData):
+                if row is None:
+                    row = AdditionalRow(api_key=key)
+                    session.add(row)
+                row.Oauth2 = value.Oauth2Data.__dict__ if value.Oauth2Data else None
+                row.scopes = value.ScopesData.__dict__ if value.ScopesData else None
+            elif isinstance(value,Oauth2):
+                if row is None:
+                    row = AdditionalRow(api_key=key)
+                    session.add(row)
+                row.Oauth2 = value.__dict__
+            elif isinstance(value,Scopes):
+                if row is None:
+                    row = AdditionalRow(api_key=key)
+                    session.add(row)
+                row.scopes = value.__dict__
+            elif value is None:
+                if row is not None:
+                    session.delete(row)
+            else:
+                raise ValueError("Invalid value type for update")
+            self.log(f"Updated additional data for API key: {key} with value: {value}")
+            session.commit()
     
     
 

@@ -15,7 +15,7 @@ import secrets
 from notifier import notifier
 from classCar import Car, Oauth2,Scopes
 from config import readConfig
-from database import createCar,removeCar, databaseInterface as database, AdditionalDatabase
+from database import createCar,removeCar, databaseInterface as database, additionalDataInstance as AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
@@ -177,12 +177,16 @@ def OAuth2Settings(key: str, request: Request):
             return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status, "note": readConfig("SITE","Note")})
         else:
             oauth2_status = "Activated"
-        data=AdditionalDatabase[key].Oauth2Data.model_dump()
+        if readConfig("DATABASE", "TYPE") == "SQL":
+            data=dict(AdditionalDatabase[key].Oauth2Data)
+        else:
+            data=AdditionalDatabase[key].Oauth2Data.model_dump()
         data["oauth2_status"] = oauth2_status
         data["key"]=key
         data["note"] = readConfig("SITE","Note")
         return templates.TemplateResponse(name="oauth2settings.html", request=request, context=data)
     except ValueError as e:
+        print(f"Error in OAuth2Settings: {e}")
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
 
@@ -199,41 +203,47 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
             if attribute == "OAuth2":
                 if value.lower() == "true":
                     oauth2 = Oauth2(client_secret="client_secret_"+secrets.token_urlsafe(12), PKCE=False,redirect_uri="")
-                    AdditionalDatabase[key].Oauth2Data = oauth2
+                    if readConfig("DATABASE", "TYPE") == "SQL":
+                        AdditionalDatabase.update(key, oauth2)
+                    else:
+                        AdditionalDatabase[key].Oauth2Data = oauth2
                     # response=Response()
                     # response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
                     # return response
                     return OAuth2Settings(key, request)
 
             return HTMLResponse(content="<p style=\"color:red\">OAuth2 not activated for this API key</p>")
-
+        Oauth2Data = AdditionalDatabase[key].Oauth2Data
         if attribute == "client_secret":
-            AdditionalDatabase[key].Oauth2Data.client_secret = value
+            Oauth2Data.client_secret = value
         elif attribute == "redirect_uri":   
-            AdditionalDatabase[key].Oauth2Data.redirect_uri = value
+           Oauth2Data.redirect_uri = value
         elif attribute == "PKCE":
             if value.lower() == "true":
-                AdditionalDatabase[key].Oauth2Data.PKCE = True
+                Oauth2Data.PKCE = True
             elif value.lower() == "false":
-                AdditionalDatabase[key].Oauth2Data.PKCE = False
+                Oauth2Data.PKCE = False
         elif attribute == "access_token":
-            AdditionalDatabase[key].Oauth2Data.access_token = value
+            Oauth2Data.access_token = value
         elif attribute == "refresh_token":
-            AdditionalDatabase[key].Oauth2Data.refresh_token = value
+            Oauth2Data.refresh_token = value
         elif attribute == "OAuth2":
             if value.lower() == "false":
-                AdditionalDatabase[key].Oauth2Data = None
+                Oauth2Data.Oauth2Data = None
         elif attribute == "generate":
-            oauth2Generator(key, AdditionalDatabase[key].Oauth2Data)
+            oauth2Generator(key, Oauth2Data)
         elif attribute == "expire":
-            AdditionalDatabase[key].Oauth2Data.expires_in = 0
+            Oauth2Data.Oauth2Data.expires_in = 0
         else:
             return HTMLResponse(content="<p style=\"color:red\">Invalid attribute</p>")
         # response=Response()
         # response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
         # return response
+        if readConfig("DATABASE", "TYPE") == "SQL":
+            AdditionalDatabase.update(key,Oauth2Data)
         return OAuth2Settings(key, request)
     except ValueError as e:
+        print(f"Error in OAuth2Change: {e}")
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
 # def OAuth2Generate(key: str, request: Request):  

@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 
 
 from scopes import scopesList
-from database import AdditionalDatabase
+from database import  additionalDataInstance as AdditionalDatabase
 from classCar import Oauth2
 from config import readConfig
 
@@ -84,6 +84,8 @@ def oauth2Generator(api_key:str,oauth2:Oauth2):
     oauth2.code = "" #invalidate code
     if oauth2.expires_in != -1:
         oauth2.expires_in = int(time()) + 3599 
+    
+    AdditionalDatabase.update(api_key, oauth2)
 
     return oauth2
 
@@ -126,6 +128,7 @@ def oauth2_post(client_id: str = Form(...), redirect_uri: str = Form(...), state
         url += f"&state={state}"
     response = Response()
     response.headers["HX-Redirect"] = url
+    AdditionalDatabase.update(client_id, oauth2)
     return response
 
 
