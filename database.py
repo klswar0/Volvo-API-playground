@@ -126,17 +126,19 @@ if readConfig("DATABASE", "TYPE") == "SQL":
 else:
     class additionalDataInstance:
         def keys(self):
-            
-            return database.keys()
+            return AdditionalDatabase.keys()
+
         def __getitem__(self, key):
-            return database[key]
+            return AdditionalDatabase[key]
         
         def __contains__(self, key):
-            return key in database
+            return key in AdditionalDatabase
+
         def __setattr__(self, key, value):
-            database[key] = value
+            AdditionalDatabase[key] = value
+
         def __setitem__(self, key, value):
-            database[key] = value
+            AdditionalDatabase[key] = value
 
     
 additionalDataInstance = additionalDataInstance()
