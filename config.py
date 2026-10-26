@@ -10,6 +10,7 @@ def readConfig(section, option, boolean=False):
 
 config = configparser.ConfigParser()
 config['DEFAULT'] = {
+    'fastAPIdocs': 'True',
     'ShortKeys': 'True',
     'Validation': 'True',
     'expirity': 'True',
@@ -39,7 +40,8 @@ config['DATABASE'] = {
     'ALWAYS_REFRESH': 'False'
     
 }
-config.read('config.ini')
+if os.path.exists("config.ini"):
+    config.read('config.ini')
 
 all_options=['DEFAULT']+config.sections()
 for section in all_options:
