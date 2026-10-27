@@ -139,6 +139,9 @@ else:
 
         def __setitem__(self, key, value):
             AdditionalDatabase[key] = value
+            
+        def update(self, key, value):
+            pass # protects from crashing but unused if dict memory database is used
 
     
 additionalDataInstance = additionalDataInstance()
