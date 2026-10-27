@@ -1,3 +1,7 @@
+
+# **DEPRECATED**
+check github wiki
+
 # Volvo playground docs
 You can use official docs for every endpoint that isnt /internal/* but you can use this docs to learn how volvo apis work (CONNECTED VEHICLE API other APIs are in works)
 
