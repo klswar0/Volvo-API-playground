@@ -390,37 +390,40 @@ class additionalDataSQL:
                 ScopesData=Scopes(**row.scopes) if row.scopes else {},
             )
     def __setattr__(self, key, value):
-        with Session(engine) as session:
-            statment=select(ApiKey).where(ApiKey.api_key==key)
-            api_key=session.exec(statment).first()
-            if api_key is None:
-                api_key=ApiKey(api_key=key)
-                session.add(api_key)
-                session.commit()
-                self.log(f"WARNING: Created new API key for additional data: {key}", error=True)
-            # for car in value:
-            #     car_row=AdditionalData(api_key=key, vin=car.VIN, data=car.__dict__)
-            #     session.add(car_row)
-            #what this code is for ? why its wrong but never any errros came
-            self.log('WARNING: check the code or contact the developer. This code is not correct and should be fixed.', error=True)
-            session.commit()
-            #self.log(f"Added additional data for VIN: {car.VIN} under API key: {key}")
+        print("contact the developer __setattr__ additionaDataSQL")
+        # with Session(engine) as session:
+        #     statment=select(ApiKey).where(ApiKey.api_key==key)
+        #     api_key=session.exec(statment).first()
+        #     if api_key is None:
+        #         api_key=ApiKey(api_key=key)
+        #         session.add(api_key)
+        #         session.commit()
+        #         self.log(f"WARNING: Created new API key for additional data: {key}", error=True)
+        #     # for car in value:
+        #     #     car_row=AdditionalData(api_key=key, vin=car.VIN, data=car.__dict__)
+        #     #     session.add(car_row)
+        #     #what this code is for ? why its wrong but never any errros came
+        #     self.log('WARNING: check the code or contact the developer. This code is not correct and should be fixed.', error=True)
+        #     session.commit()
+        #     #self.log(f"Added additional data for VIN: {car.VIN} under API key: {key}")
     def __setitem__(self, key, value):
-        with Session(engine) as session:
-            statment=select(ApiKey).where(ApiKey.api_key==key)
-            api_key=session.exec(statment).first()
-            if api_key is None:
-                api_key=ApiKey(api_key=key)
-                session.add(api_key)
-                session.commit()
-                self.log(f"WARNING: Created new API key for additional data: {key}", error=True)
-            # for car in value:
-            #     car_row=AdditionalData(api_key=key, vin=car.VIN, data=car.__dict__)
-            #     session.add(car_row)
-            self.log('WARNING: check the code or contact the developer. This code is not correct and should be fixed.', error=True)
+        print("contact the developer __setitem__ additionaDataSQL")
+        
+    #     with Session(engine) as session:
+    #         statment=select(ApiKey).where(ApiKey.api_key==key)
+    #         api_key=session.exec(statment).first()
+    #         if api_key is None:
+    #             api_key=ApiKey(api_key=key)
+    #             session.add(api_key)
+    #             session.commit()
+    #             self.log(f"WARNING: Created new API key for additional data: {key}", error=True)
+    #         # for car in value:
+    #         #     car_row=AdditionalData(api_key=key, vin=car.VIN, data=car.__dict__)
+    #         #     session.add(car_row)
+    #         self.log('WARNING: check the code or contact the developer. This code is not correct and should be fixed.', error=True)
                 
-            session.commit()
-    #         #self.log(f"Added additional data for VIN: {car.VIN} under API key: {key}")
+    #         session.commit()
+    # #         #self.log(f"Added additional data for VIN: {car.VIN} under API key: {key}")
     def update(self, key, value:AdditionalData|Oauth2|Scopes|None):
          with Session(engine) as session:
             statement = select(AdditionalRow).where(
@@ -452,9 +455,6 @@ class additionalDataSQL:
             session.commit()
     
     
-
-# class InstanceAdditionalDataSQL:
-#     pass
         
 
     

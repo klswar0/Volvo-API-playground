@@ -12,7 +12,7 @@ def purge():
 database_config()
 client = TestClient(main.app)
 dataInstance = databaseSQL.databaseSQL()
-
+additionalDataInstance = databaseSQL.additionalDataSQL()
 def test_database_contains():
     purge()
     assert ("vcc_api_key" in dataInstance)  == True
@@ -77,5 +77,20 @@ def test_carInstance_setattr():
     assert car_instance.VIN == "NEWVIN"
     assert car_instance.car.__dict__ != copy
 
-# def test_additionalData_contains():
-#     assert "vcc_api_k"
+def test_additionalData_contains():
+    purge()
+    assert "vcc_api_key" in additionalDataInstance
+    assert "vcc_api_sceret" not in additionalDataInstance
+
+def test_additionalData_getitem():
+    purge()
+    assert additionalDataInstance["vcc_api_key"] == database.additionalDataInstance["vcc_api_key"]
+    assert additionalDataInstance["all_values"] == database.additionalDataInstance["all_values"]
+    
+def test_additionalData_update():
+    purge()
+    before=additionalDataInstance["vcc_api_key"]
+    oauth=database.Oauth2(client_secret="clientsecret", code="code", code_challenge="challenge", code_challenge_method="S256", access_token="token",refresh_token="refresh", expires_in=0)
+    additionalDataInstance.update("vcc_api_key",oauth)
+    assert additionalDataInstance["vcc_api_key"].Oauth2Data != before
+    assert additionalDataInstance["vcc_api_key"].Oauth2Data == oauth
