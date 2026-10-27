@@ -487,6 +487,25 @@ class carInstanceSQL:
                     databaseSQL().carFind(VIN=self.car.VIN, vcc_api_key=self.api_key),
                     )
             self.log(f"Refreshed car data for VIN: {self.car.VIN} under API key: {self.api_key}")
+            
+    def update(self,attribute,value,internal=False):
+
+            if self.car.update(attribute,value,internal=internal):
+                with Session(engine) as session:
+                    statement = select(CarRow).where(
+                        CarRow.api_key == self.api_key, CarRow.vin == self.car.VIN
+                    )
+                    car_row = session.exec(statement).first()
+                    setattr(car_row, attribute, getattr(self.car, attribute))
+                    setattr(car_row, "lastTimestamp", getattr(self.car, "lastTimestamp"))
+                    session.add(car_row)
+                    session.commit()
+                    self.refresh()
+                    self.log(f"Updated car data for VIN: {self.car.VIN} under API key: {self.api_key}")
+                    return True
+            else:
+                return False
+    
     def keys(self):
         # self.refresh() doesnt need it here keys are a;ways the same
         self.log(f"Accessing keys for VIN: {self.car.VIN} under API key: {self.api_key}")
@@ -498,7 +517,7 @@ class carInstanceSQL:
         return self.car.__dict__[key]
     def __setitem__(self, key, value):
         self.log(f"Setting item {key} to {value} for VIN: {self.car.VIN} under API key: {self.api_key}")
-        return self.car.__dict__.__setitem__(key, value)
+        return self.update(key, value)
     
     def __getattr__(self, key):
         if readConfig("DATABASE", "ALWAYS_REFRESH",True):
@@ -509,11 +528,10 @@ class carInstanceSQL:
     def __setattr__(self, key, value):
         #mostly likely unused
         self.log(f"Setting attribute {key} to {value} for VIN: {self.car.VIN} under API key: {self.api_key}")
+        print("contact the developer __setattr__ carInstanceSQL")
         return self.car.__setattr__(key, value)
 
-    def update(self,attribute,value,internal=False):
-        self.car.update(attribute,value,internal=internal)
-        self.log(f"Updated car data for VIN: {self.car.VIN} under API key: {self.api_key}")
+
 
         
         
