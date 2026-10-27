@@ -297,36 +297,38 @@ class databaseSQL:
         # apiInstance=apiKeySQL(api_key=key)
         # return apiInstance
     def __setattr__(self, key, value):
-        with Session(engine) as session:
-            statment=select(ApiKey).where(ApiKey.api_key==key)
-            api_key=session.exec(statment).first()
-            if api_key is None:
-                api_key=ApiKey(api_key=key)
-                session.add(api_key)
-                session.commit()
-                self.log(f"WARNING: Created new API key for additional data: {key}", error=True)
-            for car in value:
-                car_row=CarRow(api_key=key, vin=car.VIN)
-                car_row.AddValues(car)
-                session.add(car_row)
-            self.log(f"Added data for VIN: {car.VIN} under API key: {key}")
-            session.commit()
+        print("contact the developer __setattr__ databaseSQL")
+        # with Session(engine) as session:
+        #     statment=select(ApiKey).where(ApiKey.api_key==key)
+        #     api_key=session.exec(statment).first()
+        #     if api_key is None:
+        #         api_key=ApiKey(api_key=key)
+        #         session.add(api_key)
+        #         session.commit()
+        #         self.log(f"WARNING: Created new API key for additional data: {key}", error=True)
+        #     for car in value:
+        #         car_row=CarRow(api_key=key, vin=car.VIN)
+        #         car_row.AddValues(car)
+        #         session.add(car_row)
+        #     self.log(f"Added data for VIN: {car.VIN} under API key: {key}")
+        #     session.commit()
     # TODO check add logic dahsboard
     def __setitem__(self, key, value):
-        with Session(engine) as session:
-            statment=select(ApiKey).where(ApiKey.api_key==key)
-            api_key=session.exec(statment).first()
-            if api_key is None:
-                api_key=ApiKey(api_key=key)
-                session.add(api_key)
-                session.commit()
-                self.log(f"WARNING: Created new API key for additional data: {key}", error=True)
-            for car in value:
-                car_row=CarRow(api_key=key, vin=car.VIN)
-                car_row.AddValues(car)
-                session.add(car_row)
-            session.commit()
-            self.log(f"Added data for VIN: {value} under API key: {key}")
+        print("contact the developer __setitem__ databaseSQL")
+        # with Session(engine) as session:
+        #     statment=select(ApiKey).where(ApiKey.api_key==key)
+        #     api_key=session.exec(statment).first()
+        #     if api_key is None:
+        #         api_key=ApiKey(api_key=key)
+        #         session.add(api_key)
+        #         session.commit()
+        #         self.log(f"WARNING: Created new API key for additional data: {key}", error=True)
+        #     for car in value:
+        #         car_row=CarRow(api_key=key, vin=car.VIN)
+        #         car_row.AddValues(car)
+        #         session.add(car_row)
+        #     session.commit()
+        #     self.log(f"Added data for VIN: {value} under API key: {key}")
     def carFind(self, VIN:str, vcc_api_key: str):
         with Session(engine) as session:
             statment=select(CarRow).where(CarRow.api_key==vcc_api_key, CarRow.vin==VIN)

@@ -80,6 +80,8 @@ else:
                 if car.VIN == VIN:
                     return car
             raise ValueError("Invalid VIN")
+        def update(self, key, value):
+            pass # protects from crashing but unused if dict memory database is used
 
         
 databaseInterface = databaseInterface()
