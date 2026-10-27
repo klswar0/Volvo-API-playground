@@ -31,7 +31,7 @@ class Scopes(BaseModel):
     
 
 def checkScope(api_key: str, scopes: list):
-    from database import AdditionalDatabase
+    from database import additionalDataInstance as AdditionalDatabase
     data = AdditionalDatabase[api_key].ScopesData
 
     if data is None:
