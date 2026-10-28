@@ -118,8 +118,120 @@ async def DashboardWS(websocket: WebSocket):
     finally:
         notifier.unsubscribe(vin, queue)
         print(f"Disconnected car: {vin} with key: {api_key}")
+  
+      
+def DashboardCarNew(key: str,VIN: str, request: Request):
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
+    try:
+        car = VINHandlingInternal(VIN, key)
+        data={"VIN":VIN,"key":key,"note": readConfig("SITE","Note")}
+        return templates.TemplateResponse(name="dashboardNew.html", request=request, context=data)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+        
+def carVisualTranslate(state: str):
+    attribute= state["attribute_name"]
+    current = state["current_value"]
     
+    asset_names ={
+        "frontLeftDoor": "doorFL",
+        "frontRightDoor": "doorFR",
+        "rearLeftDoor": "doorBL",
+        "rearRightDoor": "doorBR",
+        "tailGate": "trunk",
+        "hood": "front",
+        "sunroof": "glass",
+        #"tankLid": "cap",
+        }
 
+    asset_prefix = asset_names.get(attribute)
+    
+    if asset_prefix is None:
+        return None
+    
+    if current in {"OPEN","AJAR"}:
+        
+        return (asset_prefix,asset_prefix + "O")
+    
+    if current in {"CLOSED"}:
+        
+        return (asset_prefix, asset_prefix + "C")
+    
+    return (asset_prefix,"UNSPECIFIED")
+        
+
+async def dashboardCarVisual(websocket: WebSocket):
+    await websocket.accept()
+    if readConfig("DEFAULT", "Websocket",True) == False:
+        await websocket.send_text("<div id=\"car-info\"><p style=\"color:red\">Websocket is disabled in the configuration</p></div>")
+        await websocket.close()
+        return
+    params = websocket.query_params
+    vin = params.get("VIN")
+    api_key = params.get("key")
+    queue = notifier.subscribe(vin)
+    Back_States = {}
+        
+    try:
+        car = VINHandlingInternal(vin, api_key)
+        if not car:
+          raise ValueError("Car not found or invalid API key")
+        car_data = car.model_dump()
+        #file here
+        print(f"Initial car data for visual: {car_data}")
+        for state in car_data:
+           visual_state = carVisualTranslate({"attribute_name": state, "current_value": car_data[state]})
+           if visual_state is not None and visual_state[1] != "UNSPECIFIED":
+               Back_States[visual_state[0]] = visual_state[1]
+        html=templates.get_template("CarIframeTemplate.html").render({"states": Back_States})
+        await websocket.send_text(html)
+        while True:
+            packet = await queue.get()
+            template = templates.get_template("CarIframeTemplate.html")
+            states = Back_States.copy()
+            visual_state = carVisualTranslate(packet)
+            if visual_state is not None:
+                if visual_state[1] == "UNSPECIFIED":
+                    states.pop(visual_state[0],None)
+                else:
+                    states[visual_state[0]] = visual_state[1]
+            html=template.render({"states": states})
+            Back_States = states.copy()
+            await websocket.send_text(html)
+
+        
+    except WebSocketDisconnect:
+        print("Dashboard disconnected")
+    except ValueError as e:
+        await websocket.send_text("Invalid API key or VIN")
+        await websocket.close()
+        return
+    finally:
+        notifier.unsubscribe(vin, queue)
+        print(f"Disconnected car: {vin} with key: {api_key}")
+        
+    
+def DashboardCarIframe(key: str,VIN: str, request: Request):
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
+    try:
+        car = VINHandlingInternal(VIN, key)
+        data={"VIN":VIN,"key":key}
+        return templates.TemplateResponse(name="CarIframe.html", request=request, context=data)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+    
+def VisualCarImages(name: str, request: Request):
+    try:
+        if name == "capC.png":
+            return None 
+        return FileResponse(f"templates/Car/{name}")
+    except Exception as e:
+        return HTMLResponse(content="<p style=\"color:red\">Image not found</p>")
+    
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
     check = checkDashboardEnabled()
     if check is not None:

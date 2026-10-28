@@ -853,8 +853,11 @@ def Style():
 
 
 @app.get("/internal/dashboard/car", include_in_schema=False)
-def DashboardCar(key: str,VIN: str, request: Request):
-    return dashboard.DashboardCar(key, VIN, request)
+def DashboardCar(key: str,VIN: str, request: Request,new: bool = Query(default=False)):
+    if new:
+        return dashboard.DashboardCarNew(key, VIN, request)
+    else:
+        return dashboard.DashboardCar(key, VIN, request)
     
 @app.get("/internal/dashboard/redirect", include_in_schema=False)
 def DashboardRedirect(key: str,VIN: str, request: Request):
@@ -863,6 +866,19 @@ def DashboardRedirect(key: str,VIN: str, request: Request):
 @app.websocket("/internal/dashboard/ws")
 async def DashboardWS(websocket: WebSocket):
     return await dashboard.DashboardWS(websocket)
+
+@app.websocket("/internal/dashboard/ws/Iframe")
+async def DashboardWS(websocket: WebSocket):
+    return await dashboard.dashboardCarVisual(websocket)
+
+@app.get("/internal/dashboard/car/iframe", include_in_schema=False)
+def DashboardCarIframe(key: str,VIN: str, request: Request):
+    return dashboard.DashboardCarIframe(key, VIN, request)
+@app.get("/internal/dashboard/car/iframe/images", include_in_schema=False)
+def DashboardCarImage(name: str, request: Request):
+    return dashboard.VisualCarImages(name, request)
+
+
     
 @app.post("/internal/dashboard/update", include_in_schema=False) # html request here for dashboard
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
