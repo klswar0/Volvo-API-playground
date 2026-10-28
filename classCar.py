@@ -457,8 +457,9 @@ class Car(BaseModel):
                             value=0
                 setattr(self, attribute, value)
                 
-                if not internal:
-                    notifier.trigger_update(self.VIN, self, changed_attribute=attribute)
+                # if not internal:
+                notifier.trigger_update(self.VIN, self, changed_attribute=attribute)
+
                 self.updated()
                 # additional coditions for last timestamp and next invoice status if needed
         else:
