@@ -206,9 +206,9 @@ async def DashboardWSv2(websocket: WebSocket):
             if packet["current_value"] == "":
                 packet["current_value"] = "NOT SET"
            
-            # if packet["attribute_name"] == "fuelType":
-            #     template = templates.get_template("TempDash/fuelsection.html")
-            #     html=template.render({"VIN": packet["VIN"],"key": api_key,"fuelType":packet["current_value"],"fuelICE":car.fuelICE,"fuelElectric": car.fuelElectric})
+            if packet["attribute_name"] == "fuelType":
+                template = templates.get_template("TempDash/fuelsection.html")
+                html=template.render({"VIN": packet["VIN"],"key": api_key,"fuelType":packet["current_value"],"fuelICE":car.fuelICE,"fuelElectric": car.fuelElectric})
 
             else:
                 html=f"<p class=\"text-base md:text-lg animate-fade-in\" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
