@@ -1,5 +1,7 @@
 
 
+import os
+
 from fastapi import Body, Request , Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, FileResponse ,HTMLResponse 
 from fastapi.templating import Jinja2Templates
@@ -135,16 +137,20 @@ def carVisualTranslate(state: str):
     attribute= state["attribute_name"]
     current = state["current_value"]
     
-    asset_names ={
+    asset_names = {
         "frontLeftDoor": "doorFL",
         "frontRightDoor": "doorFR",
         "rearLeftDoor": "doorBL",
         "rearRightDoor": "doorBR",
+        "frontLeftWindow": "winFL",
+        "frontRightWindow": "winFR",
+        "rearLeftWindow": "winBL",
+        "rearRightWindow": "winBR",
         "tailGate": "trunk",
         "hood": "front",
         "sunroof": "glass",
-        #"tankLid": "cap",
-        }
+        "tankLid": "cap",
+    }
 
     asset_prefix = asset_names.get(attribute)
     
@@ -290,9 +296,10 @@ def DashboardCarIframe(key: str,VIN: str, request: Request):
     
 def VisualCarImages(name: str, request: Request):
     try:
-        if name == "capC.png":
-            return None 
-        return FileResponse(f"templates/Car/{name}")
+        if os.path.exists(f"templates/Car/{name}"):
+            return FileResponse(f"templates/Car/{name}")
+        else:
+            return FileResponse(f"templates/Car/BLANK.png")
     except Exception as e:
         return HTMLResponse(content="<p style=\"color:red\">Image not found</p>")
     

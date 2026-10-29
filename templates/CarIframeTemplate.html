@@ -1,6 +1,9 @@
 <div id="car-visual">
     <img src="/internal/dashboard/car/iframe/images?name=base.png" class="pixelArt" alt="base">
-    {% for state in states.values() %}
+    {% for state in states.values() if not state.startswith("win") %}
+        <img src="/internal/dashboard/car/iframe/images?name={{state}}.png" class="pixelArt" alt="{{state}}">
+    {% endfor %}
+    {% for state in states.values() if state.startswith("win") %}
         <img src="/internal/dashboard/car/iframe/images?name={{state}}.png" class="pixelArt" alt="{{state}}">
     {% endfor %}
 </div>
