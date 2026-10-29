@@ -73,6 +73,10 @@ else:
             database[key] = value
         def __setitem__(self, key, value):
             database[key] = value
+
+        def createApiKey(self, key: str):
+            database[key] = []
+            AdditionalDatabase[key] = AdditionalData()
             
         def carFind(self, VIN:str, vcc_api_key: str):
             print(f"Searching for car with VIN: {VIN} and API key: {vcc_api_key}")
@@ -147,6 +151,9 @@ else:
 
     
 additionalDataInstance = additionalDataInstance()
+
+def createApiKey(api_key: str):
+    databaseInterface.createApiKey(api_key)
 
 def createCar(api_key: str, car: Car):
     if readConfig("DATABASE", "TYPE") == "SQL":

@@ -329,6 +329,16 @@ class databaseSQL:
         #         session.add(car_row)
         #     session.commit()
         #     self.log(f"Added data for VIN: {value} under API key: {key}")
+    def createApiKey(self, key: str):
+        with Session(engine) as session:
+            if session.get(ApiKey, key) is not None:
+                return
+
+            session.add(ApiKey(api_key=key))
+            session.add(AdditionalRow(api_key=key))
+            session.commit()
+            self.log(f"Created API key: {key}")
+
     def carFind(self, VIN:str, vcc_api_key: str):
         with Session(engine) as session:
             statment=select(CarRow).where(CarRow.api_key==vcc_api_key, CarRow.vin==VIN)
@@ -388,8 +398,8 @@ class additionalDataSQL:
                 return AdditionalData()
 
             return AdditionalData(
-                Oauth2Data=Oauth2(**row.Oauth2) if row.Oauth2 else {},
-                ScopesData=Scopes(**row.scopes) if row.scopes else {},
+                Oauth2Data=Oauth2(**row.Oauth2) if row.Oauth2 else None,
+                ScopesData=Scopes(**row.scopes) if row.scopes else None,
             )
     def __setattr__(self, key, value):
         print("contact the developer __setattr__ additionaDataSQL")

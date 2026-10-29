@@ -18,6 +18,13 @@ def test_database_contains():
     assert ("vcc_api_key" in dataInstance)  == True
     assert (("vcc_api_secret" not in dataInstance) == True)
 
+def test_database_create_api_key():
+    purge()
+    dataInstance.createApiKey("generated-key")
+    assert "generated-key" in dataInstance
+    assert dataInstance["generated-key"] == []
+    assert "generated-key" in additionalDataInstance
+
 def test_database_getitem():
     purge()
     assert dataInstance["vcc_api_key"] == database.database["vcc_api_key"]

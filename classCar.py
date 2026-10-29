@@ -53,8 +53,8 @@ class Oauth2(BaseModel):
 
 class AdditionalData(BaseModel):
 
-    Oauth2Data: Oauth2 = Field(default=None)
-    ScopesData: Scopes = Field(default=None)
+    Oauth2Data: Oauth2 | None = Field(default=None)
+    ScopesData: Scopes | None = Field(default=None)
     # validation: bool = Field(default=True)
     
     
@@ -476,4 +476,3 @@ class Car(BaseModel):
 
 def timestampGenerator():
     return datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
-

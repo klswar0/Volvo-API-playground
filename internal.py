@@ -11,7 +11,7 @@ import secrets
 from notifier import notifier
 from classCar import Car, Oauth2,Scopes
 from config import readConfig
-from database import databaseInterface as database, AdditionalDatabase,createCar,removeCar
+from database import databaseInterface as database, AdditionalDatabase,createApiKey,createCar,removeCar
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from OAuth2 import oauth2Generator
 from auth import authenticateInternal, VINHandlingInternal
@@ -248,7 +248,7 @@ def genAPIKey():
         api_key=secrets.token_hex(16)
     else:            
         api_key=secrets.token_hex(32)
-    database[api_key] = []
+    createApiKey(api_key)
     return JSONResponse(content={"message": api_key,"description": f"THIS IS INTERNAL API/API key generated successfully"}, status_code=200)
 
 #TODO: check it!!!
@@ -286,4 +286,3 @@ def delCar(vcc_api_key: str = Header(...), VIN: str = Body(...)): #add to DOCS
 
     except KeyError:
         return UnauthorizedResponseInternal()
-
