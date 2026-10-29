@@ -17,7 +17,7 @@ import internal
 import dashboard
 from classCar import  AuthHeaderPOST,AuthHeaderGET,ResponseHeaderGenerator
 from config import readConfig
-from database import database
+from database import databaseInterface as database
 from readyResponses import ErrorResponse, BadRequestResponse, NotSupportedResponse, NormalResponse, autoErrorResponse, OLD_errorResponse
 import ErrorLogging
 import OAuth2
@@ -72,6 +72,24 @@ def index():
 # Oauth2.0 section
 
 # DOES NOT IMPLEMENT THE FULL OAUTH2.0 FLOW. IT IS ONLY A SIMULATION FOR TESTING PURPOSES.
+
+
+# WIP openID connect file
+# @app.get("/.well-known/openid-configuration")
+# def openid_configuration():
+#     issuer = "http://127.0.0.1:8000"
+
+#     return {
+#         "issuer": issuer,
+#         "authorization_endpoint": f"{issuer}/as/authorization.oauth2",
+#         "token_endpoint": f"{issuer}/as/token.oauth2",
+#         "jwks_uri": f"{issuer}/.well-known/jwks.json",
+#         "response_types_supported": ["code"],
+#         "subject_types_supported": ["public"],
+#         "id_token_signing_alg_values_supported": ["RS256"],
+#         "scopes_supported": ["openid", "profile", "email"],
+#         "code_challenge_methods_supported": ["S256"],
+#     }
 
 @app.get("/as/authorization.oauth2")
 def oauth2(request: Request, response_type:str=Query(...),client_id:str=Query(...),redirect_uri:str=Query(...),scope:str=Query(default=""),state:str=Query(default=""),code_challenge:str=Query(default=""),code_challenge_method:str=Query(default="")):
@@ -836,7 +854,11 @@ def Style():
 
 @app.get("/internal/dashboard/car", include_in_schema=False)
 def DashboardCar(key: str,VIN: str, request: Request):
-    return dashboard.DashboardCar(key, VIN, request)
+        return dashboard.DashboardCar(key, VIN, request)
+    
+@app.get("/internal/dashboard/car/v2", include_in_schema=False)
+def DashboardCar(key: str,VIN: str, request: Request):
+        return dashboard.DashboardCarNew(key, VIN, request)
     
 @app.get("/internal/dashboard/redirect", include_in_schema=False)
 def DashboardRedirect(key: str,VIN: str, request: Request):
@@ -845,6 +867,32 @@ def DashboardRedirect(key: str,VIN: str, request: Request):
 @app.websocket("/internal/dashboard/ws")
 async def DashboardWS(websocket: WebSocket):
     return await dashboard.DashboardWS(websocket)
+
+@app.websocket("/internal/dashboard/ws/Iframe")
+async def DashboardWS(websocket: WebSocket):
+    return await dashboard.dashboardCarVisual(websocket)
+
+@app.websocket("/internal/dashboard/ws/v2")
+async def DashboardWS(websocket: WebSocket):
+    return await dashboard.DashboardWSv2(websocket)
+
+@app.get("/internal/dashboard/car/v2/{section}", include_in_schema=False)
+def DashboardCarSection(key: str,VIN: str, section: str, request: Request):
+    if section == "iframe":
+        return dashboard.DashboardCarIframe(key, VIN, request)
+    elif section == "iframe/images":
+        return dashboard.VisualCarImages(section, request)
+    else:
+        return dashboard.Dashboardv2Subsections(key, VIN, section, request)
+
+@app.get("/internal/dashboard/car/iframe", include_in_schema=False)
+def DashboardCarIframe(key: str,VIN: str, request: Request):
+    return dashboard.DashboardCarIframe(key, VIN, request)
+@app.get("/internal/dashboard/car/iframe/images", include_in_schema=False)
+def DashboardCarImage(name: str, request: Request):
+    return dashboard.VisualCarImages(name, request)
+
+
     
 @app.post("/internal/dashboard/update", include_in_schema=False) # html request here for dashboard
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):

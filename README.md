@@ -3,10 +3,8 @@
 # Volvo-API-playground
 This projects aims to provide dynamic alternative to official volvo API sandbox giving developers ways to test every possibility.
 
-This project doesnt give you a ready library but give you tools to write your own implementetion faster and better 
+This project doesnt give you a ready library but gives you software to write againts so you can make your own implementetion faster and better 
 
-> [!WARNING]
-> To view the latest version check `dev` branch
 
 > [!IMPORTANT]
 > Help needed!
@@ -25,8 +23,6 @@ This project doesnt give you a ready library but give you tools to write your ow
 You can explore the public instance here:
 [Public instance](https://playground.kls.hackclub.app/internal/welcome)
 
-[![Phare badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fklswar0-github.status.phare.io%2Fshield-badges%2Fstatus.json&style=for-the-badge)](https://klswar0-github.status.phare.io)
-
 > [!TIP]
 > Are you not sure?
 > You can check the diffrences in the companion app: 
@@ -40,7 +36,7 @@ You can explore the public instance here:
 ## DOCS:
 - WIKI on github  
 - **DEPRECATED** docs.md file (handwritten with additional info)
-- /internal/docs , /internal/redoc and /internal/openapi.json (automatic fastapi docs)
+- /internal/docs , /internal/redoc and /internal/openapi.json (automatic fastapi docs; Know problem with climatization in docs)
 
 
 # Contributions

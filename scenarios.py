@@ -128,7 +128,6 @@ try:
 except Exception as e:
     print(f"Error loading user scenarios: {e}")
 
-#NOTE: NOT TESTED
 def scenariosFunc(vcc_api_key: str = Header(...), VIN: str = Header(...),scenario: str = Body(...)):
     try:
         car = VINHandlingInternal(VIN, vcc_api_key)
@@ -141,7 +140,7 @@ def scenariosFunc(vcc_api_key: str = Header(...), VIN: str = Header(...),scenari
         if car.checkValidityMultiple(SCNENARIO):
             for key, value in SCNENARIO.items():
                 car.update(key, value, True)
-            if readConfig()["DEFAULT"]["statusNotification"] == "ALL" or readConfig()["DEFAULT"]["statusNotification"] == "SET":
+            if readConfig("DEFAULT", "statusNotification") == "ALL" or readConfig("DEFAULT", "statusNotification") == "SET":
                 notifier.trigger_update_multiple(VIN, car, list(SCNENARIO.keys()))
         return JSONResponse(content={"message": f"THIS IS INTERNAL API/Scenario applied successfully: {scenario}"}, status_code=200)
     except ValueError as e:
@@ -154,7 +153,6 @@ def scenariosFunc(vcc_api_key: str = Header(...), VIN: str = Header(...),scenari
             content={"error": {"message": "VALUE_ERROR", "description": str(e)}}, 
             status_code=400
             )
-
 
 
 

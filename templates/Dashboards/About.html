@@ -1,0 +1,62 @@
+<div  id="car-info" class="flex flex-col justify-center items-center gap-4 mt-6">
+    <button hx-get="/internal/dashboard/car/v2/Base?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+        hx-swap="outerHTML transition:true"
+        class="sec min-w-40 whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+        Back
+    </button>
+<div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
+
+    <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+        <p class="text-lg md:text-xl">Model Year:</p>
+            <div class="mt-2 mb-4">
+                <p class="text-base md:text-lg " id="modelYear">{{modelYear}}</p>
+            </div>
+            <form data-attribute="modelYear" hx-ext="json-enc" 
+                hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                <input type="hidden" name="attribute" value="modelYear">
+                <input type="number" name="value" min="0" placeholder="Enter new model year" class="min-w-50 max-w-75 inputText">
+                <input type="submit" value="change" class="submitButtonDash">
+
+            </form>
+
+    </section>
+
+
+    <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75  order-first lg:order-2 dashboardSectionRe sec">
+        <p class="text-lg md:text-xl">Gearbox Type:</p>
+            <div class="mt-2 mb-4">
+                <p class="text-base md:text-lg " id="gearboxType">{{gearboxType}}</p>
+            </div>
+            <form data-attribute="gearboxType" hx-ext="json-enc"
+                hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                <input type="hidden" name="attribute" value="gearboxType">
+                <select name="value" class="inputSelection">
+                    <option value="AUTOMATIC" class="bg-zinc-950 text-zinc-100">AUTOMATIC</option>
+                    <option value="MANUAL" class="bg-zinc-950 text-zinc-100">MANUAL</option>
+                </select>
+                <input type="submit" value="change" class="submitButtonDash">
+            </form>
+
+    </section>
+
+
+    <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75  lg:order-3 dashboardSectionRe sec">
+        <p class="text-lg md:text-xl">Odometer:</p>
+            <div class="flex items-center gap-1 mt-2 mb-4">
+                <p class="text-base md:text-lg " id="odometer">{{odometer}}</p>
+                <p class="text-base md:text-lg">km</p>
+            </div>
+            <form data-attribute="odometer" hx-ext="json-enc"
+                hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                <input type="hidden" name="attribute" value="odometer">
+                <input type="number" name="value" min="0" placeholder="Enter new odometer reading" class="min-w-50 max-w-75 inputText">
+                <input type="submit" value="change" class="submitButtonDash">
+            </form>
+
+
+    </section>
+
+
+    </div>
+
+</div>

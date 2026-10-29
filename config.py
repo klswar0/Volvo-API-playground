@@ -10,6 +10,7 @@ def readConfig(section, option, boolean=False):
 
 config = configparser.ConfigParser()
 config['DEFAULT'] = {
+    'fastAPIdocs': 'True',
     'ShortKeys': 'True',
     'Validation': 'True',
     'expirity': 'True',
@@ -26,7 +27,21 @@ config['ERROR_LOGGING'] = {
     'STATUS': 'True',
     'Write': 'True'
 }
-config.read('config.ini')
+config['DATABASE'] = {
+    'TYPE': 'DICT',
+    'SQL_TYPE': '',
+    'HOST': 'localhost',
+    'PORT': '3306',
+    'USER': 'test',
+    'PASSWORD': '1234',
+    'NAME': 'api',
+    'DEBUG': 'False',
+    'Purge': 'False',
+    'ALWAYS_REFRESH': 'False'
+    
+}
+if os.path.exists("config.ini"):
+    config.read('config.ini')
 
 all_options=['DEFAULT']+config.sections()
 for section in all_options:

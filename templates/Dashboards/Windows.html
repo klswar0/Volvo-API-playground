@@ -1,0 +1,111 @@
+<div  id="car-info" class="flex flex-col justify-center items-center gap-4 mt-6">
+    <button hx-get="/internal/dashboard/car/v2/Base?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+        hx-swap="outerHTML transition:true"
+        class="sec min-w-40 whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+        Back
+    </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Front Left Window:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="frontLeftWindow">{{frontLeftWindow}}</p>
+                    </div>
+                <form data-attribute="frontLeftWindow" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="frontLeftWindow">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Front Right Window:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="frontRightWindow">{{frontRightWindow}}</p>
+                    </div>
+                <form data-attribute="frontRightWindow" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="frontRightWindow">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Rear Left Window:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="rearLeftWindow">{{rearLeftWindow}}</p>
+                    </div>
+                <form data-attribute="rearLeftWindow" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="rearLeftWindow">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Rear Right Window:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="rearRightWindow">{{rearRightWindow}}</p>
+                    </div>
+                <form data-attribute="rearRightWindow" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="rearRightWindow">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+
+
+        </div>
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Sunroof:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="sunroof">{{sunroof}}</p>
+                    </div>
+                <form data-attribute="sunroof" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="sunroof">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="AJAR">AJAR</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+</div>

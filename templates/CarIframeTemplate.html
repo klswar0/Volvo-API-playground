@@ -1,0 +1,6 @@
+<div id="car-visual">
+    <img src="/internal/dashboard/car/iframe/images?name=base.png" class="pixelArt" alt="base">
+    {% for state in states.values() %}
+        <img src="/internal/dashboard/car/iframe/images?name={{state}}.png" class="pixelArt" alt="{{state}}">
+    {% endfor %}
+</div>

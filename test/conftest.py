@@ -13,9 +13,11 @@ if str(ROOT) not in sys.path:
 
 import database 
 import snapshots 
+import os
 from classCar import Car
 from config import readConfig 
 from notifier import notifier 
+from config import config
 
 
 
@@ -28,11 +30,13 @@ database.AdditionalDatabase["TEST_OAUTH"] = database.AdditionalData(Oauth2Data=d
 database.database["TEST_SCOPE"] = [Car(VIN="12345678901234567")]
 database.AdditionalDatabase["TEST_SCOPE"] = database.AdditionalData(ScopesData=database.Scopes(scopes=["openid"]))
 
-
 database_backup = copy.deepcopy(database.database)
 additional_data_backup = copy.deepcopy(database.AdditionalDatabase)
 # snapshots_backup = copy.deepcopy(snapshots.snapshotsData)
 # config_backup = copy.deepcopy(config)
+
+if os.path.exists("config.ini"):
+    os.rename("config.ini", "config.ini.bak")
 
 @pytest.fixture(autouse=True)
 def Reset():

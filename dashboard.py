@@ -15,7 +15,7 @@ import secrets
 from notifier import notifier
 from classCar import Car, Oauth2,Scopes
 from config import readConfig
-from database import createCar, database, AdditionalDatabase
+from database import createCar,removeCar, databaseInterface as database, additionalDataInstance as AdditionalDatabase
 from readyResponses import BadRequestResponseInternal, UnauthorizedResponseInternal
 from internal import update, genAPIKey
 from scenarios import SCENARIO_TEMPLATES,SCENARIO_USER,scenariosFunc
@@ -118,8 +118,184 @@ async def DashboardWS(websocket: WebSocket):
     finally:
         notifier.unsubscribe(vin, queue)
         print(f"Disconnected car: {vin} with key: {api_key}")
+  
+      
+def DashboardCarNew(key: str,VIN: str, request: Request):
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
+    try:
+        car = VINHandlingInternal(VIN, key)
+        data={"VIN":VIN,"key":key,"note": readConfig("SITE","Note")}
+        return templates.TemplateResponse(name="dashboardNew.html", request=request, context=data)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+        
+def carVisualTranslate(state: str):
+    attribute= state["attribute_name"]
+    current = state["current_value"]
     
+    asset_names ={
+        "frontLeftDoor": "doorFL",
+        "frontRightDoor": "doorFR",
+        "rearLeftDoor": "doorBL",
+        "rearRightDoor": "doorBR",
+        "tailGate": "trunk",
+        "hood": "front",
+        "sunroof": "glass",
+        #"tankLid": "cap",
+        }
 
+    asset_prefix = asset_names.get(attribute)
+    
+    if asset_prefix is None:
+        return None
+    
+    if current in {"OPEN","AJAR"}:
+        
+        return (asset_prefix,asset_prefix + "O")
+    
+    if current in {"CLOSED"}:
+        
+        return (asset_prefix, asset_prefix + "C")
+    
+    return (asset_prefix,"UNSPECIFIED")
+
+# NEW DASHBOARD SECTION
+
+def Dashboardv2Subsections(key: str,VIN: str,section:str, request: Request):
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
+    try:
+        car = VINHandlingInternal(VIN, key)
+        car_data = car.model_dump()
+        template = templates.get_template(f"Dashboards/{section}.html")
+        html=template.render({"VIN": VIN,"key": key,**car_data})
+        return HTMLResponse(content=html)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+
+async def DashboardWSv2(websocket: WebSocket):
+    await websocket.accept()
+    if readConfig("DEFAULT", "Websocket",True) == False:
+            await websocket.send_text("<div id=\"car-info\"><p style=\"color:red\">Websocket is disabled in the configuration</p></div>")
+            await websocket.close()
+            return
+    params = websocket.query_params
+    vin = params.get("VIN")
+    api_key = params.get("key")
+    queue = notifier.subscribe(vin)
+    
+    try:
+        car = VINHandlingInternal(vin, api_key)
+        if not car:
+            raise ValueError("Car not found or invalid API key")
+        car_data = car.model_dump()
+        
+
+        car_data["key"] = api_key
+        template = templates.get_template("Dashboards/Base.html")
+        html=template.render(car_data)
+        await websocket.send_text(html)
+        
+        while True:
+            packet = await queue.get()
+    
+            packet["key"] = api_key
+            if packet["current_value"] == "":
+                packet["current_value"] = "NOT SET"
+           
+            if packet["attribute_name"] == "fuelType":
+                template = templates.get_template("TempDash/fuelsection.html")
+                html=template.render({"VIN": packet["VIN"],"key": api_key,"fuelType":packet["current_value"],"fuelICE":car.fuelICE,"fuelElectric": car.fuelElectric})
+
+            else:
+                html=f"<p class=\"text-base md:text-lg animate-fade-in\" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
+            
+            await websocket.send_text(html)
+            
+    except WebSocketDisconnect:
+        print("Dashboard disconnected")
+    except ValueError as e:
+        await websocket.send_text("Invalid API key or VIN")
+        await websocket.close()
+        return
+    finally:
+        notifier.unsubscribe(vin, queue)
+        print(f"Disconnected car: {vin} with key: {api_key}")
+        
+
+async def dashboardCarVisual(websocket: WebSocket):
+    await websocket.accept()
+    if readConfig("DEFAULT", "Websocket",True) == False:
+        await websocket.send_text("<div id=\"car-info\"><p style=\"color:red\">Websocket is disabled in the configuration</p></div>")
+        await websocket.close()
+        return
+    params = websocket.query_params
+    vin = params.get("VIN")
+    api_key = params.get("key")
+    queue = notifier.subscribe(vin)
+    Back_States = {}
+        
+    try:
+        car = VINHandlingInternal(vin, api_key)
+        if not car:
+          raise ValueError("Car not found or invalid API key")
+        car_data = car.model_dump()
+        #file here
+        print(f"Initial car data for visual: {car_data}")
+        for state in car_data:
+           visual_state = carVisualTranslate({"attribute_name": state, "current_value": car_data[state]})
+           if visual_state is not None and visual_state[1] != "UNSPECIFIED":
+               Back_States[visual_state[0]] = visual_state[1]
+        html=templates.get_template("CarIframeTemplate.html").render({"states": Back_States})
+        await websocket.send_text(html)
+        while True:
+            packet = await queue.get()
+            template = templates.get_template("CarIframeTemplate.html")
+            states = Back_States.copy()
+            visual_state = carVisualTranslate(packet)
+            if visual_state is not None:
+                if visual_state[1] == "UNSPECIFIED":
+                    states.pop(visual_state[0],None)
+                else:
+                    states[visual_state[0]] = visual_state[1]
+            html=template.render({"states": states})
+            Back_States = states.copy()
+            await websocket.send_text(html)
+
+        
+    except WebSocketDisconnect:
+        print("Dashboard disconnected")
+    except ValueError as e:
+        await websocket.send_text("Invalid API key or VIN")
+        await websocket.close()
+        return
+    finally:
+        notifier.unsubscribe(vin, queue)
+        print(f"Disconnected car: {vin} with key: {api_key}")
+        
+    
+def DashboardCarIframe(key: str,VIN: str, request: Request):
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
+    try:
+        car = VINHandlingInternal(VIN, key)
+        data={"VIN":VIN,"key":key}
+        return templates.TemplateResponse(name="CarIframe.html", request=request, context=data)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+    
+def VisualCarImages(name: str, request: Request):
+    try:
+        if name == "capC.png":
+            return None 
+        return FileResponse(f"templates/Car/{name}")
+    except Exception as e:
+        return HTMLResponse(content="<p style=\"color:red\">Image not found</p>")
+    
 def DashboardUpdate(key: str,VIN: str, request: Request, attribute: str = Body(...), value: str = Body(...)):
     check = checkDashboardEnabled()
     if check is not None:
@@ -177,12 +353,16 @@ def OAuth2Settings(key: str, request: Request):
             return templates.TemplateResponse(name="oauth2settings.html", request=request, context={"key": key, "oauth2_status": oauth2_status, "note": readConfig("SITE","Note")})
         else:
             oauth2_status = "Activated"
-        data=AdditionalDatabase[key].Oauth2Data.model_dump()
+        if readConfig("DATABASE", "TYPE") == "SQL":
+            data=dict(AdditionalDatabase[key].Oauth2Data)
+        else:
+            data=AdditionalDatabase[key].Oauth2Data.model_dump()
         data["oauth2_status"] = oauth2_status
         data["key"]=key
         data["note"] = readConfig("SITE","Note")
         return templates.TemplateResponse(name="oauth2settings.html", request=request, context=data)
     except ValueError as e:
+        print(f"Error in OAuth2Settings: {e}")
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
 
@@ -199,41 +379,47 @@ def OAuth2Change(key: str, attribute: str, value: str, request: Request):
             if attribute == "OAuth2":
                 if value.lower() == "true":
                     oauth2 = Oauth2(client_secret="client_secret_"+secrets.token_urlsafe(12), PKCE=False,redirect_uri="")
-                    AdditionalDatabase[key].Oauth2Data = oauth2
+                    if readConfig("DATABASE", "TYPE") == "SQL":
+                        AdditionalDatabase.update(key, oauth2)
+                    else:
+                        AdditionalDatabase[key].Oauth2Data = oauth2
                     # response=Response()
                     # response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
                     # return response
                     return OAuth2Settings(key, request)
 
             return HTMLResponse(content="<p style=\"color:red\">OAuth2 not activated for this API key</p>")
-
+        Oauth2Data = AdditionalDatabase[key].Oauth2Data
         if attribute == "client_secret":
-            AdditionalDatabase[key].Oauth2Data.client_secret = value
+            Oauth2Data.client_secret = value
         elif attribute == "redirect_uri":   
-            AdditionalDatabase[key].Oauth2Data.redirect_uri = value
+           Oauth2Data.redirect_uri = value
         elif attribute == "PKCE":
             if value.lower() == "true":
-                AdditionalDatabase[key].Oauth2Data.PKCE = True
+                Oauth2Data.PKCE = True
             elif value.lower() == "false":
-                AdditionalDatabase[key].Oauth2Data.PKCE = False
+                Oauth2Data.PKCE = False
         elif attribute == "access_token":
-            AdditionalDatabase[key].Oauth2Data.access_token = value
+            Oauth2Data.access_token = value
         elif attribute == "refresh_token":
-            AdditionalDatabase[key].Oauth2Data.refresh_token = value
+            Oauth2Data.refresh_token = value
         elif attribute == "OAuth2":
             if value.lower() == "false":
-                AdditionalDatabase[key].Oauth2Data = None
+                Oauth2Data.Oauth2Data = None
         elif attribute == "generate":
-            oauth2Generator(key, AdditionalDatabase[key].Oauth2Data)
+            oauth2Generator(key, Oauth2Data)
         elif attribute == "expire":
-            AdditionalDatabase[key].Oauth2Data.expires_in = 0
+            Oauth2Data.Oauth2Data.expires_in = 0
         else:
             return HTMLResponse(content="<p style=\"color:red\">Invalid attribute</p>")
         # response=Response()
         # response.headers["HX-Redirect"] = f"/internal/dashboard/OAuth2settings?key={key}"
         # return response
+        if readConfig("DATABASE", "TYPE") == "SQL":
+            AdditionalDatabase.update(key,Oauth2Data)
         return OAuth2Settings(key, request)
     except ValueError as e:
+        print(f"Error in OAuth2Change: {e}")
         return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
     
 # def OAuth2Generate(key: str, request: Request):  
@@ -350,6 +536,8 @@ def WelcomeNewCar(request: Request, key: str, VIN: str):
            
            return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car already exists</p></div>", headers=error_headers)
         except ValueError:
+            if VIN.lower()=="hackclub":
+                return FileResponse("templates/hackclub.html")
             new_car = Car(VIN=VIN)
             createCar(key, new_car)
             # response = Response()
@@ -372,8 +560,8 @@ def deleteCar(key: str, VIN: str, request: Request):
             raise ValueError("Invalid API key")
         try:
             car = VINHandlingInternal(VIN, key)
-            database[key].remove(car)
-
+            #database[key].remove(car)
+            removeCar(key, car)
             return Dashboard(key, request)
         except ValueError:
             return HTMLResponse(content="<div id=\"Error-response\"><p style=\"color:red\">Car does not exist</p></div>", headers=error_headers)

@@ -1,0 +1,67 @@
+<div  id="car-info" class="flex flex-col justify-center items-center gap-4 mt-6">
+    <button hx-get="/internal/dashboard/car/v2/Base?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+        hx-swap="outerHTML transition:true"
+        class="sec min-w-40 whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+        Back
+    </button>
+
+        <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">Longitude:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="longitude">{{longitude}}</p>
+                </div>
+                <form data-attribute="longitude" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="longitude">
+                    <input type="number" name="value" step="any" placeholder="Enter new longitude" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">Latitude:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="latitude">{{latitude}}</p>
+                </div>
+                <form data-attribute="latitude" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="latitude">
+                    <input type="number" name="value" step="any" placeholder="Enter new latitude" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">Altitude:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="altitude">{{altitude}}</p>
+                </div>
+                <form data-attribute="altitude" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="altitude">
+                    <input type="number" name="value" step="any" placeholder="Enter new altitude" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class=" w-full max-w-75 sm:max-w-100 sm:min-w-75   lg:order-1 dashboardSectionRe sec ">
+            <p class="text-lg md:text-xl">Heading:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="heading">{{heading}}</p>
+                </div>
+                <form data-attribute="heading" hx-ext="json-enc" 
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="heading">
+                    <input type="number" name="value" min="0" max="360" placeholder="Enter new heading" class="min-w-50 max-w-75 inputText">
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+
+        </div>
+</div>

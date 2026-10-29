@@ -1,7 +1,7 @@
 from time import time
 
 from classCar import AuthHeaderGET, AuthHeaderPOST
-from database import database, AdditionalDatabase
+from database import additionalDataInstance as AdditionalDatabase, databaseInterface as database, carInstance
 
 
 
@@ -10,10 +10,12 @@ def authenticate(auth_header: AuthHeaderPOST | AuthHeaderGET):
         if auth_header.vcc_api_key == "":
             raise ValueError("Missing API key")
         raise ValueError("Invalid API key")
-    if   AdditionalDatabase[auth_header.vcc_api_key].Oauth2Data is not None:
+
+    oauth2 = AdditionalDatabase[auth_header.vcc_api_key].Oauth2Data
+    if oauth2 is not None:
         if auth_header.authorization != f"Bearer {AdditionalDatabase[auth_header.vcc_api_key].access_token}":
             raise ValueError("Invalid access token")
-        if AdditionalDatabase[auth_header.vcc_api_key].Oauth2Data.expires_in != -1 and AdditionalDatabase[auth_header.vcc_api_key].Oauth2Data.expires_in < int(time()):
+        if oauth2.expires_in != -1 and oauth2.expires_in < int(time()):
             raise ValueError("Invalid access token")
     if isinstance(auth_header, AuthHeaderPOST):
         if auth_header.content_type.split(";")[0].lower() != "application/json": #NOTE: lower case to avoid case sensitivity issues checks needed
@@ -34,12 +36,16 @@ def VINHandling(VIN:str, auth_header:  AuthHeaderPOST | AuthHeaderGET):
     except Exception as e:
         raise ValueError(str(e))
     
-    for car in database[auth_header.vcc_api_key]:
-        if car.VIN == VIN:
-            return car
+    # for car in database[auth_header.vcc_api_key]:
+    #     if car.VIN == VIN:
+    #         return car
+
+    car= carInstance(auth_header.vcc_api_key,VIN)
+    return car
     raise ValueError("Invalid VIN")
 
 def authenticateInternal(vcc_api_key: str):
+    print(vcc_api_key not in database)
     if vcc_api_key not in database:
         raise ValueError("Invalid API key")
     
