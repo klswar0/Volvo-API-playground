@@ -10,7 +10,8 @@
             <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.1/ws.js"></script>
 
             <script src="https://cdn.jsdelivr.net/npm/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
-            <link rel="stylesheet" href="style.css">
+            <link rel="stylesheet" href="/internal/style.css">
+            <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     </head>    
 
@@ -25,47 +26,15 @@
 
 
             <div class="flex flex-col">
-                <div class="cluster">
+                <div>
                     <iframe src="/internal/dashboard/car/iframe?VIN={{VIN}}&key={{key}}" width="100%" height="400px" style="border: none;"></iframe>
                 </div>
-                <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        About and service
-                    </button>
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        OAuth2
-                    </button>
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        Availability
-                    </button>
+                <div hx-ext="ws" ws-connect="/internal/dashboard/ws/v2?VIN={{VIN}}&key={{key}}">
+                    <div id="car-info" hx-swap-oob="true" hx-swap="innerHTML transition:true">   
+                        <p>Awaiting real-time vehicle data connection...</p>
+                    </div>
                 </div>
-                <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        Engine and climate
-                    </button>
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        fuel and battery
-                    </button>
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        Tire pressure
-                    </button>
-                </div>
-                <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        Doors
-                    </button>
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        Windows
-                    </button>
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        Fluids
-                    </button>
-                </div>
-                <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
-                    <button  hx-get="/internal/dashboard/OAuth2settings?key={{ key }}" hx-target="body" hx-swap="outerHTML transition:true" class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
-                        Lights warning
-                    </button>
-                </div>
+                
             </div>
         </main>
         <div id="Iframe" class="mt-6 md:mt-12 w-full max-w-4xl">

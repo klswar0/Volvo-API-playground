@@ -1,0 +1,88 @@
+<div  id="car-info" class="flex flex-col justify-center items-center gap-4 mt-6">
+    <button hx-get="/internal/dashboard/car/Base?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+        hx-swap="outerHTML transition:true"
+        class="sec min-w-40 whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+        Back
+    </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 justify-items-center items-center max-w-200 mx-auto">
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Oil level:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="oilLevel">{{oilLevel}}</p>
+                    </div>
+                <form data-attribute="oilLevel" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="oilLevel">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="NO_WARNING">NO_WARNING</option>
+                        <option value="SERVICE_REQUIRED">SERVICE_REQUIRED</option>
+                        <option value="TOO_LOW">TOO_LOW</option>
+                        <option value="TOO_HIGH">TOO_HIGH</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Engine Coolant Level:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="engineCoolantLevel">{{engineCoolantLevel}}</p>
+                    </div>
+                <form data-attribute="engineCoolantLevel" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="engineCoolantLevel">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="NO_WARNING">NO_WARNING</option>
+                        <option value="TOO_LOW">TOO_LOW</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+
+                </form>
+
+            </section>
+
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Brake fluid:</p>
+        
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="brakeFluidLevel">{{brakeFluidLevel}}</p>
+                    </div>
+                <form data-attribute="brakeFluidLevel" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="brakeFluidLevel">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="NO_WARNING">NO_WARNING</option>
+                        <option value="TOO_LOW">TOO_LOW</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+
+            </section>
+            <section class="w-full max-w-75 sm:max-w-100 sm:min-w-75 dashboardSectionRe sec">
+                <p class="text-lg md:text-xl">Washer Fluid:</p>
+
+                    <div class="mt-2 mb-4">
+                        <p class="text-base md:text-lg " id="washerFluidLevelWarning">{{washerFluidLevelWarning}}</p>
+                    </div>
+                <form data-attribute="washerFluidLevelWarning" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response"><input type="hidden"
+                        name="attribute" value="washerFluidLevelWarning">
+                    <select name="value" class="inputSelection">
+                        <option value="UNSPECIFIED">UNSPECIFIED</option>
+                        <option value="NO_WARNING">NO_WARNING</option>
+                        <option value="TOO_LOW">TOO_LOW</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+
+            </section>
+
+
+        </div>
+</div>

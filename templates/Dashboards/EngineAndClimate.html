@@ -1,0 +1,42 @@
+<div  id="car-info" class="flex flex-col justify-center items-center gap-4 mt-6">
+    <button hx-get="/internal/dashboard/car/Base?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+        hx-swap="outerHTML transition:true"
+        class="sec min-w-40 whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
+        Back
+    </button>
+    <div class="flex flex-row gap-4 mt-6 items-center justify-center flex-wrap">
+        <section class=" w-full max-w-75 sm:max-w-125 sm:min-w-100  dashboardSectionRe sec">
+            <p class="text-lg md:text-xl">Engine Status:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="engineStatus">{{engineStatus}}</p>
+                </div>
+                <form data-attribute="engineStatus" hx-ext="json-enc"
+                    hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+                    <input type="hidden" name="attribute" value="engineStatus">
+                    <select name="value" class="inputSelection">
+                        <option value="STOPPED">STOPPED</option>
+                        <option value="RUNNING">RUNNING</option>
+                    </select>
+                    <input type="submit" value="change" class="submitButtonDash">
+                </form>
+
+        </section>
+
+        <section class="w-full max-w-75 sm:max-w-125 sm:min-w-100 dashboardSectionRe sec">
+            <p class="text-lg md:text-xl">Climate Status:</p>
+                <div class="mt-2 mb-4">
+                    <p class="text-base md:text-lg " id="climate">{{climate}}</p>
+                </div>
+               <form data-attribute="climate" hx-ext="json-enc"
+            hx-post="/internal/dashboard/update?VIN={{ VIN }}&key={{ key }}" hx-target="#response">
+            <input type="hidden" name="attribute" value="climate">
+            <select name="value" class="inputSelection">
+                <option value="True">ON</option>
+                <option value="False">OFF</option>
+            </select>
+            <input type="submit" value="change" class="submitButtonDash">
+        </form>
+
+        </section>
+    </div>
+</div>

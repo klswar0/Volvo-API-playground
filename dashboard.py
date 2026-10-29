@@ -160,6 +160,70 @@ def carVisualTranslate(state: str):
         return (asset_prefix, asset_prefix + "C")
     
     return (asset_prefix,"UNSPECIFIED")
+
+# NEW DASHBOARD SECTION
+
+def Dashboardv2Subsections(key: str,VIN: str,section:str, request: Request):
+    check = checkDashboardEnabled()
+    if check is not None:
+        return check
+    try:
+        car = VINHandlingInternal(VIN, key)
+        car_data = car.model_dump()
+        template = templates.get_template(f"Dashboards/{section}.html")
+        html=template.render({"VIN": VIN,"key": key,**car_data})
+        return HTMLResponse(content=html)
+    except ValueError as e:
+        return HTMLResponse(content="<p style=\"color:red\">Invalid API key</p>")
+
+async def DashboardWSv2(websocket: WebSocket):
+    await websocket.accept()
+    if readConfig("DEFAULT", "Websocket",True) == False:
+            await websocket.send_text("<div id=\"car-info\"><p style=\"color:red\">Websocket is disabled in the configuration</p></div>")
+            await websocket.close()
+            return
+    params = websocket.query_params
+    vin = params.get("VIN")
+    api_key = params.get("key")
+    queue = notifier.subscribe(vin)
+    
+    try:
+        car = VINHandlingInternal(vin, api_key)
+        if not car:
+            raise ValueError("Car not found or invalid API key")
+        car_data = car.model_dump()
+        
+
+        car_data["key"] = api_key
+        template = templates.get_template("Dashboards/Base.html")
+        html=template.render(car_data)
+        await websocket.send_text(html)
+        
+        while True:
+            packet = await queue.get()
+    
+            packet["key"] = api_key
+            if packet["current_value"] == "":
+                packet["current_value"] = "NOT SET"
+           
+            # if packet["attribute_name"] == "fuelType":
+            #     template = templates.get_template("TempDash/fuelsection.html")
+            #     html=template.render({"VIN": packet["VIN"],"key": api_key,"fuelType":packet["current_value"],"fuelICE":car.fuelICE,"fuelElectric": car.fuelElectric})
+
+            else:
+                html=f"<p class=\"text-base md:text-lg animate-fade-in\" id=\"{packet['attribute_name']}\">{packet['current_value']}</p>"
+            
+            await websocket.send_text(html)
+            
+    except WebSocketDisconnect:
+        print("Dashboard disconnected")
+    except ValueError as e:
+        await websocket.send_text("Invalid API key or VIN")
+        await websocket.close()
+        return
+    finally:
+        notifier.unsubscribe(vin, queue)
+        print(f"Disconnected car: {vin} with key: {api_key}")
         
 
 async def dashboardCarVisual(websocket: WebSocket):

@@ -871,6 +871,19 @@ async def DashboardWS(websocket: WebSocket):
 async def DashboardWS(websocket: WebSocket):
     return await dashboard.dashboardCarVisual(websocket)
 
+@app.websocket("/internal/dashboard/ws/v2")
+async def DashboardWS(websocket: WebSocket):
+    return await dashboard.DashboardWSv2(websocket)
+
+@app.get("/internal/dashboard/car/{section}", include_in_schema=False)
+def DashboardCarSection(key: str,VIN: str, section: str, request: Request):
+    if section == "iframe":
+        return dashboard.DashboardCarIframe(key, VIN, request)
+    elif section == "iframe/images":
+        return dashboard.VisualCarImages(section, request)
+    else:
+        return dashboard.Dashboardv2Subsections(key, VIN, section, request)
+
 @app.get("/internal/dashboard/car/iframe", include_in_schema=False)
 def DashboardCarIframe(key: str,VIN: str, request: Request):
     return dashboard.DashboardCarIframe(key, VIN, request)
