@@ -853,11 +853,12 @@ def Style():
 
 
 @app.get("/internal/dashboard/car", include_in_schema=False)
-def DashboardCar(key: str,VIN: str, request: Request,new: bool = Query(default=False)):
-    if new:
-        return dashboard.DashboardCarNew(key, VIN, request)
-    else:
+def DashboardCar(key: str,VIN: str, request: Request):
         return dashboard.DashboardCar(key, VIN, request)
+    
+@app.get("/internal/dashboard/car/v2", include_in_schema=False)
+def DashboardCar(key: str,VIN: str, request: Request):
+        return dashboard.DashboardCarNew(key, VIN, request)
     
 @app.get("/internal/dashboard/redirect", include_in_schema=False)
 def DashboardRedirect(key: str,VIN: str, request: Request):
@@ -875,7 +876,7 @@ async def DashboardWS(websocket: WebSocket):
 async def DashboardWS(websocket: WebSocket):
     return await dashboard.DashboardWSv2(websocket)
 
-@app.get("/internal/dashboard/car/{section}", include_in_schema=False)
+@app.get("/internal/dashboard/car/v2/{section}", include_in_schema=False)
 def DashboardCarSection(key: str,VIN: str, section: str, request: Request):
     if section == "iframe":
         return dashboard.DashboardCarIframe(key, VIN, request)

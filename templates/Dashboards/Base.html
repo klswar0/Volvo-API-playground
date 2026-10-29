@@ -1,67 +1,67 @@
 <div id="car-info">
 <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
-    <button hx-get="/internal/dashboard/car/About?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/About?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         About
     </button>
-    <button hx-get="/internal/dashboard/car/Service?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/Service?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Service
     </button>
-    <button hx-get="/internal/dashboard/car/Availability?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/Availability?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Availability
     </button>
 </div>
 <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
-    <button hx-get="/internal/dashboard/car/EngineAndClimate?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/EngineAndClimate?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Engine and climate
     </button>
-    <button hx-get="/internal/dashboard/car/FuelAndBattery?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/FuelAndBattery?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         fuel and battery
     </button>
-    <button hx-get="/internal/dashboard/car/TirePressure?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/TirePressure?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Tire pressure
     </button>
 </div>
 <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
-    <button hx-get="/internal/dashboard/car/Doors?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/Doors?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Doors
     </button>
-    <button hx-get="/internal/dashboard/car/Windows?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/Windows?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Windows
     </button>
-    <button hx-get="/internal/dashboard/car/Fluids?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/Fluids?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Fluids
     </button>
 </div>
 <div class="flex flex-row gap-4 w-full items-center justify-center mt-4">
-    <button hx-get="/internal/dashboard/car/LightsWarning?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/LightsWarning?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Lights warning
     </button>
-    <button hx-get="/internal/dashboard/car/Energy?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/Energy?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Energy
     </button>
-    <button hx-get="/internal/dashboard/car/Location?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
+    <button hx-get="/internal/dashboard/car/v2/Location?key={{ key }}&VIN={{ VIN }}" hx-target="#car-info"
         hx-swap="outerHTML transition:true"
         class="sec whitespace-nowrap mt-4 px-4 py-2.5 text-lg bg-blue-500/50 text-white rounded-xl hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 transition-all active:scale-[0.98] cursor-pointer">
         Location
