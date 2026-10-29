@@ -20,6 +20,12 @@
             <p class="text-xl md:text-2xl">API Key: {{key}}</p>
             <p class="text-xl md:text-2xl">VIN: {{VIN}}</p>
             <p class="text-xl md:text-2xl text-red-700">{{note}}</p>
+            <a
+                class="sec downButton"
+                href="/internal/dashboard/car?key={{ key }}&VIN={{ VIN }}&new=true">
+                Try new Dahboard
+            </a>
+            
         </header>
         <main>
         <div hx-ext="ws" ws-connect="/internal/dashboard/ws?VIN={{VIN}}&key={{key}}">
