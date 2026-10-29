@@ -60,8 +60,8 @@ def test_carInstance_setitem():
     purge()
     car_instance = databaseSQL.carInstanceSQL(api_key="vcc_api_key", VIN="VIN123")
     copy=car_instance.car.__dict__.copy()
-    car_instance["VIN"] = "NEWVIN"
-    assert car_instance["VIN"] == "NEWVIN"
+    car_instance["modelYear"] = 2
+    assert car_instance["modelYear"] == 2
     assert car_instance.car.__dict__ != copy
 
 def test_carInstance_getattr():
